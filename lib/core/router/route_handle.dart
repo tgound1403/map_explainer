@@ -4,7 +4,9 @@ import 'package:ai_map_explainer/feature/chat/domain/chat_usecase.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/bloc/chat_bloc.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/view/chat_view.dart';
 import 'package:ai_map_explainer/feature/detail/detail_view.dart';
+import 'package:ai_map_explainer/feature/map/domain/map_usecase.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_view.dart';
+import 'package:ai_map_explainer/feature/map/presentation/bloc/map_bloc.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +24,10 @@ Handler chatHandler = Handler(
 );
 
 Handler homeScreenHandler = Handler(handlerFunc: (BuildContext? context, params) {
-  return AppBottomNavigation();
+  return BlocProvider(
+    create: (context) => MapBloc(getIt<MapUseCase>()),
+    child: const AppBottomNavigation(),
+  );
 });
 
 Handler detailScreenHandler = Handler(handlerFunc: (context, params) {
@@ -31,5 +36,8 @@ Handler detailScreenHandler = Handler(handlerFunc: (context, params) {
 });
 
 Handler mapScreenHandler = Handler(handlerFunc: (context, params) {
-  return const MapScreen();
+  return BlocProvider(
+    create: (context) => MapBloc(getIt<MapUseCase>()),
+    child: const MapView(),
+  );
 });

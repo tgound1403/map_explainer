@@ -1,3 +1,4 @@
+import 'package:ai_map_explainer/core/utils/logger.dart';
 import 'package:wikipedia/wikipedia.dart';
 
 class WikipediaService {
@@ -14,8 +15,8 @@ class WikipediaService {
           return resultDescription?.extract ?? '';
         }
       }
-    } catch (e) {
-      print(e);
+    } catch (e, st) {
+      Logger.e(e, stackTrace: st);
       return null;
     }
   return null;

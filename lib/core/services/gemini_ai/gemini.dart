@@ -1,14 +1,13 @@
 import 'dart:io';
 
+import 'package:ai_map_explainer/core/utils/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:talker_flutter/talker_flutter.dart';
 import 'package:mime/mime.dart';
 
 class GeminiAI {
   static final instance = GeminiAI();
   static late GenerativeModel? model;
-  final talker = Talker();
 
   static Future<void> initService() async {
     final apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
@@ -33,8 +32,8 @@ class GeminiAI {
       final response = await model?.generateContent(content);
       return response?.text;
     } catch (e, st) {
-      print(e);
-      print(st);
+      Logger.e(e);
+      Logger.e(st);
       return null;
     }
   }
@@ -63,8 +62,8 @@ class GeminiAI {
 
       return resultList;
     } catch (e, st) {
-      print(e);
-      print(st);
+      Logger.e(e);
+      Logger.e(st);
       return null;
     }
   }
@@ -81,8 +80,8 @@ class GeminiAI {
 
       return response?.text;
     } catch (e, st) {
-      print(e);
-      print(st);
+      Logger.e(e);
+      Logger.e(st);
       return null;
     }
   } 
@@ -91,11 +90,11 @@ class GeminiAI {
     try {
       final content = [Content.text(prompt)];
       final response = await model?.generateContent(content);
-      print(response?.text);
+      Logger.i(response?.text);
       return response?.text;
     } catch (e, st) {
-      print(e);
-      print(st);
+      Logger.e(e);
+      Logger.e(st);
       return null;
     }
   }
@@ -117,8 +116,8 @@ class GeminiAI {
       // talker.info(response?.text);
       return response?.text;
     } on Exception catch (e, st) {
-      talker.error(e);
-      talker.error(st);
+      Logger.e(e);
+      Logger.e(st);
       return null;
     }
   }
@@ -129,11 +128,11 @@ class GeminiAI {
     try {
       final chat = model?.startChat(history: history);
       var response = (await chat?.sendMessage(prompt))?.text;
-      talker.info(response);
+      Logger.i(response);
       return response;
     } catch (e, st) {
-      talker.error(e);
-      talker.error(st);
+      Logger.e(e);
+      Logger.e(st);
       return null;
     }
   }
