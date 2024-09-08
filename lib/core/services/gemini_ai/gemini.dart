@@ -41,7 +41,7 @@ class GeminiAI {
   Future<List<String>?> findRelated(String input) async {
     try {
       final content = [
-        Content.text("You are an expert in hítory, "
+        Content.text("You are an expert in history, "
             "your task is to find the event, the people that related to my input, "
             "reply in vietnamese with format as a list for parsing in flutter "
             "like ['people_related_1_name', 'event_related_1_name']. Here is the input: $input")

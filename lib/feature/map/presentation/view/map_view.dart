@@ -1,6 +1,5 @@
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
-import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,10 +15,10 @@ class MapView extends StatefulWidget {
   const MapView({super.key});
 
   @override
-  _MapViewState createState() => _MapViewState();
+  MapViewState createState() => MapViewState();
 }
 
-class _MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
+class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   final Map<String, Marker> _markers = {};
   GoogleMapController? mapController;
   late AnimationController _bottomSheetAnimationCtl;
@@ -167,7 +166,9 @@ class _MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
             state.maybeWhen(
                 aiResponseReceived: (response, _) =>
                     _buildResult(response),
-                placeSelected: (_, __, ___) => const SizedBox.shrink(),
+                placeSelected: (_, __, ___) => const Text("Hãy chọn thông tin bạn muốn tìm hiểu",
+                  style: TextStyle(color: Colors.black, fontSize: 18)),
+                currentLocationObtained: (_, __, ___) => const SizedBox.shrink(),
                 orElse: () => const SizedBox(
                     height: 50,
                     child: Center(

@@ -1,10 +1,9 @@
+import 'package:ai_map_explainer/core/utils/logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:talker_flutter/talker_flutter.dart';
 
 class Firestore {
   static final instance = Firestore();
   static late final FirebaseFirestore db;
-  final talker = Talker();
 
   static Future<void> init() async {
     db = FirebaseFirestore.instance;
@@ -13,10 +12,10 @@ class Firestore {
   Future<void> addData(Map<String, dynamic> data, String collection) async {
     try {
       await db.collection(collection).add(data).then((DocumentReference doc) =>
-          print('DocumentSnapshot added with ID: ${doc.id}'));
+          Logger.i('DocumentSnapshot added with ID: ${doc.id}'));
     } catch (e, st) {
-      talker.error(e);
-      talker.error(st);
+      Logger.e(e);
+      Logger.e(st);
     }
   }
 

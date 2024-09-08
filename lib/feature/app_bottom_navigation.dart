@@ -24,7 +24,7 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
   void initState() {
     _tabList = [
       const MapView(),
-      const DetailView(query: 'Vietnam'),
+      const DetailView(query: 'Lịch sử Việt Nam'),
       const HistoryView()
     ];
     _selectedTabIndex = ValueNotifier<int>(0);
