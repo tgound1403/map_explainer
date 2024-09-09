@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
+import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
@@ -26,6 +30,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   String? selectedQuery;
   String? selectedChip;
   Map<String, String> information = {};
+  late String _mapStyleString;
 
   @override
   void initState() {
@@ -105,6 +110,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
 
   void _onMapCreated(GoogleMapController controller, BuildContext context) {
     mapController = controller;
+    mapController?.setMapStyle(mapStyle);
     context.read<MapBloc>().add(const MapEvent.getCurrentLocation());
   }
 
