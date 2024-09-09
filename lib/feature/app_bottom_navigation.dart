@@ -1,7 +1,7 @@
 import 'package:ai_map_explainer/core/di/service_locator.dart';
-import 'package:ai_map_explainer/feature/conversation/domain/analyzer_use_case.dart';
-import 'package:ai_map_explainer/feature/conversation/presentation/bloc/analyzer_bloc.dart';
-import 'package:ai_map_explainer/feature/conversation/presentation/view/history_view.dart';
+import 'package:ai_map_explainer/feature/history/domain/analyzer_use_case.dart';
+import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
+import 'package:ai_map_explainer/feature/history/presentation/history_view.dart';
 import 'package:ai_map_explainer/feature/general/general_view.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_view.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -41,11 +41,14 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
       ],
       child: Scaffold(
         bottomNavigationBar: CurvedNavigationBar(
+          animationDuration: const Duration(milliseconds: 500),
+          animationCurve: Curves.easeInOutCubic,
           backgroundColor: Colors.transparent,
+          color: Colors.blueGrey.shade500,
           items: const <Widget>[
-            Icon(Icons.add, size: 30),
-            Icon(Icons.list, size: 30),
-            Icon(Icons.compare_arrows, size: 30),
+            Icon(Icons.pin_drop, size: 30, color: Colors.white,),
+            Icon(Icons.book, size: 30, color: Colors.white,),
+            Icon(Icons.list, size: 30, color: Colors.white,),
           ],
           onTap: (index) {
             _selectedTabIndex.value = index;

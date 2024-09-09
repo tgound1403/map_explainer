@@ -6,6 +6,7 @@ import 'package:ai_map_explainer/feature/detail/bloc/detail_event.dart';
 import 'package:ai_map_explainer/feature/detail/bloc/detail_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class GeneralView extends StatelessWidget {
   const GeneralView({super.key});
@@ -35,7 +36,17 @@ class _DetailViewContent extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
-          body: _buildRelatedInfo(context),
+          body: state.isLoading1
+              ? const Center(
+                child: SizedBox(
+                  height: 100,
+                  child: LoadingIndicator(
+                      indicatorType: Indicator.ballPulseSync,
+                      colors: [Colors.blue, Colors.green, Colors.red],
+                    ),
+                ),
+              )
+              : _buildRelatedInfo(context),
         );
       },
     );
@@ -46,24 +57,29 @@ class _DetailViewContent extends StatelessWidget {
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children: state.relatedInfos
-                  .where((info) => info.isNotEmpty)
-                  .map((info) => InkWell(
-                        onTap: () => _goToDetail(info, context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                              color: Colors.blueGrey.shade100,
-                              borderRadius: AppBorderRadius.styleSmall),
-                          child: Text(info),
-                        ),
-                      ))
-                  .toList(),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              context.read<DetailBloc>().add(const DetailEvent.initData("Lịch sử Việt Nam"));
+            },
+            child: SingleChildScrollView(
+              child: Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: state.relatedInfos
+                    .where((info) => info.isNotEmpty)
+                    .map((info) => InkWell(
+                          onTap: () => _goToDetail(info, context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                                color: Colors.blueGrey.shade100,
+                                borderRadius: AppBorderRadius.styleSmall),
+                            child: Text(info),
+                          ),
+                        ))
+                    .toList(),
+              ),
             ),
           ),
         );

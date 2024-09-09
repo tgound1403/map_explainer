@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:ai_map_explainer/core/utils/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:mime/mime.dart';
 
 class GeminiAI {
   static final instance = GeminiAI();
@@ -27,7 +24,8 @@ class GeminiAI {
       final content = [
         Content.text("You are an expert in summarization, "
             "your task is to summarize my input and response in Vietnamese with markdown format, "
-            "don't add any your own idea or information, just summarize, reply and highlight important information. Here is the input: $input")
+            "don't add any your own idea or information, just summarize, reply and highlight important information."
+            " Here is the input: $input")
       ];
       final response = await model?.generateContent(content);
       return response?.text;
@@ -56,8 +54,7 @@ class GeminiAI {
               .replaceAll("`", "")
               .replaceAll("[", "")
               .replaceAll("]", "")
-              .replaceAll("'", "")
-              )
+              .replaceAll("'", ""))
           .toList();
 
       return resultList;
@@ -68,10 +65,11 @@ class GeminiAI {
     }
   }
 
-  Future<String?> findRelationBetweenTwoTopics({required String mainTopic, required String subTopic}) async {
+  Future<String?> findRelationBetweenTwoTopics(
+      {required String mainTopic, required String subTopic}) async {
     try {
       final content = [
-        Content.text("You are an expert in hítory, "
+        Content.text("You are an expert in history, "
             "your task is to find the relation between mainTopic and subTopic that are proviced, "
             "response in Vietnamese with markdown format, hightlight the mainTopic and subTopic appear in response. "
             "Here is the mainTopic: $mainTopic and subTopic: $subTopic")
@@ -84,48 +82,20 @@ class GeminiAI {
       Logger.e(st);
       return null;
     }
-  } 
-
-  Future<String?> generateFromText(String prompt) async {
-    try {
-      final content = [Content.text(prompt)];
-      final response = await model?.generateContent(content);
-      Logger.i(response?.text);
-      return response?.text;
-    } catch (e, st) {
-      Logger.e(e);
-      Logger.e(st);
-      return null;
-    }
-  }
-
-  Future<String?> generateFromSingleFile(File file) async {
-    try {
-      final image = await file.readAsBytes();
-      // Gemini support img, csv
-      // not support pdf
-      final mimeType = lookupMimeType(file.path);
-      // talker.info(mimeType.toString());
-      final filePart = DataPart(mimeType!, image);
-      final prompt = TextPart(
-          "When you reply to me, you will break the answer into 2 sections, including: "
-          "What is the given data about? and What are advices you can give from that data?");
-      final response = await model?.generateContent([
-        Content.multi([prompt, filePart])
-      ]);
-      // talker.info(response?.text);
-      return response?.text;
-    } on Exception catch (e, st) {
-      Logger.e(e);
-      Logger.e(st);
-      return null;
-    }
   }
 
   Future<String?> chat(
-      {required List<Content>? history, required Content prompt}) async {
-    // Initialize the chat
+      {required List<Content>? history,
+      required Content prompt,
+      required String topic}) async {
     try {
+      final direction = Content.text(
+          "You are an expert in history about $topic, "
+          "your task is to answer any question about $topic, if the $prompt is out of $topic, "
+          "please say that you don't have permission to answer that question. "
+          "response in Vietnamese with markdown format, hightlight the $topic appear in response. "
+          "At the end of response is list of reference that you used to answer the question. ");
+      history?.add(direction);
       final chat = model?.startChat(history: history);
       var response = (await chat?.sendMessage(prompt))?.text;
       Logger.i(response);
@@ -135,5 +105,21 @@ class GeminiAI {
       Logger.e(st);
       return null;
     }
+  }
+
+  Future<String?> startTalkingAboutQuery(String query) async {
+    try {
+      final content = [
+        Content.text("You are an expert in history about $query, "
+            "your task is to give me some question to ask about $query, "
+            "response in Vietnamese with markdown format, hightlight the $query appear in response. ")
+      ];
+      final response = await model?.generateContent(content);
+      return response?.text;
+    } catch (e, st) {
+      Logger.e(e);
+      Logger.e(st);
+    }
+    return null;
   }
 }

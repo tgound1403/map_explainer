@@ -17,7 +17,7 @@ Handler chatHandler = Handler(
   handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
     final chatModel = context?.settings?.arguments as ChatModel;
     return BlocProvider(
-      create: (context) => ChatBloc(getIt<ChatUseCase>())..add(ChatEventStart(prompt: '', model: chatModel)),
+      create: (context) => ChatBloc(getIt<ChatUseCase>())..add(ChatEventStart(prompt: '', model: chatModel, topic: '')),
       child: ChatView(model: chatModel,),
     );
   },
