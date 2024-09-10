@@ -6,6 +6,7 @@ import 'package:ai_map_explainer/feature/detail/bloc/detail_event.dart';
 import 'package:ai_map_explainer/feature/detail/bloc/detail_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
 class GeneralView extends StatelessWidget {
@@ -28,25 +29,32 @@ class _DetailViewContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DetailBloc, DetailState>(
       builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            title: Text(
-              state.query,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-          body: state.isLoading1
-              ? const Center(
-                child: SizedBox(
-                  height: 100,
-                  child: LoadingIndicator(
-                      indicatorType: Indicator.ballPulseSync,
-                      colors: [Colors.blue, Colors.green, Colors.red],
+        return SafeArea(
+          child: Scaffold(
+            body: state.isLoading1
+                ? const Center(
+                    child: SizedBox(
+                      height: 100,
+                      child: LoadingIndicator(
+                        indicatorType: Indicator.ballPulseSync,
+                        colors: [Colors.blue, Colors.green, Colors.red],
+                      ),
+                    ),
+                  )
+                : Padding(
+                  padding: const EdgeInsets.all(16.0).copyWith(bottom: 0),
+                  child: Column(
+                      children: [
+                        Text(
+                          state.query,
+                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 24),
+                        ),
+                        const Gap(16),
+                        _buildRelatedInfo(context),
+                      ],
                     ),
                 ),
-              )
-              : _buildRelatedInfo(context),
+          ),
         );
       },
     );
@@ -59,7 +67,9 @@ class _DetailViewContent extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: RefreshIndicator(
             onRefresh: () async {
-              context.read<DetailBloc>().add(const DetailEvent.initData("Lịch sử Việt Nam"));
+              context
+                  .read<DetailBloc>()
+                  .add(const DetailEvent.initData("Lịch sử Việt Nam"));
             },
             child: SingleChildScrollView(
               child: Wrap(

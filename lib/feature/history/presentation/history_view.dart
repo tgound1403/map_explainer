@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class HistoryView extends StatefulWidget {
   const HistoryView({super.key});
@@ -40,7 +39,18 @@ class _HistoryViewState extends State<HistoryView> {
           _bloc.add(const AnalyzerEvent.started());
         },
         child: Scaffold(
-          body: _buildBody(),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                const Text(
+                  "Lịch sử trò chuyện",
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 24),
+                ),
+                const Gap(16),
+                _buildBody(),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -61,6 +71,8 @@ class _HistoryViewState extends State<HistoryView> {
           lsChat = state.whenOrNull(data: (chat) => chat ?? []) ?? [];
           return state.maybeWhen(
               data: (chat) => ListView.separated(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
                     itemBuilder: (_, int index) => Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(

@@ -84,6 +84,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return IntroductionScreen(
+      animationDuration: 500,
+      curve: Curves.easeInOutCubic,
       globalBackgroundColor: Colors.blueGrey,
       pages: lsPageViewModel,
       showSkipButton: true,

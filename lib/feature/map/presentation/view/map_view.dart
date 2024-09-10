@@ -30,7 +30,6 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   String? selectedQuery;
   String? selectedChip;
   Map<String, String> information = {};
-  late String _mapStyleString;
 
   @override
   void initState() {
@@ -54,10 +53,15 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
       listener: (context, state) {
         state.maybeWhen(
             aiResponseReceived: (response, _) => isExpand = true,
-            placeSelected: (latlng, placemark, _) =>
-                _moveCameraToLocation(latlng),
-            currentLocationObtained: (position, _, __) => _moveCameraToLocation(
-                LatLng(position.latitude, position.longitude)),
+            placeSelected: (latlng, placemark, _) {
+                _moveCameraToLocation(latlng);
+                _resetMarker(placemark, latlng);
+            },
+            currentLocationObtained: (position, placemark, __) {
+                _resetMarker(placemark, LatLng(position.latitude, position.longitude));
+              _moveCameraToLocation(
+                LatLng(position.latitude, position.longitude));
+            },
             orElse: () => null);
       },
       builder: (context, state) {
@@ -68,8 +72,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
               children: [
                 GoogleMap(
                   onMapCreated: (ctl) => _onMapCreated(ctl, context),
-                  onTap: (latLng) =>
-                      context.read<MapBloc>().add(MapEvent.mapTapped(latLng)),
+                  onTap: (latLng) => context.read<MapBloc>().add(MapEvent.mapTapped(latLng)),
                   initialCameraPosition: const CameraPosition(
                     target: LatLng(0, 0),
                     zoom: 2,
@@ -82,7 +85,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
                     placeSelected: (_, placemark, __) =>
                         _buildInformationBox(child: _buildPlaceInfo(placemark)),
                     currentLocationObtained: (_, placemark, __) =>
-                        _buildInformationBox(child: _buildPlaceInfo(placemark)),
+                        _buildInformationBox(child: const Text("Chọn địa điểm trên bản đồ")),
                     orElse: () => const SizedBox.shrink(),
                   ),
                 ),
@@ -106,6 +109,22 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
         );
       },
     );
+  }
+
+  void _resetMarker(Placemark? place, LatLng location) {
+   final marker = Marker(
+      // icon: await getCustomIcon(),
+      markerId: MarkerId(place?.name ?? ''),
+      position: location,
+      infoWindow: InfoWindow(
+        title: place?.name,
+        snippet: place?.street ?? '',
+      ),
+    );
+    setState(() {
+      _markers[place?.name ?? ''] = marker;
+    });
+    
   }
 
   void _onMapCreated(GoogleMapController controller, BuildContext context) {
