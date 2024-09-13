@@ -23,13 +23,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Image.asset('./assets/ho-chi-minh.png'),
               const Gap(16),
               const Text("Chủ tịch Hồ Chí Minh",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white70)),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white70)),
               const Gap(16),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
                 child: Text(
                   "\"Dân ta phải biết sử ta, cho tường gốc tích nước nhà Việt Nam\"",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -38,7 +44,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         decoration: const PageDecoration(pageColor: Colors.blueGrey)),
     PageViewModel(
-      title: "",
+        title: "",
         bodyWidget: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -50,7 +56,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
                 child: Text(
                   "\"Dòng máu Lạc Hồng, nghìn năm còn chảy.\"",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -59,7 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         decoration: const PageDecoration(pageColor: Colors.blueGrey)),
     PageViewModel(
-      title: "",
+        title: "",
         bodyWidget: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -71,7 +80,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
                 child: Text(
                   "\"Tìm hiểu lịch sử từ những con đường bạn đi hằng ngày.\"",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -92,9 +104,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       skip: const Text("Bỏ qua"),
       next: const Text("Tiếp theo"),
       done: const Text("Bắt đầu thôi"),
-      onDone: () {
-        Routes.router.navigateTo(context, RoutePath.home);
-      },
+      onDone: _goToHome,
+      onSkip: _goToHome,
       dotsDecorator: DotsDecorator(
         size: const Size.square(10.0),
         activeSize: const Size(20.0, 10.0),
@@ -108,5 +119,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         foregroundColor: Colors.white,
       ),
     );
+  }
+
+  void _goToHome() {
+    Routes.router.navigateTo(context, RoutePath.home);
   }
 }
