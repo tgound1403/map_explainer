@@ -87,12 +87,15 @@ class GeminiAI {
   Future<String?> chat(
       {required List<Content>? history,
       required Content prompt,
-      required String topic}) async {
+      required String topic,
+      required String source}) async {
     try {
       final direction = Content.text(
           "You are an expert in history about $topic, "
-          "your task is to answer any question about $topic, if the $prompt is out of $topic, "
-          "please say that you don't have permission to answer that question. "
+          "your task is to answer any question about $topic based on the source that I provided: $source,"
+          " if the $prompt is out of $topic,  "
+          "please say that you don't have permission to answer that question, "
+          "or the source is not enough to answer that question if it don't have any information about that question in source. "
           "response in Vietnamese with markdown format, hightlight the $topic appear in response. "
           "At the end of response is list of reference that you used to answer the question. ");
       history?.add(direction);
@@ -107,12 +110,34 @@ class GeminiAI {
     }
   }
 
+  Future<String?> getFollowUpQuestion({
+    required String previousResponse,
+    required String source,
+    required String topic,
+  }) async {
+    try {
+      final content = Content.text("You are an expert in history about $topic."
+          "your task is to give me a list of question to ask about $topic, follow up with $previousResponse and based on $source."
+          "reply in vietnamese with just only format as a list for parsing in flutter like ['question 1', 'question 2', 'question 3']");
+      final response = await model?.generateContent([content]);
+      return response?.text;
+    } catch (e, st) {
+      Logger.e(e);
+      Logger.e(st);
+      return null;
+    }
+  }
+
   Future<String?> startTalkingAboutQuery(String query) async {
     try {
       final content = [
         Content.text("You are an expert in history about $query, "
             "your task is to give me some question to ask about $query, "
-            "response in Vietnamese with markdown format, hightlight the $query appear in response. ")
+            "response in Vietnamese with markdown format, hightlight the $query appear in response. "
+            "Reply in format of response and recommendQuestions, recommendQuestions is a list of question to ask about $query, "
+            "must be the same content with questions that you give me in re"
+            "{'response': 'response some question to ask in Vietnamese with markdown format', "
+            "'recommendQuestions': ['question 1', 'question 2', 'question 3']}")
       ];
       final response = await model?.generateContent(content);
       return response?.text;
