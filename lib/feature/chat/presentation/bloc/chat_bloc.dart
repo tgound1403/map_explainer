@@ -18,7 +18,8 @@ part 'chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ChatBloc(this._useCase)
-      : super(const ChatState(state: LoadState.initial, model: null)) {
+      : super(const ChatState(
+            state: LoadState.initial, model: null, source: null)) {
     on<ChatEventStart>(_onChatEventStart);
   }
 
@@ -28,14 +29,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ChatEventStart event, Emitter<ChatState> emit) async {
     final prompt = event.prompt;
     final model = event.model;
+    final source = event.source;
+    final topic = event.topic;
     List<Content>? history = [];
-    emit(ChatInitialState(state: LoadState.loading, model: model));
+    emit(ChatInitialState(
+        state: LoadState.loading, model: model, source: source));
     if (prompt.isNotEmpty) {
       final message = MessageModel(message: prompt, isUser: true);
       model.messages!.add(message);
     }
-    emit(ChatInitialState(state: LoadState.success, model: model));
-    emit(ChatInitialState(state: LoadState.loading, model: model));
+    emit(ChatInitialState(
+        state: LoadState.success, model: model, source: source));
+    emit(ChatInitialState(
+        state: LoadState.loading, model: model, source: source));
     for (final message in model.messages!) {
       if (message.isUser ?? false) {
         if (message.mimeType == null) {
@@ -49,11 +55,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }
     }
 
-    final response = await _useCase.chatWithAI(prompt: prompt, model: model, history: history, topic: event.topic);
+    final response = await _useCase.chatWithAI(
+        prompt: prompt,
+        model: model,
+        history: history,
+        topic: topic,
+        source: source ?? '');
     response.fold((l) {
-      emit(ChatInitialState(state: LoadState.failure, model: model));
+      emit(ChatInitialState(
+          state: LoadState.failure, model: model, source: source));
     }, (r) {
-      emit(ChatInitialState(state: LoadState.success, model: model));
+      emit(ChatInitialState(
+          state: LoadState.success, model: model, source: source));
     });
   }
 }

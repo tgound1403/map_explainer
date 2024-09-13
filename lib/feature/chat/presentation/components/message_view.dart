@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:ai_map_explainer/feature/chat/data/model/message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -36,20 +35,8 @@ class MessageView extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
-    if (message.mimeType != null) {
-      final image = Image.memory(base64Decode(message.message!));
-      return InkWell(
-        onTap: () {
-        // showImageViewer(context, image.image,
-        //     swipeDismissible: false);
-      },
-          child: SizedBox(
-              width: MediaQuery.sizeOf(context).width * .5,
-              child: image));
-    } else {
-      return MarkdownBody(
-        data: message.message ?? '',
-      );
-    }
+    return MarkdownBody(
+      data: message.message ?? '',
+    );
   }
 }

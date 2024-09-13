@@ -9,8 +9,14 @@ class ChatRepository {
   ChatRepository(this._remoteDS);
   final ChatRemoteDataSource _remoteDS;
 
-  Future<Either<ErrorState, ChatModel>> chatWithAI(String prompt, ChatModel model, List<Content> history, String topic) async {
-    final result = await _remoteDS.chatWithAI(prompt, model, history, topic);
+  Future<Either<ErrorState, ChatModel>> chatWithAI(
+      String prompt,
+      ChatModel model,
+      List<Content> history,
+      String topic,
+      String source) async {
+    final result =
+        await _remoteDS.chatWithAI(prompt, model, history, topic, source);
     return result.fold(Left.new, Right.new);
   }
 }

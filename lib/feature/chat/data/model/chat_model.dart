@@ -12,13 +12,16 @@ class ChatModel {
     required this.id,
     required this.title,
     required this.messages,
+    required this.recommendQuestions,
   });
 
   String? id;
   String? title;
   List<MessageModel>? messages;
+  List<String>? recommendQuestions;
 
-  factory ChatModel.fromJson(Map<String, Object?> json) => _$ChatModelFromJson(json);
+  factory ChatModel.fromJson(Map<String, Object?> json) =>
+      _$ChatModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$ChatModelToJson(this);
 }

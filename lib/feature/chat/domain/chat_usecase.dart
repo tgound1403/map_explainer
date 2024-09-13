@@ -10,5 +10,10 @@ class ChatUseCase {
   final ChatRepository _repo;
 
   Future<Either<ErrorState, ChatModel>> chatWithAI(
-      {required String prompt, required ChatModel model, required List<Content> history, required String topic}) => _repo.chatWithAI(prompt, model, history, topic);
+          {required String prompt,
+          required ChatModel model,
+          required List<Content> history,
+          required String topic,
+          required String source}) =>
+      _repo.chatWithAI(prompt, model, history, topic, source);
 }

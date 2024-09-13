@@ -1,3 +1,4 @@
+import 'package:ai_map_explainer/core/services/wikipedia/wikipedia.dart';
 import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/components/message_view.dart';
 import 'package:flutter/material.dart';
@@ -23,9 +24,17 @@ class _ChatViewState extends State<ChatView> {
 
   final _controller = TextEditingController();
 
+  String? source = "";
+
   @override
   void initState() {
     super.initState();
+    getSource();
+  }
+
+  void getSource() async {
+    source = await WikipediaService.instance.useWikipedia(
+        query: removePrefix(widget.model.title ?? '', 'Cuộc trò chuyện về'));
   }
 
   @override
@@ -51,16 +60,20 @@ class _ChatViewState extends State<ChatView> {
 
   //*region ACTION
   void chatWithAI() {
-    _bloc.add(ChatEventStart(prompt: _controller.text, model: widget.model, topic: removePrefix(widget.model.title ?? '', 'Cuộc trò chuyện về')));
+    _bloc.add(ChatEventStart(
+        source: source,
+        prompt: _controller.text,
+        model: widget.model,
+        topic: removePrefix(widget.model.title ?? '', 'Cuộc trò chuyện về')));
     _controller.clear();
   }
 
   String removePrefix(String original, String prefix) {
-  if (original.startsWith(prefix)) {
-    return original.substring(prefix.length).trim();
+    if (original.startsWith(prefix)) {
+      return original.substring(prefix.length).trim();
+    }
+    return original;
   }
-  return original;
-}
 
   //* endregion
 
@@ -70,12 +83,24 @@ class _ChatViewState extends State<ChatView> {
       child: BlocBuilder<ChatBloc, ChatState>(
         builder: (context, state) {
           final messages = state.model?.messages ?? [];
-          return ListView.builder(
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                return MessageView(message: message);
-              });
+          final recommendQuestions = state.model?.recommendQuestions ?? [];
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      return MessageView(message: message);
+                    }),
+                state.state.isLoading
+                    ? const SizedBox.shrink()
+                    : _buildRecommendQuestion(recommendQuestions)
+              ],
+            ),
+          );
         },
       ),
     );
@@ -103,7 +128,7 @@ class _ChatViewState extends State<ChatView> {
                 controller: _controller,
                 style: Theme.of(context).textTheme.titleSmall,
                 decoration: InputDecoration(
-                    hintText: 'Write your message',
+                    hintText: 'Hay bạn có câu hỏi cho riêng mình',
                     hintStyle: Theme.of(context)
                         .textTheme
                         .titleSmall!
@@ -127,6 +152,39 @@ class _ChatViewState extends State<ChatView> {
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecommendQuestion(List<String> recommendQuestions) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width - 16,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16.0),
+        child: Transform.translate(
+          offset: const Offset(0, -32),
+          child: ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              itemBuilder: (_, idx) => InkWell(
+                    onTap: () => _bloc.add(ChatEventStart(
+                        source: source,
+                        prompt: recommendQuestions[idx],
+                        model: widget.model,
+                        topic: removePrefix(
+                            widget.model.title ?? '', 'Cuộc trò chuyện về'))),
+                    child: Text(
+                      recommendQuestions[idx],
+                      style: const TextStyle(
+                          color: Colors.blue,
+                          fontStyle: FontStyle.italic,
+                          decoration: TextDecoration.underline),
+                    ),
+                  ),
+              separatorBuilder: (_, __) => const Gap(8),
+              itemCount: recommendQuestions.length),
         ),
       ),
     );
