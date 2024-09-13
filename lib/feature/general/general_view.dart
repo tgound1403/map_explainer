@@ -41,19 +41,22 @@ class _DetailViewContent extends StatelessWidget {
                       ),
                     ),
                   )
-                : Padding(
-                  padding: const EdgeInsets.all(16.0).copyWith(bottom: 0),
-                  child: Column(
-                      children: [
-                        Text(
-                          state.query,
-                          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 24),
-                        ),
-                        const Gap(16),
-                        _buildRelatedInfo(context),
-                      ],
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0).copyWith(bottom: 0),
+                      child: Column(
+                        children: [
+                          Text(
+                            state.query,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 24),
+                          ),
+                          const Gap(16),
+                          _buildRelatedInfo(context),
+                        ],
+                      ),
                     ),
-                ),
+                  ),
           ),
         );
       },
@@ -71,25 +74,23 @@ class _DetailViewContent extends StatelessWidget {
                   .read<DetailBloc>()
                   .add(const DetailEvent.initData("Lịch sử Việt Nam"));
             },
-            child: SingleChildScrollView(
-              child: Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
-                children: state.relatedInfos
-                    .where((info) => info.isNotEmpty)
-                    .map((info) => InkWell(
-                          onTap: () => _goToDetail(info, context),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                                color: Colors.blueGrey.shade100,
-                                borderRadius: AppBorderRadius.styleSmall),
-                            child: Text(info),
-                          ),
-                        ))
-                    .toList(),
-              ),
+            child: Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
+              children: state.relatedInfos
+                  .where((info) => info.isNotEmpty)
+                  .map((info) => InkWell(
+                        onTap: () => _goToDetail(info, context),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                              color: Colors.blueGrey.shade100,
+                              borderRadius: AppBorderRadius.styleSmall),
+                          child: Text(info),
+                        ),
+                      ))
+                  .toList(),
             ),
           ),
         );

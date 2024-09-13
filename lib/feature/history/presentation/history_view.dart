@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:ai_map_explainer/core/common/style/padding_style.dart';
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
-import 'package:ai_map_explainer/core/services/firebase/firestore.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:ai_map_explainer/feature/chat/data/model/chat_model.dart';
 import 'package:flutter/material.dart';
@@ -70,52 +69,55 @@ class _HistoryViewState extends State<HistoryView> {
         builder: (context, state) {
           lsChat = state.whenOrNull(data: (chat) => chat ?? []) ?? [];
           return state.maybeWhen(
-              data: (chat) => ListView.separated(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                    itemBuilder: (_, int index) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.blueGrey.shade500,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            InkWell(
-                              onTap: () => _openChat(lsChat[index]),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    lsChat[index].title ?? '',
-                                    style: const TextStyle(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                                onPressed: () =>
-                                    _deleteChat(lsChat[index].id ?? ""),
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ))
-                          ],
-                        )),
-                    separatorBuilder: (_, int index) => const Gap(16),
-                    itemCount: lsChat.length,
+            data: (chat) => ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (_, int index) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey.shade500,
+                    borderRadius: BorderRadius.circular(16),
                   ),
-              orElse: () => const Center(
-                      child: SizedBox(
-                    width: 100,
-                    child: LoadingIndicator(
-                      indicatorType: Indicator.ballPulse,
-                    ),
-                  )));
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: () => _openChat(lsChat[index]),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Text(
+                              lsChat[index].title ?? '',
+                              style: const TextStyle(color: Colors.white),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () => _deleteChat(lsChat[index].id ?? ""),
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ))
+                    ],
+                  )),
+              separatorBuilder: (_, int index) => const Gap(16),
+              itemCount: lsChat.length,
+            ),
+            loading: () => const Center(
+                child: SizedBox(
+              width: 100,
+              child: LoadingIndicator(
+                indicatorType: Indicator.ballPulse,
+              ),
+            )),
+            orElse: () => const Center(
+              child: Text("Không có dữ liệu"),
+            ),
+          );
         },
       ),
     );
@@ -131,7 +133,7 @@ class _HistoryViewState extends State<HistoryView> {
   }
 
   Future<void> _deleteChat(String id) async {
-    await Firestore.instance.deleteSpecificData('chats', id);
+    _bloc.add(AnalyzerEvent.delete(id));
   }
   //*  endregion
 }

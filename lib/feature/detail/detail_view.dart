@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gap/gap.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'bloc/detail_bloc.dart';
 import 'bloc/detail_event.dart';
 import 'bloc/detail_state.dart';
@@ -20,8 +20,12 @@ class DetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => DetailBloc()..add(DetailEvent.initData(query)),),
-        BlocProvider(create: (context) => AnalyzerBloc(getIt<AnalyzerUseCase>()),)
+        BlocProvider(
+          create: (context) => DetailBloc()..add(DetailEvent.initData(query)),
+        ),
+        BlocProvider(
+          create: (context) => AnalyzerBloc(getIt<AnalyzerUseCase>()),
+        )
       ],
       child: _DetailViewContent(topic: query),
     );
@@ -39,10 +43,9 @@ class _DetailViewContent extends StatelessWidget {
       listener: (context, state) {
         state.maybeWhen(
           orElse: () {},
-          loading: () =>
-            LoadingOverlay.show(context, message: "Đợi xíu rồi mình cùng trò chuyện về $topic nha ..."),
-          data: (_) =>
-            LoadingOverlay.hide(),
+          loading: () => LoadingOverlay.show(context,
+              message: "Đợi xíu rồi mình cùng trò chuyện về $topic nha ..."),
+          data: (_) => LoadingOverlay.hide(),
         );
       },
       child: BlocBuilder<DetailBloc, DetailState>(
@@ -58,8 +61,9 @@ class _DetailViewContent extends StatelessWidget {
               actions: [
                 IconButton(
                   onPressed: () {
-                    context.read<AnalyzerBloc>().add(
-                      AnalyzerEvent.createNew(context, state.query));
+                    context
+                        .read<AnalyzerBloc>()
+                        .add(AnalyzerEvent.createNew(context, state.query));
                   },
                   icon: const Icon(
                     Icons.chat_rounded,
@@ -67,56 +71,62 @@ class _DetailViewContent extends StatelessWidget {
                 )
               ],
             ),
-            body: Skeletonizer(
-              ignoreContainers: false,
-              justifyMultiLineText: true,
-              enabled: state.isLoading1,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Flex(
-                  direction: Axis.vertical,
-                  children: [
-                    Flexible(
-                      child: AnimatedContainer(
-                        curve: Curves.easeInOutCubic,
-                        padding: const EdgeInsets.all(16).copyWith(bottom: 0),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16)),
-                        height: state.isExpand
-                            ? MediaQuery.sizeOf(context).height * .8
-                            : MediaQuery.sizeOf(context).height * .4,
-                        duration: const Duration(milliseconds: 600),
-                        child: Flex(direction: Axis.vertical, children: [
-                          Flexible(
-                            child: SingleChildScrollView(
-                              child: MarkdownBody(data: state.result ?? ''),
-                            ),
-                          ),
-                          const Gap(16),
-                          _buildRelatedInfo(),
-                          IconButton(
-                            onPressed: () => context
-                                .read<DetailBloc>()
-                                .add(const DetailEvent.toggleExpand()),
-                            icon: Icon(
-                              !state.isExpand
-                                  ? Icons.arrow_drop_down_rounded
-                                  : Icons.arrow_drop_up_rounded,
-                              size: 32,
-                            ),
-                          )
-                        ]),
-                      ),
+            body: state.isLoading1
+                ? const Center(
+                    child: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: LoadingIndicator(
+                      indicatorType: Indicator.ballPulseSync,
+                      colors: [Colors.blueGrey],
                     ),
-                    const Gap(16),
-                    state.relationship?.isNotEmpty ?? false
-                        ? _buildContentBox(state.relationship ?? '')
-                        : const SizedBox.shrink(),
-                  ],
-                ),
-              ),
-            ),
+                  ))
+                : Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Flex(
+                      direction: Axis.vertical,
+                      children: [
+                        Flexible(
+                          child: AnimatedContainer(
+                            curve: Curves.easeInOutCubic,
+                            padding:
+                                const EdgeInsets.all(16).copyWith(bottom: 0),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16)),
+                            height: state.isExpand
+                                ? MediaQuery.sizeOf(context).height * .8
+                                : MediaQuery.sizeOf(context).height * .4,
+                            duration: const Duration(milliseconds: 600),
+                            child: Flex(direction: Axis.vertical, children: [
+                              Flexible(
+                                child: SingleChildScrollView(
+                                  child: MarkdownBody(data: state.result ?? ''),
+                                ),
+                              ),
+                              const Gap(16),
+                              _buildRelatedInfo(),
+                              IconButton(
+                                onPressed: () => context
+                                    .read<DetailBloc>()
+                                    .add(const DetailEvent.toggleExpand()),
+                                icon: Icon(
+                                  !state.isExpand
+                                      ? Icons.arrow_drop_down_rounded
+                                      : Icons.arrow_drop_up_rounded,
+                                  size: 32,
+                                ),
+                              )
+                            ]),
+                          ),
+                        ),
+                        const Gap(16),
+                        state.relationship?.isNotEmpty ?? false
+                            ? _buildContentBox(state.relationship ?? '')
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
           );
         },
       ),
@@ -127,7 +137,15 @@ class _DetailViewContent extends StatelessWidget {
     return BlocBuilder<DetailBloc, DetailState>(
       builder: (context, state) {
         return state.isLoading2
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(
+                child: SizedBox(
+                height: 100,
+                width: 100,
+                child: LoadingIndicator(
+                  indicatorType: Indicator.ballPulseSync,
+                  colors: [Colors.blueGrey],
+                ),
+              ))
             : Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -137,8 +155,7 @@ class _DetailViewContent extends StatelessWidget {
                 child: Flex(direction: Axis.vertical, children: [
                   Flexible(
                     child: SingleChildScrollView(
-                      child: Skeletonizer(
-                          enabled: false, child: MarkdownBody(data: content)),
+                      child: MarkdownBody(data: content),
                     ),
                   ),
                 ]),

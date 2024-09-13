@@ -46,12 +46,20 @@ class AnalyzerBloc extends Bloc<AnalyzerEvent, AnalyzerState> {
         delete: (id) async {
           emit(const AnalyzerState.loading());
 
-          final chat = await _useCase.deleteSpecificChat(id: id);
-          chat.fold(
+          final result = await _useCase.deleteSpecificChat(id: id);
+          result.fold(
             (l) => emit(AnalyzerState.error(l)),
-            (r) => AnalyzerEvent.started,
+            (r) async {
+              final chats = await _useCase.fetchOldChats();
+              chats.fold(
+                (l) => emit(AnalyzerState.error(l)),
+                (r) {
+                  _lsChat = r;
+                  emit(AnalyzerState.data(_lsChat));
+                },
+              );
+            },
           );
-          emit(AnalyzerState.data(_lsChat));
         },
         loading: () => emit(const AnalyzerState.loading()),
         error: (error) => emit(AnalyzerState.error(error)),

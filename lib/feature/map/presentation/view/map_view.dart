@@ -1,10 +1,7 @@
-import 'dart:async';
-
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
@@ -54,13 +51,14 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
         state.maybeWhen(
             aiResponseReceived: (response, _) => isExpand = true,
             placeSelected: (latlng, placemark, _) {
-                _moveCameraToLocation(latlng);
-                _resetMarker(placemark, latlng);
+              _moveCameraToLocation(latlng);
+              _resetMarker(placemark, latlng);
             },
             currentLocationObtained: (position, placemark, __) {
-                _resetMarker(placemark, LatLng(position.latitude, position.longitude));
+              _resetMarker(
+                  placemark, LatLng(position.latitude, position.longitude));
               _moveCameraToLocation(
-                LatLng(position.latitude, position.longitude));
+                  LatLng(position.latitude, position.longitude));
             },
             orElse: () => null);
       },
@@ -72,7 +70,8 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
               children: [
                 GoogleMap(
                   onMapCreated: (ctl) => _onMapCreated(ctl, context),
-                  onTap: (latLng) => context.read<MapBloc>().add(MapEvent.mapTapped(latLng)),
+                  onTap: (latLng) =>
+                      context.read<MapBloc>().add(MapEvent.mapTapped(latLng)),
                   initialCameraPosition: const CameraPosition(
                     target: LatLng(0, 0),
                     zoom: 2,
@@ -85,7 +84,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
                     placeSelected: (_, placemark, __) =>
                         _buildInformationBox(child: _buildPlaceInfo(placemark)),
                     currentLocationObtained: (_, placemark, __) =>
-                        _buildInformationBox(child: const Text("Chọn địa điểm trên bản đồ")),
+                        _buildInformationBox(child: _buildPlaceInfo(placemark)),
                     orElse: () => const SizedBox.shrink(),
                   ),
                 ),
@@ -112,8 +111,8 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   }
 
   void _resetMarker(Placemark? place, LatLng location) {
-   final marker = Marker(
-      // icon: await getCustomIcon(),
+    _markers.clear();
+    final marker = Marker(
       markerId: MarkerId(place?.name ?? ''),
       position: location,
       infoWindow: InfoWindow(
@@ -124,7 +123,6 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     setState(() {
       _markers[place?.name ?? ''] = marker;
     });
-    
   }
 
   void _onMapCreated(GoogleMapController controller, BuildContext context) {
@@ -165,21 +163,21 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
 
   Widget _buildPlaceInfo(Placemark placemark) {
     _getInfoForChips(placemark);
-    return  Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Bạn đang chọn",
-                  style: TextStyle(color: Colors.black, fontSize: 18)),
-              Text(placemark.street ?? 'street',
-                  style: const TextStyle(color: Colors.black, fontSize: 24)),
-              Text("Thành phố: ${placemark.locality}",
-                  style: const TextStyle(color: Colors.black)),
-              Text("Tỉnh: ${placemark.administrativeArea}",
-                  style: const TextStyle(color: Colors.black)),
-              Text("Quốc gia: ${placemark.country}",
-                  style: const TextStyle(color: Colors.black)),
-            ],
-          );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Bạn đang chọn",
+            style: TextStyle(color: Colors.black, fontSize: 18)),
+        Text(placemark.street ?? 'street',
+            style: const TextStyle(color: Colors.black, fontSize: 24)),
+        Text("Thành phố: ${placemark.locality}",
+            style: const TextStyle(color: Colors.black)),
+        Text("Tỉnh: ${placemark.administrativeArea}",
+            style: const TextStyle(color: Colors.black)),
+        Text("Quốc gia: ${placemark.country}",
+            style: const TextStyle(color: Colors.black)),
+      ],
+    );
   }
 
   Widget _buildSheetContent(MapState state) {
@@ -189,11 +187,13 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
         child: Column(
           children: [
             state.maybeWhen(
-                aiResponseReceived: (response, _) =>
-                    _buildResult(response),
-                placeSelected: (_, __, ___) => const Text("Hãy chọn thông tin bạn muốn tìm hiểu",
-                  style: TextStyle(color: Colors.black, fontSize: 18)),
-                currentLocationObtained: (_, __, ___) => const SizedBox.shrink(),
+                aiResponseReceived: (response, _) => _buildResult(response),
+                placeSelected: (_, __, ___) => const Text(
+                    "Hãy chọn thông tin bạn muốn tìm hiểu",
+                    style: TextStyle(color: Colors.black, fontSize: 18)),
+                currentLocationObtained: (_, __, ___) => const Text(
+                    "Hãy chọn thông tin bạn muốn tìm hiểu",
+                    style: TextStyle(color: Colors.black, fontSize: 18)),
                 orElse: () => const SizedBox(
                     height: 50,
                     child: Center(
@@ -208,51 +208,53 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildResult(String data, ) {
+  Widget _buildResult(
+    String data,
+  ) {
     return AnimatedContainer(
-            duration: const Duration(milliseconds: 600),
-            curve: Curves.easeInOutCubic,
-            padding: const EdgeInsets.all(16)
-                .copyWith(top: 0, bottom: isExpand ? 0 : 16),
-            height: isExpand ? MediaQuery.of(context).size.height * .5 : 120,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOutCubic,
+      padding:
+          const EdgeInsets.all(16).copyWith(top: 0, bottom: isExpand ? 0 : 16),
+      height: isExpand ? MediaQuery.of(context).size.height * .5 : 120,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Flex(
+        direction: Axis.vertical,
+        children: [
+          InkWell(
+            onTap: () => setState(() => isExpand = !isExpand),
+            child: Icon(
+              isExpand
+                  ? Icons.arrow_drop_down_rounded
+                  : Icons.arrow_drop_up_rounded,
+              size: 32,
             ),
-            child: Flex(
-              direction: Axis.vertical,
-              children: [
-                InkWell(
-                  onTap: () => setState(() => isExpand = !isExpand),
-                  child: Icon(
-                    isExpand
-                        ? Icons.arrow_drop_down_rounded
-                        : Icons.arrow_drop_up_rounded,
-                    size: 32,
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: MarkdownBody(data: data),
-                  ),
-                ),
-                const Gap(8),
-                if (isExpand)
-                  TextButton(
-                    onPressed: () => _gotoDetail(selectedQuery ?? ''),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text("Tìm hiểu thêm",
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500)),
-                        Icon(Icons.arrow_right_rounded),
-                      ],
-                    ),
-                  ),
-              ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: MarkdownBody(data: data),
             ),
-          );
+          ),
+          const Gap(8),
+          if (isExpand)
+            TextButton(
+              onPressed: () => _gotoDetail(selectedQuery ?? ''),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("Tìm hiểu thêm",
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  Icon(Icons.arrow_right_rounded),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   Widget _buildListOfChips() {
