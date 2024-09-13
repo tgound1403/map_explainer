@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>GMSServicesAPIKey</key>
+	<string>AIzaSyBF053k0P5ARcxG5c6ZmBNa6PpnzSdU62k</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Ứng dụng cần quyền truy cập vị trí của bạn để hiển thị bản đồ và các tính năng liên quan.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Ứng dụng cần quyền truy cập vị trí của bạn để cung cấp các tính năng dựa trên vị trí ngay cả khi ứng dụng không hoạt động.</string>
 </dict>
 </plist>
