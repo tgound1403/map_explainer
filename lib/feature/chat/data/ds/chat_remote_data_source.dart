@@ -27,6 +27,7 @@ class ChatRemoteDataSource {
         var question = await GeminiAI.instance.getFollowUpQuestion(
             previousResponse: response ?? "", source: source, topic: topic);
 
+        Logger.i("RESPONSE: $response");
         Logger.i("QUESTION: $question");
 
         List<String> followUpQuestions = List<String>.from(jsonDecode(question

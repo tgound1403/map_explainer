@@ -1,5 +1,6 @@
 import 'package:ai_map_explainer/core/services/wikipedia/wikipedia.dart';
 import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
+import 'package:ai_map_explainer/core/utils/logger.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/components/message_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

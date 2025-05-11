@@ -9,7 +9,7 @@ class GeminiAI {
   static Future<void> initService() async {
     final apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
     model = GenerativeModel(
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-pro-exp-02-05',
         apiKey: apiKey,
         systemInstruction: Content.text(
             "You are an expert in history and geography. Your task is to provide in short information about place, people or historic event given. "
@@ -117,7 +117,7 @@ class GeminiAI {
   }) async {
     try {
       final content = Content.text("You are an expert in history about $topic."
-          "your task is to give me a list of question to ask about $topic, follow up with $previousResponse and based on $source."
+          "your task is to give me a list of 5 questions to ask about $topic, follow up with $previousResponse and based on $source."
           "reply in vietnamese with just only format as a list for parsing in flutter like ['question 1', 'question 2', 'question 3']");
       final response = await model?.generateContent([content]);
       return response?.text;

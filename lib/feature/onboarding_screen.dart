@@ -3,6 +3,7 @@ import 'package:ai_map_explainer/core/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -12,6 +13,19 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  static const String _onboardingKey = 'has_seen_onboarding';
+
+  @override
+  void initState() {
+    super.initState();
+    _markOnboardingAsSeen();
+  }
+
+  Future<void> _markOnboardingAsSeen() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_onboardingKey, true);
+  }
+
   List<PageViewModel>? lsPageViewModel = [
     PageViewModel(
         title: "",
