@@ -41,12 +41,12 @@ class _DetailViewContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AnalyzerBloc, AnalyzerState>(
       listener: (context, state) {
-        state.maybeWhen(
-          orElse: () {},
-          loading: () => LoadingOverlay.show(context,
-              message: "Đợi xíu rồi mình cùng trò chuyện về $topic nha ..."),
-          data: (_) => LoadingOverlay.hide(),
-        );
+        if (state.runtimeType.toString() == '_Loading') {
+          LoadingOverlay.show(context,
+              message: "Đợi xíu rồi mình cùng trò chuyện về $topic nha ...");
+        } else if (state.runtimeType.toString() == '_Data') {
+          LoadingOverlay.hide();
+        }
       },
       child: BlocBuilder<DetailBloc, DetailState>(
         builder: (context, state) {

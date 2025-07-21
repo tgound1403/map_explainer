@@ -14,31 +14,43 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   }
 
   Future<void> _mapEventHandler(MapEvent event, Emitter<MapState> emit) async {
-    await event.when(
-      getCurrentLocation: () => _handleGetCurrentLocation(emit),
-      mapTapped: (location) => _handleMapTapped(location, emit),
-      askAI: (query) => _handleAskAI(query, emit),
-    );
+    switch (event) {
+      case GetCurrentLocation():
+        await _handleGetCurrentLocation(emit);
+      case MapTapped():
+        await _handleMapTapped(event.location, emit);
+      case AskAI():
+        await _handleAskAI(event.query, emit);
+    }
   }
 
   Future<void> _handleGetCurrentLocation(Emitter<MapState> emit) async {
     try {
       final position = await _mapUseCase.getCurrentLocation();
-      final placemark = await _mapUseCase.getAddressFromLatLng(LatLng(position.latitude, position.longitude));
-      emit(MapState.currentLocationObtained(position: position, placemark: placemark, loadState: LoadState.success));
+      final placemark = await _mapUseCase
+          .getAddressFromLatLng(LatLng(position.latitude, position.longitude));
+      emit(MapState.currentLocationObtained(
+          position: position,
+          placemark: placemark,
+          loadState: LoadState.success));
     } catch (e, st) {
       Logger.e(e, stackTrace: st);
-      emit(MapState.error(message: _getErrorMessage(e, st), loadState: LoadState.failure));
+      emit(MapState.error(
+          message: _getErrorMessage(e, st), loadState: LoadState.failure));
     }
   }
 
   Future<void> _handleMapTapped(LatLng location, Emitter<MapState> emit) async {
     try {
       final placemark = await _mapUseCase.getAddressFromLatLng(location);
-      emit(MapState.placeSelected(location: location, placemark: placemark, loadState: LoadState.success));
+      emit(MapState.placeSelected(
+          location: location,
+          placemark: placemark,
+          loadState: LoadState.success));
     } catch (e, st) {
       Logger.e(e, stackTrace: st);
-      emit(MapState.error(message: _getErrorMessage(e, st), loadState: LoadState.failure));
+      emit(MapState.error(
+          message: _getErrorMessage(e, st), loadState: LoadState.failure));
     }
   }
 
@@ -46,10 +58,12 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     emit(const MapState.initial(LoadState.loading));
     try {
       final aiReply = await _mapUseCase.askAI(query);
-      emit(MapState.aiResponseReceived(response: aiReply, loadState: LoadState.success));
+      emit(MapState.aiResponseReceived(
+          response: aiReply, loadState: LoadState.success));
     } catch (e, st) {
       Logger.e(e, stackTrace: st);
-      emit(MapState.error(message: _getErrorMessage(e, st), loadState: LoadState.failure));
+      emit(MapState.error(
+          message: _getErrorMessage(e, st), loadState: LoadState.failure));
     }
   }
 

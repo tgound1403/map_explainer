@@ -21,54 +21,67 @@ class AnalyzerBloc extends Bloc<AnalyzerEvent, AnalyzerState> {
 
   AnalyzerBloc(this._useCase) : super(const _Initial()) {
     on<AnalyzerEvent>((event, emit) {
-      return event.when<void>(
-        started: () async {
+      switch (event) {
+        case _Started():
+          _onStarted(emit);
+        case _ECreate():
+          _onCreateNew(event.context, event.query, emit);
+        case _EDelete():
+          _onDelete(event.id, emit);
+        case _ELoading():
           emit(const AnalyzerState.loading());
-
-          final chats = await _useCase.fetchOldChats();
-          chats.fold(
-            (l) => emit(AnalyzerState.error(l)),
-            (r) => _lsChat = r,
-          );
-          Logger.d('Chat size: ${_lsChat?.length}');
-          emit(AnalyzerState.data(_lsChat));
-        },
-        createNew: (context, query) async {
-          emit(const AnalyzerState.loading());
-
-          final chat = await _useCase.startChatSection(query: query);
-          chat.fold(
-            (l) => emit(AnalyzerState.error(l)),
-            (r) => _openChat(context, model: r),
-          );
-          emit(AnalyzerState.data(_lsChat));
-        },
-        delete: (id) async {
-          emit(const AnalyzerState.loading());
-
-          final result = await _useCase.deleteSpecificChat(id: id);
-          result.fold(
-            (l) => emit(AnalyzerState.error(l)),
-            (r) async {
-              final chats = await _useCase.fetchOldChats();
-              chats.fold(
-                (l) => emit(AnalyzerState.error(l)),
-                (r) {
-                  _lsChat = r;
-                  emit(AnalyzerState.data(_lsChat));
-                },
-              );
-            },
-          );
-        },
-        loading: () => emit(const AnalyzerState.loading()),
-        error: (error) => emit(AnalyzerState.error(error)),
-        data: (chats) => emit(AnalyzerState.data(chats)),
-      );
+        case _EError():
+          emit(AnalyzerState.error(event.error));
+        case _EData():
+          emit(AnalyzerState.data(event.models));
+      }
     });
   }
 
   List<ChatModel>? _lsChat;
+
+  Future<void> _onStarted(Emitter<AnalyzerState> emit) async {
+    emit(const _Loading());
+
+    final chats = await _useCase.fetchOldChats();
+    chats.fold(
+      (l) => emit(_Error(l)),
+      (r) => _lsChat = r,
+    );
+    Logger.d('Chat size: ${_lsChat?.length}');
+    emit(AnalyzerState.data(_lsChat));
+  }
+
+  Future<void> _onCreateNew(
+      BuildContext context, String query, Emitter<AnalyzerState> emit) async {
+    emit(const AnalyzerState.loading());
+
+    final chat = await _useCase.startChatSection(query: query);
+    chat.fold(
+      (l) => emit(AnalyzerState.error(l)),
+      (r) => _openChat(context, model: r),
+    );
+    emit(AnalyzerState.data(_lsChat));
+  }
+
+  Future<void> _onDelete(String id, Emitter<AnalyzerState> emit) async {
+    emit(const AnalyzerState.loading());
+
+    final result = await _useCase.deleteSpecificChat(id: id);
+    result.fold(
+      (l) => emit(AnalyzerState.error(l)),
+      (r) async {
+        final chats = await _useCase.fetchOldChats();
+        chats.fold(
+          (l) => emit(AnalyzerState.error(l)),
+          (r) {
+            _lsChat = r;
+            emit(AnalyzerState.data(_lsChat));
+          },
+        );
+      },
+    );
+  }
 
   void _openChat(BuildContext context, {ChatModel? model}) {
     Routes.router.navigateTo(

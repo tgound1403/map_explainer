@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'detail_state.freezed.dart';
 
 @freezed
-class DetailState with _$DetailState {
+sealed class DetailState with _$DetailState {
   const factory DetailState({
     @Default('') String query,
     String? result,

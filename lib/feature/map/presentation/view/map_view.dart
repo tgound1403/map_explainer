@@ -48,19 +48,21 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return BlocConsumer<MapBloc, MapState>(
       listener: (context, state) {
-        state.maybeWhen(
-            aiResponseReceived: (response, _) => isExpand = true,
-            placeSelected: (latlng, placemark, _) {
-              _moveCameraToLocation(latlng);
-              _resetMarker(placemark, latlng);
-            },
-            currentLocationObtained: (position, placemark, __) {
-              _resetMarker(
-                  placemark, LatLng(position.latitude, position.longitude));
-              _moveCameraToLocation(
-                  LatLng(position.latitude, position.longitude));
-            },
-            orElse: () => null);
+        if (state.runtimeType.toString() == '_AIResponseReceived') {
+          isExpand = true;
+        } else if (state.runtimeType.toString() == '_PlaceSelected') {
+          final placeState = state as dynamic;
+          _moveCameraToLocation(placeState.location);
+          _resetMarker(placeState.placemark, placeState.location);
+        } else if (state.runtimeType.toString() == '_CurrentLocationObtained') {
+          final locationState = state as dynamic;
+          _resetMarker(
+              locationState.placemark,
+              LatLng(locationState.position.latitude,
+                  locationState.position.longitude));
+          _moveCameraToLocation(LatLng(locationState.position.latitude,
+              locationState.position.longitude));
+        }
       },
       builder: (context, state) {
         return Scaffold(
@@ -80,13 +82,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
                 ),
                 Positioned(
                   top: 24,
-                  child: state.maybeWhen(
-                    placeSelected: (_, placemark, __) =>
-                        _buildInformationBox(child: _buildPlaceInfo(placemark)),
-                    currentLocationObtained: (_, placemark, __) =>
-                        _buildInformationBox(child: _buildPlaceInfo(placemark)),
-                    orElse: () => const SizedBox.shrink(),
-                  ),
+                  child: _buildInformationBoxForState(state),
                 ),
               ],
             ),
@@ -186,20 +182,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            state.maybeWhen(
-                aiResponseReceived: (response, _) => _buildResult(response),
-                placeSelected: (_, __, ___) => const Text(
-                    "Hãy chọn thông tin bạn muốn tìm hiểu",
-                    style: TextStyle(color: Colors.black, fontSize: 18)),
-                currentLocationObtained: (_, __, ___) => const Text(
-                    "Hãy chọn thông tin bạn muốn tìm hiểu",
-                    style: TextStyle(color: Colors.black, fontSize: 18)),
-                orElse: () => const SizedBox(
-                    height: 50,
-                    child: Center(
-                        child: LoadingIndicator(
-                            indicatorType: Indicator.ballPulseSync,
-                            colors: [Colors.blueGrey])))),
+            _buildSheetContentForState(state),
             const Gap(8),
             _buildListOfChips(),
           ],
@@ -305,5 +288,34 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   void _moveCameraToLocation(LatLng? latlng) {
     mapController?.animateCamera(
         CameraUpdate.newLatLngZoom(latlng ?? const LatLng(0, 0), 15.0));
+  }
+
+  Widget _buildInformationBoxForState(MapState state) {
+    if (state.runtimeType.toString() == '_PlaceSelected') {
+      final placeState = state as dynamic;
+      return _buildInformationBox(child: _buildPlaceInfo(placeState.placemark));
+    } else if (state.runtimeType.toString() == '_CurrentLocationObtained') {
+      final locationState = state as dynamic;
+      return _buildInformationBox(
+          child: _buildPlaceInfo(locationState.placemark));
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildSheetContentForState(MapState state) {
+    if (state.runtimeType.toString() == '_AIResponseReceived') {
+      final responseState = state as dynamic;
+      return _buildResult(responseState.response);
+    } else if (state.runtimeType.toString() == '_PlaceSelected' ||
+        state.runtimeType.toString() == '_CurrentLocationObtained') {
+      return const Text("Hãy chọn thông tin bạn muốn tìm hiểu",
+          style: TextStyle(color: Colors.black, fontSize: 18));
+    }
+    return const SizedBox(
+        height: 50,
+        child: Center(
+            child: LoadingIndicator(
+                indicatorType: Indicator.ballPulseSync,
+                colors: [Colors.blueGrey])));
   }
 }

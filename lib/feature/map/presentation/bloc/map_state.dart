@@ -7,7 +7,7 @@ import 'package:geocoding/geocoding.dart';
 part 'map_state.freezed.dart';
 
 @freezed
-class MapState with _$MapState {
+sealed class MapState with _$MapState {
   const factory MapState.initial(LoadState loadState) = _Initial;
   
   const factory MapState.currentLocationObtained({

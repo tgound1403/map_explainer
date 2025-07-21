@@ -1,6 +1,5 @@
 import 'package:ai_map_explainer/core/services/wikipedia/wikipedia.dart';
 import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
-import 'package:ai_map_explainer/core/utils/logger.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/components/message_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -117,7 +116,7 @@ class _ChatViewState extends State<ChatView> {
             borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
+                  color: Colors.grey.withValues(alpha: 0.5),
                   spreadRadius: 5,
                   blurRadius: 7,
                   offset: const Offset(0, 3))

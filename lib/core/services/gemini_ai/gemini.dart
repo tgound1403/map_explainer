@@ -9,7 +9,7 @@ class GeminiAI {
   static Future<void> initService() async {
     final apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
     model = GenerativeModel(
-        model: 'gemini-2.0-pro-exp-02-05',
+        model: 'gemini-2.5-flash',
         apiKey: apiKey,
         systemInstruction: Content.text(
             "You are an expert in history and geography. Your task is to provide in short information about place, people or historic event given. "
