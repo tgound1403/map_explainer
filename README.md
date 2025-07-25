@@ -8,6 +8,7 @@ Welcome to the AI-Driven Map Exploration App, a Flutter-based mobile application
 - First install all the dependency with
 `flutter pub get`
 - Then create an .env file at the root folder, and add GEMINI_API_KEY='INSERT YOUR API KEY HERE'
+- Generate file with `flutter pub run build_runner build —delete-conflicting-outputs`
 - Finally, start app with 
 `flutter run`
 
