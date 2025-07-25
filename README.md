@@ -4,6 +4,13 @@
 
 Welcome to the AI-Driven Map Exploration App, a Flutter-based mobile application designed to help users explore the rich history of Vietnam through interactive maps. The app provides engaging historical insights using AI, integrating various technologies to offer a seamless and informative experience across both iOS and Android platforms.
 
+## How to run
+- First install all the dependency with
+`flutter pub get`
+- Then create an .env file at the root folder, and add GEMINI_API_KEY='INSERT YOUR API KEY HERE'
+- Finally, start app with 
+`flutter run`
+
 ## Features
 
 - **Interactive Map Integration**: Uses Google Maps API to display an interactive map with markers for significant historical sites across Vietnam.
