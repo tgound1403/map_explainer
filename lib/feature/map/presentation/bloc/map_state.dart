@@ -14,21 +14,28 @@ sealed class MapState with _$MapState {
     required Position position,
     required Placemark placemark,
     required LoadState loadState,
-  }) = _CurrentLocationObtained;
+    @Default({}) Map<String, String> information,
+  }) = CurrentLocationObtained;
   
   const factory MapState.placeSelected({
     required LatLng location,
     required Placemark placemark,
     required LoadState loadState,
-  }) = _PlaceSelected;
+    @Default({}) Map<String, String> information,
+  }) = PlaceSelected;
+
+  const factory MapState.chipSelected({
+    required String selectedChip,
+    required LoadState loadState,
+  }) = ChipSelected;
   
   const factory MapState.aiResponseReceived({
     required String response,
     required LoadState loadState,
-  }) = _AIResponseReceived;
+  }) = AIResponseReceived;
   
   const factory MapState.error({
     required String message,
     required LoadState loadState,
-  }) = _Error;
+  }) = Error;
 }

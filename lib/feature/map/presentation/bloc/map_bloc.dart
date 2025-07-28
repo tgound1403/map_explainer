@@ -1,6 +1,7 @@
 import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
 import 'package:ai_map_explainer/core/utils/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import './map_event.dart';
 import './map_state.dart';
@@ -27,47 +28,50 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   Future<void> _handleGetCurrentLocation(Emitter<MapState> emit) async {
     try {
       final position = await _mapUseCase.getCurrentLocation();
-      final placemark = await _mapUseCase
-          .getAddressFromLatLng(LatLng(position.latitude, position.longitude));
-      emit(MapState.currentLocationObtained(
-          position: position,
-          placemark: placemark,
-          loadState: LoadState.success));
+      final placemark = await _mapUseCase.getAddressFromLatLng(LatLng(position.latitude, position.longitude));
+      final information = _createInformation(placemark);
+      emit(MapState.currentLocationObtained(position: position, placemark: placemark, information: information, loadState: LoadState.success));
     } catch (e, st) {
       Logger.e(e, stackTrace: st);
-      emit(MapState.error(
-          message: _getErrorMessage(e, st), loadState: LoadState.failure));
+      emit(MapState.error(message: _getErrorMessage(e, st), loadState: LoadState.failure));
     }
   }
 
   Future<void> _handleMapTapped(LatLng location, Emitter<MapState> emit) async {
     try {
       final placemark = await _mapUseCase.getAddressFromLatLng(location);
-      emit(MapState.placeSelected(
-          location: location,
-          placemark: placemark,
-          loadState: LoadState.success));
+      final information = _createInformation(placemark);
+      emit(MapState.placeSelected(location: location, placemark: placemark, information: information, loadState: LoadState.success));
     } catch (e, st) {
       Logger.e(e, stackTrace: st);
-      emit(MapState.error(
-          message: _getErrorMessage(e, st), loadState: LoadState.failure));
+      emit(MapState.error(message: _getErrorMessage(e, st), loadState: LoadState.failure));
     }
   }
 
-  Future<void> _handleAskAI(String query, Emitter<MapState> emit) async {
+  Future<void> _handleAskAI(String input, Emitter<MapState> emit) async {
     emit(const MapState.initial(LoadState.loading));
     try {
+      emit(MapState.chipSelected(selectedChip: input, loadState: LoadState.loading));
+      var query = input.replaceAll(RegExp(r'^Đường\s|^\đường\s'), '');
       final aiReply = await _mapUseCase.askAI(query);
-      emit(MapState.aiResponseReceived(
-          response: aiReply, loadState: LoadState.success));
+      emit(MapState.aiResponseReceived(response: aiReply, loadState: LoadState.success));
     } catch (e, st) {
       Logger.e(e, stackTrace: st);
-      emit(MapState.error(
-          message: _getErrorMessage(e, st), loadState: LoadState.failure));
+      emit(MapState.error(message: _getErrorMessage(e, st), loadState: LoadState.failure));
     }
   }
 
   String _getErrorMessage(dynamic error, StackTrace stackTrace) {
     return '$error\n$stackTrace';
+  }
+
+  Map<String,String> _createInformation(Placemark? place) {
+    return {
+      "administrativeArea": place?.administrativeArea ?? "",
+      "subAdministrativeArea": place?.subAdministrativeArea ?? "",
+      "locality": place?.locality ?? "",
+      "subLocality": place?.subLocality ?? "",
+      "thoroughfare": place?.thoroughfare ?? "",
+    };
   }
 }

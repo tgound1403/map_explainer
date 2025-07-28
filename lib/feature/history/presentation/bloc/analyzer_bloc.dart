@@ -19,21 +19,15 @@ part 'analyzer_bloc.freezed.dart';
 class AnalyzerBloc extends Bloc<AnalyzerEvent, AnalyzerState> {
   final AnalyzerUseCase _useCase;
 
-  AnalyzerBloc(this._useCase) : super(const _Initial()) {
-    on<AnalyzerEvent>((event, emit) {
+  AnalyzerBloc(this._useCase) : super(const Initial()) {
+    on<AnalyzerEvent>((event, emit) async {
       switch (event) {
-        case _Started():
-          _onStarted(emit);
-        case _ECreate():
-          _onCreateNew(event.context, event.query, emit);
-        case _EDelete():
-          _onDelete(event.id, emit);
-        case _ELoading():
-          emit(const AnalyzerState.loading());
-        case _EError():
-          emit(AnalyzerState.error(event.error));
-        case _EData():
-          emit(AnalyzerState.data(event.models));
+        case Started():
+          await _onStarted(emit);
+        case Create():
+          await _onCreateNew(event.context, event.query, emit);
+        case Delete():
+          await _onDelete(event.id, emit);
       }
     });
   }
@@ -41,15 +35,18 @@ class AnalyzerBloc extends Bloc<AnalyzerEvent, AnalyzerState> {
   List<ChatModel>? _lsChat;
 
   Future<void> _onStarted(Emitter<AnalyzerState> emit) async {
-    emit(const _Loading());
+    emit(const Loading());
 
-    final chats = await _useCase.fetchOldChats();
-    chats.fold(
-      (l) => emit(_Error(l)),
-      (r) => _lsChat = r,
-    );
-    Logger.d('Chat size: ${_lsChat?.length}');
-    emit(AnalyzerState.data(_lsChat));
+    await _useCase.fetchOldChats().then((res) {
+      res.fold(
+        (l) => emit(AnalyzerState.error(l)),
+        (r) {
+          _lsChat = r;
+          Logger.d('Chat size: ${_lsChat?.length}');
+          emit(AnalyzerState.data(_lsChat));
+        },
+      );
+    });
   }
 
   Future<void> _onCreateNew(

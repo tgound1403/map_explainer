@@ -2,7 +2,6 @@ import 'package:ai_map_explainer/core/di/service_locator.dart';
 import 'package:ai_map_explainer/feature/history/domain/analyzer_use_case.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:ai_map_explainer/feature/history/presentation/history_view.dart';
-import 'package:ai_map_explainer/feature/general/general_view.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_view.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,7 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
   void initState() {
     _tabList = [
       const MapView(),
-      const GeneralView(),
+      // const GeneralView(),
       const HistoryView()
     ];
     _selectedTabIndex = ValueNotifier<int>(0);
@@ -47,7 +46,7 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
           color: Colors.blueGrey.shade500,
           items: const <Widget>[
             Icon(Icons.pin_drop, size: 30, color: Colors.white,),
-            Icon(Icons.book, size: 30, color: Colors.white,),
+            // Icon(Icons.book, size: 30, color: Colors.white,),
             Icon(Icons.list, size: 30, color: Colors.white,),
           ],
           onTap: (index) {

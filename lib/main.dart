@@ -4,6 +4,7 @@ import 'package:ai_map_explainer/core/services/firebase/firebase_options.dart';
 import 'package:ai_map_explainer/core/services/firebase/firestore.dart';
 import 'package:ai_map_explainer/core/services/gemini_ai/gemini.dart';
 import 'package:ai_map_explainer/core/utils/logger.dart';
+import 'package:ai_map_explainer/feature/app_bottom_navigation.dart';
 import 'package:ai_map_explainer/feature/onboarding_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'feature/map/domain/map_usecase.dart';
 import 'feature/map/presentation/bloc/map_bloc.dart';
-import 'feature/map/presentation/view/map_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
       home: hasSeenOnboarding
           ? BlocProvider(
               create: (context) => MapBloc(getIt<MapUseCase>()),
-              child: const MapView(),
+              child: const AppBottomNavigation(),
             )
           : const OnboardingScreen(),
     );

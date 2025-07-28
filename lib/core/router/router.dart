@@ -12,8 +12,6 @@ class Routes {
 
     _setRouter(RoutePath.detail, handler: detailScreenHandler);
 
-    _setRouter(RoutePath.map, handler: mapScreenHandler);
-
     _setRouter(RoutePath.chat, handler: chatHandler);
   }
 

@@ -61,9 +61,8 @@ class _HistoryViewState extends State<HistoryView> {
       padding: AppPadding.styleLarge.copyWith(bottom: 0.0),
       child: BlocConsumer<AnalyzerBloc, AnalyzerState>(
         listener: (context, state) {
-          if (state.runtimeType.toString() == '_Data') {
-            final dataState = state as dynamic;
-            lsChat = dataState.chats ?? [];
+          if (state is Data) {
+            lsChat = state.chats ?? [];
           }
         },
         builder: (context, state) {
@@ -87,7 +86,7 @@ class _HistoryViewState extends State<HistoryView> {
   }
 
   Widget _buildStateContent(AnalyzerState state) {
-    if (state.runtimeType.toString() == '_Data') {
+    if (state is Data) {
       final dataState = state as dynamic;
       lsChat = dataState.chats ?? [];
       return ListView.separated(
@@ -128,7 +127,7 @@ class _HistoryViewState extends State<HistoryView> {
         separatorBuilder: (_, int index) => const Gap(16),
         itemCount: lsChat.length,
       );
-    } else if (state.runtimeType.toString() == '_Loading') {
+    } else if (state is Loading) {
       return const Center(
           child: SizedBox(
         width: 100,

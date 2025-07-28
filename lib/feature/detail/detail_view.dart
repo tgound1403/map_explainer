@@ -41,10 +41,10 @@ class _DetailViewContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AnalyzerBloc, AnalyzerState>(
       listener: (context, state) {
-        if (state.runtimeType.toString() == '_Loading') {
+        if (state is Loading) {
           LoadingOverlay.show(context,
               message: "Đợi xíu rồi mình cùng trò chuyện về $topic nha ...");
-        } else if (state.runtimeType.toString() == '_Data') {
+        } else if (state is Data) {
           LoadingOverlay.hide();
         }
       },

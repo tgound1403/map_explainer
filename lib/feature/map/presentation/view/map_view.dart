@@ -1,5 +1,6 @@
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
+import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,9 +25,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   GoogleMapController? mapController;
   late AnimationController _bottomSheetAnimationCtl;
   bool isExpand = false;
-  String? selectedQuery;
-  String? selectedChip;
-  Map<String, String> information = {};
+  var dataForNext = "";
 
   @override
   void initState() {
@@ -48,20 +47,16 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return BlocConsumer<MapBloc, MapState>(
       listener: (context, state) {
-        if (state.runtimeType.toString() == '_AIResponseReceived') {
+        if (state is AIResponseReceived) {
           isExpand = true;
-        } else if (state.runtimeType.toString() == '_PlaceSelected') {
-          final placeState = state as dynamic;
-          _moveCameraToLocation(placeState.location);
-          _resetMarker(placeState.placemark, placeState.location);
-        } else if (state.runtimeType.toString() == '_CurrentLocationObtained') {
-          final locationState = state as dynamic;
-          _resetMarker(
-              locationState.placemark,
-              LatLng(locationState.position.latitude,
-                  locationState.position.longitude));
-          _moveCameraToLocation(LatLng(locationState.position.latitude,
-              locationState.position.longitude));
+        } else if (state is PlaceSelected) {
+          _moveCameraToLocation(state.location);
+          _resetMarker(state.placemark, state.location);
+        } else if (state is CurrentLocationObtained) {
+          _resetMarker(state.placemark, LatLng(state.position.latitude, state.position.longitude));
+          _moveCameraToLocation(LatLng(state.position.latitude, state.position.longitude));
+        } else if (state is ChipSelected) {
+          dataForNext = state.selectedChip;
         }
       },
       builder: (context, state) {
@@ -72,8 +67,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
               children: [
                 GoogleMap(
                   onMapCreated: (ctl) => _onMapCreated(ctl, context),
-                  onTap: (latLng) =>
-                      context.read<MapBloc>().add(MapEvent.mapTapped(latLng)),
+                  onTap: (latLng) => context.read<MapBloc>().add(MapEvent.mapTapped(latLng)),
                   initialCameraPosition: const CameraPosition(
                     target: LatLng(0, 0),
                     zoom: 2,
@@ -127,16 +121,6 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     context.read<MapBloc>().add(const MapEvent.getCurrentLocation());
   }
 
-  void _getInfoForChips(Placemark? place) {
-    information = {
-      "administrativeArea": place?.administrativeArea ?? "",
-      "subAdministrativeArea": place?.subAdministrativeArea ?? "",
-      "locality": place?.locality ?? "",
-      "subLocality": place?.subLocality ?? "",
-      "thoroughfare": place?.thoroughfare ?? "",
-    };
-  }
-
   Widget _buildInformationBox({required Widget child}) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -158,7 +142,6 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildPlaceInfo(Placemark placemark) {
-    _getInfoForChips(placemark);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -181,13 +164,16 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
       padding: const EdgeInsets.all(16),
       child: SingleChildScrollView(
         child: Column(
-          children: [
+            children: [
             _buildSheetContentForState(state),
-            const Gap(8),
-            _buildListOfChips(),
-          ],
-        ),
+        const Gap(8),
+        (state.loadState == LoadState.loading) ?
+        Text("Đang tìm kiếm thông tin về $dataForNext...")
+        : const SizedBox.shrink(),
+        _buildListOfChips(state),
+        ],
       ),
+    ),
     );
   }
 
@@ -210,9 +196,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
           InkWell(
             onTap: () => setState(() => isExpand = !isExpand),
             child: Icon(
-              isExpand
-                  ? Icons.arrow_drop_down_rounded
-                  : Icons.arrow_drop_up_rounded,
+              isExpand ? Icons.arrow_drop_down_rounded : Icons.arrow_drop_up_rounded,
               size: 32,
             ),
           ),
@@ -224,13 +208,11 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
           const Gap(8),
           if (isExpand)
             TextButton(
-              onPressed: () => _gotoDetail(selectedQuery ?? ''),
+              onPressed: () => _gotoDetail(dataForNext),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("Tìm hiểu thêm",
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  Text("Tìm hiểu thêm", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                   Icon(Icons.arrow_right_rounded),
                 ],
               ),
@@ -240,7 +222,14 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildListOfChips() {
+  Widget _buildListOfChips(MapState state) {
+    Map<String, String> information = {};
+    if (state is CurrentLocationObtained) {
+      information = state.information;
+    }
+    if (state is PlaceSelected) {
+      information = state.information;
+    }
     List<String> infos = information.values.toList();
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -248,8 +237,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemBuilder: (_, idx) =>
-            infos[idx] != "" ? _buildChip(infos[idx]) : const SizedBox.shrink(),
+        itemBuilder: (_, idx) => infos[idx] != "" ? _buildChip(infos[idx]) : const SizedBox.shrink(),
         separatorBuilder: (_, idx) => SizedBox(
           width: infos[idx] != "" ? 16 : 0,
         ),
@@ -261,55 +249,48 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   Widget _buildChip(String name) {
     return InkWell(
       onTap: () => _askAI(name),
-      child: Chip(
-        backgroundColor: Colors.blueGrey.shade100,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        side: BorderSide(
-            width: selectedChip == name ? 1 : 0,
-            color: selectedChip == name ? Colors.blueGrey : Colors.transparent),
-        label: Text(name),
+      child: BlocBuilder<MapBloc, MapState>(
+        builder: (context, state) {
+          final isSelected = dataForNext == name;
+          return Chip(
+            backgroundColor: Colors.blueGrey.shade100,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            side: BorderSide(
+                width:  isSelected ? 1 : 0,
+                color: isSelected ? Colors.blueGrey : Colors.transparent),
+            label: Text(name),
+          );
+        },
       ),
     );
   }
 
   void _askAI(String input) {
-    setState(() {
-      selectedChip = input;
-      selectedQuery = input.replaceAll(RegExp(r'^Đường\s|^\đường\s'), '');
-    });
-    context.read<MapBloc>().add(MapEvent.askAI(selectedQuery!));
+    context.read<MapBloc>().add(MapEvent.askAI(input));
   }
 
   void _gotoDetail(String query) {
-    Routes.router.navigateTo(context, RoutePath.detail,
-        routeSettings: RouteSettings(arguments: query));
+    Routes.router.navigateTo(context, RoutePath.detail, routeSettings: RouteSettings(arguments: query));
   }
 
   void _moveCameraToLocation(LatLng? latlng) {
-    mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(latlng ?? const LatLng(0, 0), 15.0));
+    mapController?.animateCamera(CameraUpdate.newLatLngZoom(latlng ?? const LatLng(0, 0), 15.0));
   }
 
   Widget _buildInformationBoxForState(MapState state) {
-    if (state.runtimeType.toString() == '_PlaceSelected') {
-      final placeState = state as dynamic;
-      return _buildInformationBox(child: _buildPlaceInfo(placeState.placemark));
-    } else if (state.runtimeType.toString() == '_CurrentLocationObtained') {
-      final locationState = state as dynamic;
-      return _buildInformationBox(
-          child: _buildPlaceInfo(locationState.placemark));
+    if (state is PlaceSelected) {
+      return _buildInformationBox(child: _buildPlaceInfo(state.placemark));
+    } else if (state is CurrentLocationObtained) {
+      return _buildInformationBox(child: _buildPlaceInfo(state.placemark));
     }
     return const SizedBox.shrink();
   }
 
   Widget _buildSheetContentForState(MapState state) {
-    if (state.runtimeType.toString() == '_AIResponseReceived') {
-      final responseState = state as dynamic;
-      return _buildResult(responseState.response);
-    } else if (state.runtimeType.toString() == '_PlaceSelected' ||
-        state.runtimeType.toString() == '_CurrentLocationObtained') {
-      return const Text("Hãy chọn thông tin bạn muốn tìm hiểu",
-          style: TextStyle(color: Colors.black, fontSize: 18));
+    if (state is AIResponseReceived) {
+      return _buildResult(state.response);
+    } else if (state is PlaceSelected || state is CurrentLocationObtained) {
+      return const Text("Hãy chọn thông tin bạn muốn tìm hiểu", style: TextStyle(color: Colors.black, fontSize: 18));
     }
     return const SizedBox(
         height: 50,
