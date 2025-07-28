@@ -63,21 +63,21 @@ class AnalyzerBloc extends Bloc<AnalyzerEvent, AnalyzerState> {
 
   Future<void> _onDelete(String id, Emitter<AnalyzerState> emit) async {
     emit(const AnalyzerState.loading());
-
-    final result = await _useCase.deleteSpecificChat(id: id);
-    result.fold(
-      (l) => emit(AnalyzerState.error(l)),
-      (r) async {
-        final chats = await _useCase.fetchOldChats();
-        chats.fold(
-          (l) => emit(AnalyzerState.error(l)),
-          (r) {
-            _lsChat = r;
-            emit(AnalyzerState.data(_lsChat));
-          },
-        );
-      },
-    );
+    await _useCase.deleteSpecificChat(id: id).then((res) {
+      res.fold(
+        (l) => emit(AnalyzerState.error(l)),
+        (r) async => r,
+      );
+    });
+    await _useCase.fetchOldChats().then((res) {
+      res.fold(
+            (l) => emit(AnalyzerState.error(l)),
+            (r) {
+          _lsChat = r;
+          emit(AnalyzerState.data(_lsChat));
+        },
+      );
+    });
   }
 
   void _openChat(BuildContext context, {ChatModel? model}) {
