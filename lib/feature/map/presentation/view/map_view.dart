@@ -1,6 +1,7 @@
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
 import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
+import 'package:ai_map_explainer/core/widget/ToggleButton.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,15 +22,19 @@ class MapView extends StatefulWidget {
 }
 
 class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
-  final Map<String, Marker> _markers = {};
-  GoogleMapController? mapController;
   late AnimationController _bottomSheetAnimationCtl;
+  late MapBloc mapBloc;
+
+  GoogleMapController? mapController;
+
+  final Map<String, Marker> _markers = {};
   bool isExpand = false;
   var dataForNext = "";
 
   @override
   void initState() {
     super.initState();
+    mapBloc = context.read<MapBloc>();
     _bottomSheetAnimationCtl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
@@ -67,7 +72,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
               children: [
                 GoogleMap(
                   onMapCreated: (ctl) => _onMapCreated(ctl, context),
-                  onTap: (latLng) => context.read<MapBloc>().add(MapEvent.mapTapped(latLng)),
+                  onTap: (latLng) => mapBloc.add(MapEvent.mapTapped(latLng)),
                   initialCameraPosition: const CameraPosition(
                     target: LatLng(0, 0),
                     zoom: 2,
@@ -82,8 +87,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () => context
-                .read<MapBloc>()
+            onPressed: () => mapBloc
                 .add(const MapEvent.getCurrentLocation()),
             child: const Icon(Icons.location_on_rounded),
           ),
@@ -118,7 +122,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   void _onMapCreated(GoogleMapController controller, BuildContext context) {
     mapController = controller;
     mapController?.setMapStyle(mapStyle);
-    context.read<MapBloc>().add(const MapEvent.getCurrentLocation());
+    mapBloc.add(const MapEvent.getCurrentLocation());
   }
 
   Widget _buildInformationBox({required Widget child}) {
@@ -193,12 +197,9 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
       child: Flex(
         direction: Axis.vertical,
         children: [
-          InkWell(
-            onTap: () => setState(() => isExpand = !isExpand),
-            child: Icon(
-              isExpand ? Icons.arrow_drop_down_rounded : Icons.arrow_drop_up_rounded,
-              size: 32,
-            ),
+          ToggleButton(
+            onPressed: () => setState(() => isExpand = !isExpand),
+            changeValue: isExpand
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -230,7 +231,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     if (state is PlaceSelected) {
       information = state.information;
     }
-    List<String> infos = information.values.toList();
+    List<String> infos = information.values.map((e) => mapBloc.removeMapPrefix(e)).toList();
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 48,
@@ -266,7 +267,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   }
 
   void _askAI(String input) {
-    context.read<MapBloc>().add(MapEvent.askAI(input));
+    mapBloc.add(MapEvent.askAI(input));
   }
 
   void _gotoDetail(String query) {

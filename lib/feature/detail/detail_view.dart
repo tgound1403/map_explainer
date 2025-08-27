@@ -1,5 +1,6 @@
 import 'package:ai_map_explainer/core/common/components/loading_overlay.dart';
 import 'package:ai_map_explainer/core/di/service_locator.dart';
+import 'package:ai_map_explainer/core/widget/ToggleButton.dart';
 import 'package:ai_map_explainer/feature/history/domain/analyzer_use_case.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:flutter/material.dart';
@@ -106,17 +107,11 @@ class _DetailViewContent extends StatelessWidget {
                               ),
                               const Gap(16),
                               _buildRelatedInfo(),
-                              IconButton(
-                                onPressed: () => context
-                                    .read<DetailBloc>()
+                              ToggleButton(
+                                onPressed: () => context.read<DetailBloc>()
                                     .add(const DetailEvent.toggleExpand()),
-                                icon: Icon(
-                                  !state.isExpand
-                                      ? Icons.arrow_drop_down_rounded
-                                      : Icons.arrow_drop_up_rounded,
-                                  size: 32,
+                                changeValue: !state.isExpand
                                 ),
-                              )
                             ]),
                           ),
                         ),
@@ -135,6 +130,7 @@ class _DetailViewContent extends StatelessWidget {
 
   Widget _buildContentBox(String content) {
     return BlocBuilder<DetailBloc, DetailState>(
+      buildWhen: (prev, curr) => prev.isLoading2 != curr.isLoading2,
       builder: (context, state) {
         return state.isLoading2
             ? const Center(

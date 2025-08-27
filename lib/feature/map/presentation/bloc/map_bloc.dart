@@ -52,13 +52,16 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     emit(const MapState.initial(LoadState.loading));
     try {
       emit(MapState.chipSelected(selectedChip: input, loadState: LoadState.loading));
-      var query = input.replaceAll(RegExp(r'^Đường\s|^\đường\s'), '');
-      final aiReply = await _mapUseCase.askAI(query);
+      final aiReply = await _mapUseCase.askAI(input);
       emit(MapState.aiResponseReceived(response: aiReply, loadState: LoadState.success));
     } catch (e, st) {
       Logger.e(e, stackTrace: st);
       emit(MapState.error(message: _getErrorMessage(e, st), loadState: LoadState.failure));
     }
+  }
+
+  String removeMapPrefix(String data) {
+    return data.replaceAll(RegExp(r'^Đường\s|^\đường\s'), '');
   }
 
   String _getErrorMessage(dynamic error, StackTrace stackTrace) {

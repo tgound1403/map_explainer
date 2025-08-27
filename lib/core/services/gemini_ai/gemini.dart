@@ -39,13 +39,13 @@ class GeminiAI {
   Future<List<String>?> findRelated(String input) async {
     try {
       final content = [
-        Content.text("You are an expert in history, "
-            "your task is to find the event, the people that related to my input, "
-            "reply in vietnamese with format as a list for parsing in flutter "
-            "like ['people_related_1_name', 'event_related_1_name']. Here is the input: $input")
+        Content.text("Bạn là một chuyên gia về lịch sử, "
+            "nhiệm vụ của bạn là tìm các sự kiện, nhân vật liên quan tới $input, "
+            "trả lời bằng tiếng Việt với định dạng"
+            "ngắn gọn không dài dòng thêm bớt gì cả như sau: ['tên sự kiện/ nhân vật liên quan 1', ' tên nhân vật/ sự kiện liên quan 2']")
       ];
       final response = await model?.generateContent(content);
-      var datas = response?.text?.replaceAll("`", "");
+      var datas = response?.text?.replaceAll("`", "").replaceAll("json", "");
 
       String trimmedString = datas?.substring(1, datas.length - 1) ?? '';
       List<String> resultList = trimmedString.split(', ');
@@ -91,14 +91,14 @@ class GeminiAI {
       required String source}) async {
     try {
       final direction = Content.text(
-          "You are an expert in history about $topic, "
-          "your task is to answer any question about $topic based on the source that I provided: $source,"
-          " if the $prompt is out of $topic,  "
-          "please say that you don't have permission to answer that question, "
-          "or the source is not enough to answer that question if it don't have any information about that question in source. "
-          "response in Vietnamese with markdown format, hightlight the $topic appear in response. "
-          "At the end of response is list of reference that you used to answer the question. ");
-      history?.add(direction);
+          "Bạn là một chuyên gia lịch sử về $topic, trong nguồn dữ liệu được cung cấp là $source. "
+          "Nhiệm vụ của bạn là trả lời các câu hỏi về $topic dựa trên nguồn,"
+          " nếu câu hỏi ngoài chủ đề $topic,  "
+          "hãy trả lời rằng bạn không được phép trả lời, "
+          "hoặc trả lời không đủ thông tin khi nội dung không được tìm thấy trong nguồn. "
+          "Trả lời câu hỏi $prompt bằng tiếng Việt với định dạng markdown, highlight những đoạn text $topic xuất hiện trong response. "
+          "Ở cuối câu trả lời là các references bạn đã sử dụng để có câu trả lời trên. ");
+      // history?.add(direction);
       final chat = model?.startChat(history: history);
       var response = (await chat?.sendMessage(prompt))?.text;
       Logger.i(response);
@@ -116,9 +116,9 @@ class GeminiAI {
     required String topic,
   }) async {
     try {
-      final content = Content.text("You are an expert in history about $topic."
-          "your task is to give me a list of 5 questions to ask about $topic, follow up with $previousResponse and based on $source."
-          "reply in vietnamese with just only format as a list for parsing in flutter like ['question 1', 'question 2', 'question 3']");
+      final content = Content.text("Bạn là một chuyên gia về lịch sử, lần này sẽ trò chuyện về chủ đề $topic."
+          "nhiệm vụ của bạn là gợi ý 5 câu hỏi mới dựa trên chủ đề $topic, cùng với $previousResponse và dựa trên nguồn $source."
+          "trả lời bằng tiếng việt với định dạng ngắn gọn như sau, không thêm bớt: ['question 1', 'question 2', 'question 3']");
       final response = await model?.generateContent([content]);
       return response?.text;
     } catch (e, st) {
@@ -131,11 +131,11 @@ class GeminiAI {
   Future<String?> startTalkingAboutQuery(String query) async {
     try {
       final content = [
-        Content.text("You are an expert in history about $query, "
-            "your task is to give me some question to ask about $query, "
-            "response in Vietnamese with markdown format, hightlight the $query appear in response. "
-            "Reply in format of response and recommendQuestions, recommendQuestions is a list of question to ask about $query, "
-            "must be the same content with questions that you give me in re"
+        Content.text("Bạn là một chuyên gia lịch sử về $query, "
+            "nhiệm vụ của bạn là cho tôi một số câu hỏi để tìm hiểu về $query. "
+            "Trả lời ở định dạng gồm response và recommendQuestions, "
+            "recommendQuestions là một danh sách các câu hỏi cho $query, "
+            "chúng phải giống với các câu hỏi đã được trả lời trong response. Định dạng trả lời: "
             "{'response': 'response some question to ask in Vietnamese with markdown format', "
             "'recommendQuestions': ['question 1', 'question 2', 'question 3']}")
       ];

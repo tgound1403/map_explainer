@@ -30,13 +30,14 @@ class ChatRemoteDataSource {
         Logger.i("RESPONSE: $response");
         Logger.i("QUESTION: $question");
 
+        final aiRes = MessageModel(message: response ?? "", isUser: false);
+        model.messages!.add(aiRes);
+
         List<String> followUpQuestions = List<String>.from(jsonDecode(question
                 ?.replaceAll("'", '"')
                 .replaceAll("`", "")
                 .replaceAll("dart", "") ??
             ""));
-        final aiRes = MessageModel(message: response ?? "", isUser: false);
-        model.messages!.add(aiRes);
         model.recommendQuestions = followUpQuestions;
         Firestore.instance.modifyData('chats', model.id!, model.toJson());
       }

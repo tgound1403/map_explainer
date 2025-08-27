@@ -25,7 +25,7 @@ class DetailBloc extends Bloc<DetailEvent, DetailState> {
   }
 
   Future<void> _onFindRelationship(FindRelationship event, Emitter<DetailState> emit) async {
-    emit(state.copyWith(isLoading2: true, selectedSubTopic: event.subTopic));
+    emit(state.copyWith(isLoading2: true, selectedSubTopic: event.subTopic, isExpand: false));
     final relationship = await GeminiAI.instance.findRelationBetweenTwoTopics(
       mainTopic: state.query,
       subTopic: event.subTopic,
