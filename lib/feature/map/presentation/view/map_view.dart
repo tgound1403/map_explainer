@@ -129,17 +129,19 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.all(16),
       width: MediaQuery.of(context).size.width - 32,
-      decoration: BoxDecoration(
+      decoration: ShapeDecoration(
         color: Colors.white,
-        boxShadow: [
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(36),
+        ),
+        shadows: [
           BoxShadow(
-            blurRadius: 4,
-            spreadRadius: 2,
+            blurRadius: 8,
+            spreadRadius: 4,
             offset: Offset.zero,
             color: Colors.blueGrey[100]!,
           )
         ],
-        borderRadius: BorderRadius.circular(16),
       ),
       child: child,
     );
@@ -166,6 +168,11 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   Widget _buildSheetContent(MapState state) {
     return Container(
       padding: const EdgeInsets.all(16),
+      decoration: ShapeDecoration(
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(36),
+        ),
+      ),
       child: SingleChildScrollView(
         child: Column(
             children: [
@@ -190,9 +197,11 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
       padding:
           const EdgeInsets.all(16).copyWith(top: 0, bottom: isExpand ? 0 : 16),
       height: isExpand ? MediaQuery.of(context).size.height * .5 : 120,
-      decoration: BoxDecoration(
+      decoration: ShapeDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
       child: Flex(
         direction: Axis.vertical,
@@ -255,7 +264,9 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
           final isSelected = dataForNext == name;
           return Chip(
             backgroundColor: Colors.blueGrey.shade100,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedSuperellipseBorder(
+              borderRadius: BorderRadius.circular(36),
+            ),
             side: BorderSide(
                 width:  isSelected ? 1 : 0,
                 color: isSelected ? Colors.blueGrey : Colors.transparent),

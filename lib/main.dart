@@ -12,6 +12,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'feature/detail/bloc/detail_bloc.dart';
+import 'feature/detail/bloc/detail_event.dart';
 import 'feature/map/domain/map_usecase.dart';
 import 'feature/map/presentation/bloc/map_bloc.dart';
 
@@ -50,10 +52,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: hasSeenOnboarding
-          ? BlocProvider(
-              create: (context) => MapBloc(getIt<MapUseCase>()),
-              child: const AppBottomNavigation(),
-            )
+          ? const AppBottomNavigation()
           : const OnboardingScreen(),
     );
   }

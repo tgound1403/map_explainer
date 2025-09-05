@@ -94,9 +94,11 @@ class _HistoryViewState extends State<HistoryView> {
         shrinkWrap: true,
         itemBuilder: (_, int index) => Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
+            decoration: ShapeDecoration(
               color: Colors.blueGrey.shade500,
-              borderRadius: BorderRadius.circular(16),
+              shape: RoundedSuperellipseBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

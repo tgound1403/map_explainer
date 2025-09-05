@@ -14,11 +14,7 @@ class GeneralView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          DetailBloc()..add(const DetailEvent.initData("Lịch sử Việt Nam")),
-      child: const _DetailViewContent(),
-    );
+    return const _DetailViewContent();
   }
 }
 

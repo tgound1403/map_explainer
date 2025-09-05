@@ -7,6 +7,12 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'detail/bloc/detail_bloc.dart';
+import 'detail/bloc/detail_event.dart';
+import 'general/general_view.dart';
+import 'map/domain/map_usecase.dart';
+import 'map/presentation/bloc/map_bloc.dart';
+
 class AppBottomNavigation extends StatefulWidget {
   const AppBottomNavigation({super.key});
 
@@ -23,7 +29,7 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
   void initState() {
     _tabList = [
       const MapView(),
-      // const GeneralView(),
+      const GeneralView(),
       const HistoryView()
     ];
     _selectedTabIndex = ValueNotifier<int>(0);
@@ -35,8 +41,14 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-        create: (context) => AnalyzerBloc(getIt<AnalyzerUseCase>())..add(const AnalyzerEvent.started()),
-      ),
+          create: (context) => AnalyzerBloc(getIt<AnalyzerUseCase>())
+            ..add(const AnalyzerEvent.started()),
+        ),
+        BlocProvider(create: (context) => MapBloc(getIt<MapUseCase>())),
+        BlocProvider(
+          create: (context) => DetailBloc()
+            ..add(const DetailEvent.initData("Lịch sử Việt Nam")),
+        )
       ],
       child: Scaffold(
         bottomNavigationBar: CurvedNavigationBar(
@@ -46,7 +58,7 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
           color: Colors.blueGrey.shade500,
           items: const <Widget>[
             Icon(Icons.pin_drop, size: 30, color: Colors.white,),
-            // Icon(Icons.book, size: 30, color: Colors.white,),
+            Icon(Icons.book, size: 30, color: Colors.white,),
             Icon(Icons.list, size: 30, color: Colors.white,),
           ],
           onTap: (index) {

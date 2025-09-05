@@ -9,29 +9,41 @@ class MessageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Align(
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Align(
         alignment: message.isUser ?? false
             ? Alignment.centerRight
             : Alignment.centerLeft,
         child: Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: message.isUser ?? false
-                    ? Colors.blueGrey.shade50
-                    : Colors.blueGrey.shade100,
-                borderRadius: message.isUser ?? false
-                    ? const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                        bottomLeft: Radius.circular(20))
-                    : const BorderRadius.only(
-                        topRight: Radius.circular(20),
-                        topLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20))),
+            decoration: ShapeDecoration(
+              shape: RoundedSuperellipseBorder(
+                  borderRadius: message.isUser ?? false
+                      ? _borderForMessageRight()
+                      : _borderForMessageLeft()),
+              color: message.isUser ?? false
+                  ? Colors.blueGrey.shade50
+                  : Colors.blueGrey.shade100,
+            ),
             child: _buildContent(context)),
       ),
     );
+  }
+
+  BorderRadius _borderForMessageRight() {
+    return const BorderRadius.only(
+        topLeft: Radius.circular(24),
+        bottomRight: Radius.circular(24),
+        bottomLeft: Radius.circular(24));
+  }
+
+  BorderRadius _borderForMessageLeft() {
+    return const BorderRadius.only(
+        topRight: Radius.circular(24),
+        topLeft: Radius.circular(24),
+        bottomRight: Radius.circular(24));
   }
 
   Widget _buildContent(BuildContext context) {

@@ -24,9 +24,6 @@ class DetailView extends StatelessWidget {
         BlocProvider(
           create: (context) => DetailBloc()..add(DetailEvent.initData(query)),
         ),
-        BlocProvider(
-          create: (context) => AnalyzerBloc(getIt<AnalyzerUseCase>()),
-        )
       ],
       child: _DetailViewContent(topic: query),
     );
@@ -92,9 +89,12 @@ class _DetailViewContent extends StatelessWidget {
                             curve: Curves.easeInOutCubic,
                             padding:
                                 const EdgeInsets.all(16).copyWith(bottom: 0),
-                            decoration: BoxDecoration(
+                            decoration: ShapeDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(16)),
+                                shape: RoundedSuperellipseBorder(
+                                borderRadius: BorderRadius.circular(36),
+                              ),
+                            ),
                             height: state.isExpand
                                 ? MediaQuery.sizeOf(context).height * .8
                                 : MediaQuery.sizeOf(context).height * .4,
@@ -185,8 +185,9 @@ class _DetailViewContent extends StatelessWidget {
                                   state.relatedInfos[idx])),
                           child: Chip(
                             backgroundColor: Colors.blueGrey.shade100,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
+                            shape: RoundedSuperellipseBorder(
+                              borderRadius: BorderRadius.circular(36),
+                            ),
                             side: BorderSide(
                                 width: state.selectedSubTopic ==
                                         state.relatedInfos[idx]
