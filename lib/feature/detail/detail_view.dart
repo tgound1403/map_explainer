@@ -19,12 +19,8 @@ class DetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => DetailBloc()..add(DetailEvent.initData(query)),
-        ),
-      ],
+    return BlocProvider(
+      create: (context) => DetailBloc()..add(DetailEvent.initData(query)),
       child: _DetailViewContent(topic: query),
     );
   }
