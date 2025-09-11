@@ -5,23 +5,30 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "com.example.ai_map_explainer/intent_channel"
-    private var senderPackage: String? = null
-    private var broadcastAction: String? = null
+    private val CHANNEL = "com.example.ai_map_explainer/intent_channel";
+    private var clientPackage: String? = null;
+    private var callbackAction: String? = null;
+    
+    companion object {
+        val TAG = "Duong-Flutter";
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.example.ai_map_explainer/intent_channel").setMethodCallHandler { call, result ->
             when (call.method) {
                 "sendStatus" -> {
-                    // Nhận trạng thái từ Flutter và gửi broadcast về App A
-                    val status = call.argument<String>("status")
-                    sendBroadcastToSender(status)
+                    Log.d(TAG, "configureFlutterEngine: ${call.arguments}")
+                    sendBroadcastToSender(call.arguments as Map<String, String>)
                     result.success(true)
                 }
-                else -> result.notImplemented()
+                else -> {
+                    Log.d(TAG, "configureFlutterEngine: ${call.method}")
+                    result.notImplemented()
+                }
             }
         }
     }
@@ -29,8 +36,8 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Lưu thông tin sender từ Intent
-        senderPackage = intent.getStringExtra("sender_package")
-        broadcastAction = intent.getStringExtra("broadcast_action")
+        clientPackage = intent.getStringExtra("clientPackage")
+        callbackAction = intent.getStringExtra("callbackAction")
         // Gửi Intent lên Flutter
         sendIntentToFlutter(intent)
     }
@@ -38,10 +45,10 @@ class MainActivity : FlutterActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        print(intent.getStringExtra("sender_package"))
+        print("[DUONG] ${intent.getStringExtra(" clientPackage ")}")
         // Cập nhật thông tin sender
-        senderPackage = intent.getStringExtra("sender_package")
-        broadcastAction = intent.getStringExtra("broadcast_action")
+        clientPackage = intent.getStringExtra("clientPackage")
+        callbackAction = intent.getStringExtra("callbackAction")
         sendIntentToFlutter(intent)
     }
 
@@ -65,13 +72,22 @@ class MainActivity : FlutterActivity() {
         return intentData
     }
 
-    private fun sendBroadcastToSender(status: String?) {
-        if (senderPackage != null && broadcastAction != null) {
-            val broadcastIntent = Intent(broadcastAction).apply {
-                putExtra("status", status)
-                setPackage(senderPackage) // Gửi broadcast tới App A
+    private fun sendBroadcastToSender(status: Map<String, String>) {
+        if (clientPackage != null && callbackAction != null) {
+            val broadcastIntent = Intent(callbackAction).apply {
+                putExtra("orderId", status["orderId"])
+                putExtra("payRequestId", status["payRequestId"])
+                putExtra("amountPaid", status["amountPaid"])
+                putExtra("resultCode", status["resultCode"])
+                setPackage(clientPackage)
             }
-            sendBroadcast(broadcastIntent)
+            try {
+                sendBroadcast(broadcastIntent)
+                Log.d(TAG, "sendBroadcastToSender: send DONE")
+            } catch (e: Exception) {
+                Log.d(TAG, "sendBroadcastToSender:  exception: ${e.message}")
+
+            }
         }
     }
 }

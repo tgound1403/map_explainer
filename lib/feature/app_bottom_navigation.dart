@@ -24,6 +24,19 @@ class AppBottomNavigation extends StatefulWidget {
 class _AppBottomNavigationState extends State<AppBottomNavigation> {
   late ValueNotifier<int> _selectedTabIndex;
   static const platform = MethodChannel('com.example.ai_map_explainer/intent_channel');
+  List<Widget> _tabList = [];
+
+  @override
+  void initState() {
+    _tabList = [
+      const MapView(),
+      const GeneralView(),
+      const HistoryView()
+    ];
+    platform.setMethodCallHandler(_handleMethodCall);
+    _selectedTabIndex = ValueNotifier<int>(0);
+    super.initState();
+  }
 
   // Xử lý lời gọi từ native
   Future<dynamic> _handleMethodCall(MethodCall call) async {
@@ -39,39 +52,32 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
     final data = intentData['extras'];
 
     // Logic xử lý Intent, ví dụ:
-    String status;
+    Map<String, dynamic> status;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Received shared data: $data")),
+      const SnackBar(content: Text("Received shared data")),
     );
-    status = "Success: Processed shared data - $data";
+    status = {
+      "orderId": "",
+      "payRequestId": "",
+      "amountPaid": "",
+      "resultCode": "PAYMENT_SUCCESS"
+    };
 
     // Gửi trạng thái về native để broadcast
-    await sendStatusToNative(status);
+    Future.delayed(const Duration(seconds: 3), () async {
+      await sendStatusToNative(status);
+    });
   }
 
   // Gửi trạng thái về native
-  Future<void> sendStatusToNative(String status) async {
+  Future<void> sendStatusToNative(Map<String,dynamic> status) async {
     try {
-      await platform.invokeMethod('sendStatus', {'status': status});
-      print("Status sent to native: $status");
+      print("[Duong] Status sent to native: $status");
+      await platform.invokeMethod("sendStatus", status);
     } catch (e) {
-      print("Error sending status: $e");
+      print("[Duong] Error sending status: $e");
     }
-  }
-
-  List<Widget> _tabList = [];
-
-  @override
-  void initState() {
-    _tabList = [
-      const MapView(),
-      const GeneralView(),
-      const HistoryView()
-    ];
-    platform.setMethodCallHandler(_handleMethodCall);
-    _selectedTabIndex = ValueNotifier<int>(0);
-    super.initState();
   }
 
   @override
