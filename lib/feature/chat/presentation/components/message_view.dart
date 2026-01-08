@@ -1,5 +1,6 @@
 import 'package:ai_map_explainer/core/widget/tts_button.dart';
 import 'package:ai_map_explainer/feature/chat/data/model/message.dart';
+import 'package:ai_map_explainer/feature/chat/presentation/components/chat_timestamp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
@@ -10,27 +11,47 @@ class MessageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isUser = message.isUser ?? false;
+    // Generate timestamp if not exists (for backward compatibility)
+    final timestamp = _getTimestamp();
+    
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Align(
-        alignment: message.isUser ?? false
-            ? Alignment.centerRight
-            : Alignment.centerLeft,
-        child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: ShapeDecoration(
-              shape: RoundedSuperellipseBorder(
-                  borderRadius: message.isUser ?? false
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Column(
+        crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: ShapeDecoration(
+                shape: RoundedSuperellipseBorder(
+                  borderRadius: isUser
                       ? _borderForMessageRight()
                       : _borderForMessageLeft()),
-              color: message.isUser ?? false
-                  ? Colors.blueGrey.shade50
-                  : Colors.blueGrey.shade100,
+                color: isUser
+                    ? Colors.blueGrey.shade50
+                    : Colors.blueGrey.shade100,
+              ),
+              child: _buildContent(context),
             ),
-            child: _buildContent(context)),
+          ),
+          ChatTimestamp(
+            timestamp: timestamp,
+            isUser: isUser,
+          ),
+        ],
       ),
     );
+  }
+
+  /// Get timestamp from message (for backward compatibility, generate if not exists)
+  DateTime? _getTimestamp() {
+    // TODO: Add timestamp field to MessageModel
+    // For now, return null to not show timestamp
+    // When timestamp is added to model, use: message.timestamp
+    return null;
   }
 
   BorderRadius _borderForMessageRight() {
