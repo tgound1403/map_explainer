@@ -49,3 +49,18 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Build artifacts
+android/app/.cxx/
+ios/build/
+**/build/
+
+# Generated localization files (if using flutter gen-l10n)
+# Uncomment if you want to ignore generated files
+# lib/l10n/app_localizations*.dart
+
+# VS Code settings (personal preferences)
+.vscode/settings.json
+
+# DevTools options (can be committed if team wants shared config)
+# devtools_options.yaml
