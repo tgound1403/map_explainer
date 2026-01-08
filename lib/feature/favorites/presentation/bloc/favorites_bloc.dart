@@ -48,14 +48,16 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
       );
 
       if (success) {
-        // Reload favorites
-        add(LoadFavorites(type: event.type));
-        // Emit favorite status
-        emit(FavoriteStatus(
-          isFavorite: true,
-          type: event.type,
-          itemId: event.itemId,
-        ));
+        // Reload favorites để cập nhật danh sách
+        // Lấy type từ state hiện tại nếu có, hoặc từ event
+        String? currentType;
+        if (state is FavoritesLoaded) {
+          currentType = (state as FavoritesLoaded).type;
+        }
+        final favorites = currentType != null
+            ? await _favoritesService.getAllFavorites(type: currentType)
+            : await _favoritesService.getAllFavorites();
+        emit(FavoritesLoaded(favorites: favorites, type: currentType));
       }
     } catch (e, st) {
       Logger.e('Error adding favorite: $e', stackTrace: st);
@@ -71,14 +73,16 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
       );
 
       if (success) {
-        // Reload favorites
-        add(LoadFavorites(type: event.type));
-        // Emit favorite status
-        emit(FavoriteStatus(
-          isFavorite: false,
-          type: event.type,
-          itemId: event.itemId,
-        ));
+        // Reload favorites để cập nhật danh sách
+        // Lấy type từ state hiện tại nếu có, hoặc từ event
+        String? currentType;
+        if (state is FavoritesLoaded) {
+          currentType = (state as FavoritesLoaded).type;
+        }
+        final favorites = currentType != null
+            ? await _favoritesService.getAllFavorites(type: currentType)
+            : await _favoritesService.getAllFavorites();
+        emit(FavoritesLoaded(favorites: favorites, type: currentType));
       }
     } catch (e, st) {
       Logger.e('Error removing favorite: $e', stackTrace: st);

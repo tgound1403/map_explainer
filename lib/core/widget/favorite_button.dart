@@ -31,17 +31,16 @@ class FavoriteButton extends StatelessWidget {
       builder: (context, state) {
         bool isFavorite = false;
 
-        // Check current favorite status
+        // Check current favorite status từ state
         if (state is FavoriteStatus &&
             state.type == type &&
             state.itemId == itemId) {
           isFavorite = state.isFavorite;
-        } else {
-          // Check on mount
-          context.read<FavoritesBloc>().add(CheckFavorite(
-                type: type,
-                itemId: itemId,
-              ));
+        } else if (state is FavoritesLoaded) {
+          // Check trong danh sách favorites hiện tại
+          isFavorite = state.favorites.any(
+            (fav) => fav.type == type && fav.itemId == itemId,
+          );
         }
 
         return IconButton(

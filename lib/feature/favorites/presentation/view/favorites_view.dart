@@ -24,20 +24,42 @@ class _FavoritesViewState extends State<FavoritesView> with SingleTickerProvider
   late TabController _tabController;
   String _selectedType = 'all'; // 'all', 'location', 'chat'
 
+  String? _previousType;
+  bool _isInitialized = false;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(_onTabChanged);
-    context.read<FavoritesBloc>().add(const LoadFavorites());
+    _selectedType = 'all';
+    _previousType = 'all';
+    // Load favorites ban đầu sau khi widget được build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !_isInitialized) {
+        _isInitialized = true;
+        context.read<FavoritesBloc>().add(const LoadFavorites());
+      }
+    });
   }
 
   void _onTabChanged() {
+    // Chỉ xử lý khi tab change hoàn tất (không phải trong quá trình animation)
+    if (_tabController.indexIsChanging) {
+      return;
+    }
+    
     final index = _tabController.index;
-    setState(() {
-      _selectedType = index == 0 ? 'all' : (index == 1 ? 'location' : 'chat');
-    });
-    context.read<FavoritesBloc>().add(LoadFavorites(type: _selectedType == 'all' ? null : _selectedType));
+    final newType = index == 0 ? 'all' : (index == 1 ? 'location' : 'chat');
+    
+    // Chỉ load lại nếu type thay đổi và đã initialized
+    if (_previousType != newType && mounted && _isInitialized) {
+      setState(() {
+        _selectedType = newType;
+        _previousType = newType;
+      });
+      context.read<FavoritesBloc>().add(LoadFavorites(type: newType == 'all' ? null : newType));
+    }
   }
 
   @override
