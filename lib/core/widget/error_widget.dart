@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:ai_map_explainer/l10n/app_localizations.dart';
 
 /// Reusable error widget với retry functionality
 class ErrorDisplayWidget extends StatelessWidget {
@@ -21,20 +22,24 @@ class ErrorDisplayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Localized retry label
+    final l10n = AppLocalizations.of(context);
+    final retryLabel = l10n?.retry ?? 'Retry';
     
     switch (style) {
       case ErrorStyle.centered:
-        return _buildCentered(context, theme);
+        return _buildCentered(context, theme, retryLabel);
       case ErrorStyle.inline:
-        return _buildInline(context, theme);
+        return _buildInline(context, theme, retryLabel);
       case ErrorStyle.banner:
-        return _buildBanner(context, theme);
+        return _buildBanner(context, theme, retryLabel);
       case ErrorStyle.fullScreen:
-        return _buildFullScreen(context, theme);
+        return _buildFullScreen(context, theme, retryLabel);
     }
   }
 
-  Widget _buildCentered(BuildContext context, ThemeData theme) {
+  Widget _buildCentered(
+      BuildContext context, ThemeData theme, String retryLabel) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -67,7 +72,7 @@ class ErrorDisplayWidget extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Thử lại'),
+                label: Text(retryLabel),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: Colors.white,
@@ -80,7 +85,8 @@ class ErrorDisplayWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildInline(BuildContext context, ThemeData theme) {
+  Widget _buildInline(
+      BuildContext context, ThemeData theme, String retryLabel) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -118,7 +124,8 @@ class ErrorDisplayWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBanner(BuildContext context, ThemeData theme) {
+  Widget _buildBanner(
+      BuildContext context, ThemeData theme, String retryLabel) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -165,7 +172,7 @@ class ErrorDisplayWidget extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh, size: 18),
-                label: const Text('Thử lại'),
+                label: Text(retryLabel),
                 style: TextButton.styleFrom(
                   foregroundColor: theme.colorScheme.onErrorContainer,
                 ),
@@ -177,7 +184,8 @@ class ErrorDisplayWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildFullScreen(BuildContext context, ThemeData theme) {
+  Widget _buildFullScreen(
+      BuildContext context, ThemeData theme, String retryLabel) {
     return Container(
       color: theme.scaffoldBackgroundColor,
       child: Center(
@@ -212,7 +220,7 @@ class ErrorDisplayWidget extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: onRetry,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Thử lại'),
+                  label: Text(retryLabel),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
