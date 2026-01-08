@@ -3,7 +3,7 @@ import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/components/message_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ai_map_explainer/l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
 
 import '../../../../core/router/router.dart';
@@ -146,7 +146,7 @@ class _ChatViewState extends State<ChatView> {
                   return GestureDetector(
                     child: state.state.isLoading
                         ? const CircularProgressIndicator()
-                        : Icon(Icons.send, tooltip: AppLocalizations.of(context)?.send ?? 'Send'),
+                        : const Icon(Icons.send),
                     onTap: () => chatWithAI(),
                   );
                 },

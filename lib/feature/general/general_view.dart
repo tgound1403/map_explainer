@@ -9,7 +9,7 @@ import 'package:ai_map_explainer/feature/detail/bloc/detail_event.dart';
 import 'package:ai_map_explainer/feature/detail/bloc/detail_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ai_map_explainer/l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 

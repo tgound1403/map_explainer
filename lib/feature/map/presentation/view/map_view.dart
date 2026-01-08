@@ -8,7 +8,7 @@ import 'package:ai_map_explainer/core/widget/loading_widget.dart';
 import 'package:ai_map_explainer/core/services/map/historical_location_model.dart';
 import 'package:ai_map_explainer/core/services/map/marker_cluster_service.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ai_map_explainer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

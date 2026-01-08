@@ -6,7 +6,7 @@ import 'package:ai_map_explainer/feature/map/presentation/view/map_view.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:ai_map_explainer/l10n/app_localizations.dart';
 
 import 'detail/bloc/detail_bloc.dart';
 import 'detail/bloc/detail_event.dart';
