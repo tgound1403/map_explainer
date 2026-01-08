@@ -104,7 +104,39 @@ class AppAnimations {
     Duration duration = normal,
     Curve curve = standardCurve,
     Offset slideOffset = const Offset(0, 20),
+    Duration? delay,
   }) {
+    // Note: Delay không được hỗ trợ tốt trong ListView.builder vì FutureBuilder
+    // sẽ tạo Future mới mỗi lần build. Sử dụng TweenAnimationBuilder với
+    // Interval curve để tạo delay effect.
+    if (delay != null && delay.inMilliseconds > 0) {
+      final totalDuration = duration + delay;
+      final delayRatio = delay.inMilliseconds / totalDuration.inMilliseconds;
+      
+      // Sử dụng TweenAnimationBuilder với duration bao gồm delay
+      return TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: totalDuration,
+        curve: Interval(
+          delayRatio,
+          1.0,
+          curve: curve,
+        ),
+        builder: (context, value, child) {
+          // Đảm bảo widget luôn hiển thị, chỉ animate opacity và position
+          final opacity = value > 0 ? value : 0.01; // Tối thiểu 0.01 để widget được render
+          return Opacity(
+            opacity: opacity,
+            child: Transform.translate(
+              offset: slideOffset * (1 - value),
+              child: child,
+            ),
+          );
+        },
+        child: child,
+      );
+    }
+    
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: duration,
