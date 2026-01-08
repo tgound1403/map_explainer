@@ -400,7 +400,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
           if (isExpand)
             TextButton(
               onPressed: () => _gotoDetail(dataForNext),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
@@ -408,7 +408,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.w500),
                   ),
-                  Icon(Icons.arrow_right_rounded),
+                  const Icon(Icons.arrow_right_rounded),
                 ],
               ),
             ),
