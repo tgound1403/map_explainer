@@ -45,6 +45,9 @@ flutter run
 ✅ Tự động load khi mở bản đồ
 ✅ Markers có màu đỏ để phân biệt với user location (màu xanh)
 ✅ Marker được chọn sẽ có màu cam
+✅ 27 địa điểm lịch sử (14 địa điểm miền Bắc + 13 địa điểm miền Nam)
+✅ Tập trung vào khu vực TP.HCM và các tỉnh lân cận
+✅ Các địa điểm liên quan đến kháng chiến chống Mỹ
 
 ### Marker Clustering
 ✅ Tự động nhóm markers khi zoom out
@@ -71,3 +74,11 @@ flutter run
 ✅ Fade-slide animations cho information boxes
 ✅ Improved bottom sheet animations
 ✅ Material transitions cho navigation
+
+### Edge Zoom Gesture
+✅ Zoom bằng cách vuốt ở cạnh màn hình
+✅ EdgeZoomGestureDetector widget
+✅ Vuốt lên/xuống ở cạnh trái/phải để zoom
+✅ Vuốt trái/phải ở cạnh trên/dưới để zoom
+✅ Zoom indicator hiển thị level hiện tại
+✅ Throttle mechanism để tránh zoom quá nhanh

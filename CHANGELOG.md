@@ -24,6 +24,23 @@
   - Fade-slide animations cho information boxes
   - Improved bottom sheet animations
   - Material transitions cho navigation
+
+- ✅ **Historical Locations Expansion**: Mở rộng danh sách địa điểm lịch sử
+  - Thêm 13 địa điểm mới ở khu vực TP.HCM và các tỉnh lân cận
+  - Tập trung vào các địa điểm liên quan đến kháng chiến chống Mỹ
+  - Bao gồm: Nhà tù Côn Đảo, Căn cứ Rừng Sác, Địa đạo Bến Dược, Khu di tích Ngã Ba Giồng
+  - Các chiến trường: Long Tân, Bình Giã, Đồng Xoài, Ấp Bắc, Bến Cát, Phước Long
+  - Căn cứ cách mạng: Tà Thiết, Nhà Bè
+  - Tổng cộng 27 địa điểm lịch sử trong database
+
+- ✅ **Edge Zoom Gesture**: Zoom bằng cách vuốt ở cạnh màn hình
+  - EdgeZoomGestureDetector widget để detect swipe gestures ở cạnh màn hình
+  - Vuốt lên/xuống ở cạnh trái/phải để zoom
+  - Vuốt trái/phải ở cạnh trên/dưới để zoom
+  - Swipe down/right = zoom in, swipe up/left = zoom out
+  - Zoom indicator hiển thị level hiện tại khi đang zoom
+  - Throttle mechanism để tránh zoom quá nhanh
+  - Tích hợp mượt mà với Google Maps controller
   
 - ✅ **Localization Support**: Hỗ trợ đa ngôn ngữ (Tiếng Việt & Tiếng Anh)
   - Setup Flutter localization với ARB files

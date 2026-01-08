@@ -9,6 +9,7 @@ import 'package:ai_map_explainer/core/services/map/historical_location_model.dar
 import 'package:ai_map_explainer/core/services/map/marker_cluster_service.dart';
 import 'package:ai_map_explainer/core/services/map/marker_icon_service.dart';
 import 'package:ai_map_explainer/core/utils/animations.dart';
+import 'package:ai_map_explainer/core/widget/edge_zoom_gesture_detector.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
 import 'package:ai_map_explainer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -107,34 +108,46 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
       builder: (context, state) {
         return Scaffold(
           body: SafeArea(
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                GoogleMap(
-                  onMapCreated: (ctl) => _onMapCreated(ctl, context),
-                  onTap: (latLng) => mapBloc.add(MapEvent.mapTapped(latLng)),
-                  onCameraMove: (position) {
-                    _currentZoom = position.zoom;
-                  },
-                  onCameraIdle: () {
-                    if (mapController != null) {
-                      mapController!.getVisibleRegion().then((bounds) {
-                        _currentBounds = bounds;
-                        _updateMarkersWithClustering();
-                      });
-                    }
-                  },
-                  initialCameraPosition: const CameraPosition(
-                    target: LatLng(0, 0),
-                    zoom: 2,
+            child: EdgeZoomGestureDetector(
+              mapController: mapController,
+              edgeWidth: 50.0,
+              zoomStep: 0.5,
+              onZoomChanged: (zoom) {
+                // Sync zoom level với state
+                _currentZoom = zoom;
+              },
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  GoogleMap(
+                    onMapCreated: (ctl) => _onMapCreated(ctl, context),
+                    onTap: (latLng) => mapBloc.add(MapEvent.mapTapped(latLng)),
+                    onCameraMove: (position) {
+                      _currentZoom = position.zoom;
+                    },
+                    onCameraIdle: () {
+                      if (mapController != null) {
+                        mapController!.getVisibleRegion().then((bounds) {
+                          _currentBounds = bounds;
+                          _updateMarkersWithClustering();
+                        });
+                      }
+                    },
+                    initialCameraPosition: const CameraPosition(
+                      target: LatLng(0, 0),
+                      zoom: 2,
+                    ),
+                    markers: _markers.values.toSet(),
                   ),
-                  markers: _markers.values.toSet(),
-                ),
-                Positioned(
-                  top: 24,
-                  child: _buildInformationBoxForState(state),
-                ),
-              ],
+                  Positioned(
+                    top: 24,
+                    child: AppAnimations.fadeSlide(
+                      duration: AppAnimations.normal,
+                      child: _buildInformationBoxForState(state),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           floatingActionButton: FloatingActionButton(
