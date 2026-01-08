@@ -1,5 +1,6 @@
 import 'package:ai_map_explainer/core/services/gemini_ai/gemini.dart';
 import 'package:ai_map_explainer/core/services/map/location_service.dart';
+import 'package:ai_map_explainer/core/services/map/historical_location_service.dart';
 import 'package:ai_map_explainer/core/services/wikipedia/wikipedia.dart';
 import 'package:ai_map_explainer/feature/history/data/analyzer_remote_ds.dart';
 import 'package:ai_map_explainer/feature/chat/data/ds/chat_remote_data_source.dart';
@@ -22,6 +23,7 @@ void setupDependencies() {
   getIt.registerLazySingleton(() => ChatRemoteDataSource());
   // Đăng ký các service
   getIt.registerLazySingleton(() => LocationService());
+  getIt.registerLazySingleton(() => HistoricalLocationService.instance);
   getIt.registerLazySingleton(() => WikipediaService());
   getIt.registerLazySingleton(() => GeminiAI());
 
@@ -30,6 +32,7 @@ void setupDependencies() {
         locationService: getIt<LocationService>(),
         wikipediaService: getIt<WikipediaService>(),
         geminiService: getIt<GeminiAI>(),
+        historicalLocationService: getIt<HistoricalLocationService>(),
       ));
   getIt.registerLazySingleton<AnalyzerRepository>(() => AnalyzerRepository(getIt<AnalyzerRemoteDataSource>()));
   getIt.registerLazySingleton<ChatRepository>(() => ChatRepository(getIt<ChatRemoteDataSource>()));

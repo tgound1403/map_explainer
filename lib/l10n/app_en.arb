@@ -1,0 +1,185 @@
+{
+  "@@locale": "en",
+  "appTitle": "AI Map Explainer",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "youAreSelecting": "You are selecting",
+  "@youAreSelecting": {
+    "description": "Label shown when user selects a location"
+  },
+  "city": "City",
+  "@city": {
+    "description": "City label"
+  },
+  "province": "Province",
+  "@province": {
+    "description": "Province label"
+  },
+  "country": "Country",
+  "@country": {
+    "description": "Country label"
+  },
+  "selectInformationToLearn": "Select information you want to learn",
+  "@selectInformationToLearn": {
+    "description": "Prompt to select information"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+  "searchingInfoAbout": "Searching for information about {query}...",
+  "@searchingInfoAbout": {
+    "description": "Loading message when searching",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "learnMore": "Learn more",
+  "@learnMore": {
+    "description": "Button to learn more"
+  },
+  "currentLocation": "Your location",
+  "@currentLocation": {
+    "description": "Label for current location"
+  },
+  "historicalLocation": "Historical Location",
+  "@historicalLocation": {
+    "description": "Label for historical location"
+  },
+  "type": "Type",
+  "@type": {
+    "description": "Type label"
+  },
+  "period": "Period",
+  "@period": {
+    "description": "Period label"
+  },
+  "address": "Address",
+  "@address": {
+    "description": "Address label"
+  },
+  "relatedInfo": "Related information:",
+  "@relatedInfo": {
+    "description": "Label for related information"
+  },
+  "chatHistory": "Chat History",
+  "@chatHistory": {
+    "description": "Title for chat history screen"
+  },
+  "noData": "No data",
+  "@noData": {
+    "description": "Message when there is no data"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error title"
+  },
+  "connectionError": "Connection Error",
+  "@connectionError": {
+    "description": "Connection error title"
+  },
+  "locationError": "Location Error",
+  "@locationError": {
+    "description": "Location error title"
+  },
+  "serviceError": "Service Error",
+  "@serviceError": {
+    "description": "Service error title"
+  },
+  "storageError": "Storage Error",
+  "@storageError": {
+    "description": "Storage error title"
+  },
+  "cannotConnectToInternet": "Cannot connect to the internet. Please check your network connection.",
+  "@cannotConnectToInternet": {
+    "description": "Network error message"
+  },
+  "cannotGetLocation": "Cannot get your location. Please check location permissions in settings.",
+  "@cannotGetLocation": {
+    "description": "Location error message"
+  },
+  "informationNotFound": "Information not found. Please try with different keywords.",
+  "@informationNotFound": {
+    "description": "404 error message"
+  },
+  "authenticationError": "Authentication error. Please try again later.",
+  "@authenticationError": {
+    "description": "401/403 error message"
+  },
+  "serverError": "Server error. Please try again later.",
+  "@serverError": {
+    "description": "500+ error message"
+  },
+  "dataLoadError": "Error loading data. Please try again later.",
+  "@dataLoadError": {
+    "description": "Generic API error message"
+  },
+  "cacheError": "Error accessing saved data. Please try again.",
+  "@cacheError": {
+    "description": "Cache error message"
+  },
+  "unknownError": "An unknown error occurred. Please try again later.",
+  "@unknownError": {
+    "description": "Unknown error message"
+  },
+  "lightMode": "Light Mode",
+  "@lightMode": {
+    "description": "Light mode label"
+  },
+  "darkMode": "Dark Mode",
+  "@darkMode": {
+    "description": "Dark mode label"
+  },
+  "clusterOfLocations": "Cluster of {count} locations",
+  "@clusterOfLocations": {
+    "description": "Cluster marker info window title",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tapToSeeDetails": "Tap to see details",
+  "@tapToSeeDetails": {
+    "description": "Cluster marker info window snippet"
+  },
+  "loadingHistoricalLocations": "Loading historical locations...",
+  "@loadingHistoricalLocations": {
+    "description": "Loading message for historical locations"
+  },
+  "loadingHistory": "Loading history...",
+  "@loadingHistory": {
+    "description": "Loading message for history"
+  },
+  "pullToRefresh": "Pull to refresh",
+  "@pullToRefresh": {
+    "description": "Pull to refresh message"
+  },
+  "doYouHaveYourOwnQuestion": "Do you have your own question?",
+  "@doYouHaveYourOwnQuestion": {
+    "description": "Chat input hint"
+  },
+  "send": "Send",
+  "@send": {
+    "description": "Send button"
+  },
+  "vietnameseHistory": "Vietnamese History",
+  "@vietnameseHistory": {
+    "description": "Default query for history"
+  },
+  "about": "about",
+  "@about": {
+    "description": "Preposition 'about'"
+  }
+}

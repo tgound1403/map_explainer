@@ -3,6 +3,7 @@ import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/components/message_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
 
 import '../../../../core/router/router.dart';
@@ -128,7 +129,7 @@ class _ChatViewState extends State<ChatView> {
                 controller: _controller,
                 style: Theme.of(context).textTheme.titleSmall,
                 decoration: InputDecoration(
-                    hintText: 'Hay bạn có câu hỏi cho riêng mình',
+                    hintText: AppLocalizations.of(context)?.doYouHaveYourOwnQuestion ?? 'Do you have your own question?',
                     hintStyle: Theme.of(context)
                         .textTheme
                         .titleSmall!
@@ -145,7 +146,7 @@ class _ChatViewState extends State<ChatView> {
                   return GestureDetector(
                     child: state.state.isLoading
                         ? const CircularProgressIndicator()
-                        : const Icon(Icons.send),
+                        : Icon(Icons.send, tooltip: AppLocalizations.of(context)?.send ?? 'Send'),
                     onTap: () => chatWithAI(),
                   );
                 },

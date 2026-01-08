@@ -41,6 +41,8 @@ dependencies:
   hive: ^2.2.3
   isar: ^3.1.0+1
   intl: ^0.19.0
+  flutter_localizations:
+    sdk: flutter
   path_provider: ^2.1.5
   flutter_markdown: ^0.7.7+1
   wikipedia: ^0.0.8
@@ -53,6 +55,7 @@ dependencies:
   copy_with_extension: ^5.0.4
   dartz: ^0.10.1
   injectable: ^2.4.4
+  provider: ^6.1.2
   google_maps_flutter: ^2.12.1
   http: ^1.2.2
   google_generative_ai: ^0.4.4
@@ -91,6 +94,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -101,6 +105,7 @@ flutter:
   assets:
   - assets/
   - assets/locations.json
+  - assets/historical_locations.json
   - .env
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

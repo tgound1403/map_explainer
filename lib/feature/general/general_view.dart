@@ -1,13 +1,17 @@
 import 'package:ai_map_explainer/core/common/style/border_radius_style.dart';
+import 'package:ai_map_explainer/core/localization/locale_provider.dart';
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
+import 'package:ai_map_explainer/core/theme/theme_provider.dart';
+import 'package:ai_map_explainer/core/widget/loading_widget.dart';
 import 'package:ai_map_explainer/feature/detail/bloc/detail_bloc.dart';
 import 'package:ai_map_explainer/feature/detail/bloc/detail_event.dart';
 import 'package:ai_map_explainer/feature/detail/bloc/detail_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
-import 'package:loading_indicator/loading_indicator.dart';
+import 'package:provider/provider.dart';
 
 class GeneralView extends StatelessWidget {
   const GeneralView({super.key});
@@ -28,24 +32,34 @@ class _DetailViewContent extends StatelessWidget {
         return SafeArea(
           child: Scaffold(
             body: state.isLoading1
-                ? const Center(
-                    child: SizedBox(
-                      height: 100,
-                      child: LoadingIndicator(
-                        indicatorType: Indicator.ballPulseSync,
-                        colors: [Colors.blue, Colors.green, Colors.red],
-                      ),
-                    ),
+                ? LoadingWidget(
+                    message: AppLocalizations.of(context)?.loading ?? "Loading...",
+                    style: LoadingStyle.centered,
                   )
                 : SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0).copyWith(bottom: 0),
                       child: Column(
                         children: [
-                          Text(
-                            state.query,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  state.query,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500, fontSize: 24),
+                                ),
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildLanguageToggle(context),
+                                  const Gap(8),
+                                  _buildThemeToggle(context),
+                                ],
+                              ),
+                            ],
                           ),
                           const Gap(16),
                           _buildRelatedInfo(context),
@@ -66,9 +80,10 @@ class _DetailViewContent extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: RefreshIndicator(
             onRefresh: () async {
+              final l10n = AppLocalizations.of(context);
               context
                   .read<DetailBloc>()
-                  .add(const DetailEvent.initData("Lịch sử Việt Nam"));
+                  .add(DetailEvent.initData(l10n?.vietnameseHistory ?? "Vietnamese History"));
             },
             child: Wrap(
               spacing: 8.0,
@@ -97,5 +112,65 @@ class _DetailViewContent extends StatelessWidget {
   void _goToDetail(String info, BuildContext context) {
     Routes.router.navigateTo(context, RoutePath.detail,
         routeSettings: RouteSettings(arguments: info));
+  }
+
+  Widget _buildThemeToggle(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) {
+        return IconButton(
+          icon: Icon(
+            themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+          ),
+          tooltip: themeProvider.isDarkMode ? l10n.lightMode : l10n.darkMode,
+          onPressed: () => themeProvider.toggleTheme(),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageToggle(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Consumer<LocaleProvider>(
+      builder: (context, localeProvider, _) {
+        return PopupMenuButton<String>(
+          icon: const Icon(Icons.language),
+          tooltip: 'Change language',
+          onSelected: (String value) {
+            if (value == 'vi') {
+              localeProvider.setVietnamese();
+            } else {
+              localeProvider.setEnglish();
+            }
+          },
+          itemBuilder: (BuildContext context) => [
+            PopupMenuItem<String>(
+              value: 'vi',
+              child: Row(
+                children: [
+                  Text('🇻🇳 Tiếng Việt'),
+                  if (localeProvider.isVietnamese) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'en',
+              child: Row(
+                children: [
+                  Text('🇬🇧 English'),
+                  if (localeProvider.isEnglish) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

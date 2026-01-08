@@ -8,4 +8,6 @@ sealed class MapEvent with _$MapEvent {
   const factory MapEvent.getCurrentLocation() = GetCurrentLocation;
   const factory MapEvent.mapTapped(LatLng location) = MapTapped;
   const factory MapEvent.askAI(String query) = AskAI;
+  const factory MapEvent.loadHistoricalLocations() = LoadHistoricalLocations;
+  const factory MapEvent.historicalLocationTapped(String locationId) = HistoricalLocationTapped;
 }

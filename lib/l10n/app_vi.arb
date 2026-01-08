@@ -1,0 +1,60 @@
+{
+  "@@locale": "vi",
+  "appTitle": "AI Map Explainer",
+  "youAreSelecting": "Bạn đang chọn",
+  "city": "Thành phố",
+  "province": "Tỉnh",
+  "country": "Quốc gia",
+  "selectInformationToLearn": "Hãy chọn thông tin bạn muốn tìm hiểu",
+  "loading": "Đang tải...",
+  "searchingInfoAbout": "Đang tìm kiếm thông tin về {query}...",
+  "@searchingInfoAbout": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "learnMore": "Tìm hiểu thêm",
+  "currentLocation": "Vị trí của bạn",
+  "historicalLocation": "Địa điểm lịch sử",
+  "type": "Loại",
+  "period": "Thời kỳ",
+  "address": "Địa chỉ",
+  "relatedInfo": "Thông tin liên quan:",
+  "chatHistory": "Lịch sử trò chuyện",
+  "noData": "Không có dữ liệu",
+  "delete": "Xóa",
+  "retry": "Thử lại",
+  "error": "Đã xảy ra lỗi",
+  "connectionError": "Lỗi kết nối",
+  "locationError": "Lỗi vị trí",
+  "serviceError": "Lỗi dịch vụ",
+  "storageError": "Lỗi lưu trữ",
+  "cannotConnectToInternet": "Không thể kết nối đến internet. Vui lòng kiểm tra kết nối mạng của bạn.",
+  "cannotGetLocation": "Không thể lấy vị trí của bạn. Vui lòng kiểm tra quyền truy cập vị trí trong cài đặt.",
+  "informationNotFound": "Không tìm thấy thông tin. Vui lòng thử với từ khóa khác.",
+  "authenticationError": "Lỗi xác thực. Vui lòng thử lại sau.",
+  "serverError": "Lỗi máy chủ. Vui lòng thử lại sau.",
+  "dataLoadError": "Lỗi khi tải dữ liệu. Vui lòng thử lại sau.",
+  "cacheError": "Lỗi khi truy cập dữ liệu đã lưu. Vui lòng thử lại.",
+  "unknownError": "Đã xảy ra lỗi không xác định. Vui lòng thử lại sau.",
+  "lightMode": "Chế độ sáng",
+  "darkMode": "Chế độ tối",
+  "clusterOfLocations": "Cụm {count} địa điểm",
+  "@clusterOfLocations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tapToSeeDetails": "Tap để xem chi tiết",
+  "loadingHistoricalLocations": "Đang tải địa điểm lịch sử...",
+  "loadingHistory": "Đang tải lịch sử...",
+  "pullToRefresh": "Kéo xuống để làm mới",
+  "doYouHaveYourOwnQuestion": "Hay bạn có câu hỏi cho riêng mình",
+  "send": "Gửi",
+  "vietnameseHistory": "Lịch sử Việt Nam",
+  "about": "về"
+}

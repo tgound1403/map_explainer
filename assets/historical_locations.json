@@ -1,0 +1,172 @@
+{
+  "locations": [
+    {
+      "id": "ho-chi-minh-mausoleum",
+      "name": "Lăng Chủ tịch Hồ Chí Minh",
+      "lat": 21.036944,
+      "lng": 105.834167,
+      "description": "Lăng Chủ tịch Hồ Chí Minh là nơi an nghỉ của Chủ tịch Hồ Chí Minh, vị lãnh tụ vĩ đại của dân tộc Việt Nam. Đây là một trong những di tích lịch sử quan trọng nhất của Việt Nam.",
+      "period": "Thời kỳ hiện đại",
+      "type": "Di tích lịch sử",
+      "address": "Số 1, Đường Hùng Vương, Quận Ba Đình, Hà Nội",
+      "relatedEvents": ["Cách mạng Tháng Tám", "Kháng chiến chống Pháp", "Kháng chiến chống Mỹ"],
+      "relatedFigures": ["Hồ Chí Minh"]
+    },
+    {
+      "id": "hoa-lo-prison",
+      "name": "Nhà tù Hỏa Lò",
+      "lat": 21.025556,
+      "lng": 105.846389,
+      "description": "Nhà tù Hỏa Lò là một di tích lịch sử nổi tiếng ở Hà Nội, từng được gọi là 'Hanoi Hilton' bởi các tù binh Mỹ. Đây là nơi giam giữ nhiều nhà cách mạng Việt Nam và tù binh Mỹ trong chiến tranh.",
+      "period": "Thời kỳ kháng chiến",
+      "type": "Di tích lịch sử",
+      "address": "Số 1, Phố Hỏa Lò, Quận Hoàn Kiếm, Hà Nội",
+      "relatedEvents": ["Kháng chiến chống Pháp", "Kháng chiến chống Mỹ"],
+      "relatedFigures": ["Hồ Chí Minh", "Võ Nguyên Giáp"]
+    },
+    {
+      "id": "imperial-citadel-thang-long",
+      "name": "Hoàng thành Thăng Long",
+      "lat": 21.033333,
+      "lng": 105.841667,
+      "description": "Hoàng thành Thăng Long là quần thể di tích gắn với lịch sử kinh thành Thăng Long - Đông Kinh và Hà Nội. Đây là di sản văn hóa thế giới được UNESCO công nhận.",
+      "period": "Thời kỳ phong kiến",
+      "type": "Di tích lịch sử",
+      "address": "Số 19C, Hoàng Diệu, Quận Ba Đình, Hà Nội",
+      "relatedEvents": ["Thành lập Thăng Long", "Các triều đại phong kiến Việt Nam"],
+      "relatedFigures": ["Lý Thái Tổ", "Lý Công Uẩn"]
+    },
+    {
+      "id": "temple-of-literature",
+      "name": "Văn Miếu - Quốc Tử Giám",
+      "lat": 21.026944,
+      "lng": 105.836111,
+      "description": "Văn Miếu - Quốc Tử Giám là trường đại học đầu tiên của Việt Nam, được xây dựng năm 1070 dưới thời vua Lý Thánh Tông. Đây là nơi thờ Khổng Tử và các bậc hiền triết.",
+      "period": "Thời kỳ phong kiến",
+      "type": "Di tích lịch sử",
+      "address": "Số 58, Quốc Tử Giám, Quận Đống Đa, Hà Nội",
+      "relatedEvents": ["Thành lập Văn Miếu", "Giáo dục phong kiến"],
+      "relatedFigures": ["Lý Thánh Tông", "Chu Văn An"]
+    },
+    {
+      "id": "one-pillar-pagoda",
+      "name": "Chùa Một Cột",
+      "lat": 21.035833,
+      "lng": 105.832222,
+      "description": "Chùa Một Cột là một trong những biểu tượng văn hóa của Hà Nội, được xây dựng năm 1049 dưới thời vua Lý Thái Tông. Chùa có kiến trúc độc đáo với một cột đá duy nhất.",
+      "period": "Thời kỳ phong kiến",
+      "type": "Di tích tôn giáo",
+      "address": "Chùa Một Cột, Quận Ba Đình, Hà Nội",
+      "relatedEvents": ["Xây dựng chùa Một Cột"],
+      "relatedFigures": ["Lý Thái Tông"]
+    },
+    {
+      "id": "dien-bien-phu",
+      "name": "Điện Biên Phủ",
+      "lat": 21.383333,
+      "lng": 103.016667,
+      "description": "Điện Biên Phủ là nơi diễn ra trận đánh lịch sử năm 1954, kết thúc cuộc kháng chiến chống Pháp. Đây là một trong những chiến thắng vĩ đại nhất của quân đội Việt Nam.",
+      "period": "Thời kỳ kháng chiến",
+      "type": "Địa danh lịch sử",
+      "address": "Tỉnh Điện Biên",
+      "relatedEvents": ["Chiến dịch Điện Biên Phủ", "Hiệp định Geneva"],
+      "relatedFigures": ["Võ Nguyên Giáp", "Hồ Chí Minh"]
+    },
+    {
+      "id": "hue-imperial-citadel",
+      "name": "Kinh thành Huế",
+      "lat": 16.468056,
+      "lng": 107.576944,
+      "description": "Kinh thành Huế là kinh đô của triều Nguyễn, triều đại phong kiến cuối cùng của Việt Nam. Đây là di sản văn hóa thế giới được UNESCO công nhận.",
+      "period": "Thời kỳ phong kiến",
+      "type": "Di tích lịch sử",
+      "address": "Thành phố Huế, Tỉnh Thừa Thiên Huế",
+      "relatedEvents": ["Triều Nguyễn", "Xâm lược Pháp"],
+      "relatedFigures": ["Gia Long", "Tự Đức"]
+    },
+    {
+      "id": "my-son-sanctuary",
+      "name": "Thánh địa Mỹ Sơn",
+      "lat": 15.766667,
+      "lng": 108.116667,
+      "description": "Thánh địa Mỹ Sơn là quần thể đền tháp của vương quốc Champa cổ, được xây dựng từ thế kỷ 4 đến thế kỷ 14. Đây là di sản văn hóa thế giới.",
+      "period": "Thời kỳ cổ đại",
+      "type": "Di tích lịch sử",
+      "address": "Xã Duy Phú, Huyện Duy Xuyên, Tỉnh Quảng Nam",
+      "relatedEvents": ["Vương quốc Champa"],
+      "relatedFigures": []
+    },
+    {
+      "id": "cu-chi-tunnels",
+      "name": "Địa đạo Củ Chi",
+      "lat": 11.061667,
+      "lng": 106.515833,
+      "description": "Địa đạo Củ Chi là hệ thống đường hầm phức tạp được xây dựng trong thời kỳ kháng chiến chống Mỹ. Đây là biểu tượng của tinh thần kiên cường và sáng tạo của người Việt Nam.",
+      "period": "Thời kỳ kháng chiến",
+      "type": "Di tích lịch sử",
+      "address": "Huyện Củ Chi, Thành phố Hồ Chí Minh",
+      "relatedEvents": ["Kháng chiến chống Mỹ", "Chiến tranh Việt Nam"],
+      "relatedFigures": ["Võ Nguyên Giáp"]
+    },
+    {
+      "id": "reunification-palace",
+      "name": "Dinh Độc Lập",
+      "lat": 10.776944,
+      "lng": 106.695278,
+      "description": "Dinh Độc Lập là nơi đánh dấu sự kết thúc của chiến tranh Việt Nam khi xe tăng của quân Giải phóng tiến vào ngày 30/4/1975. Đây là biểu tượng của sự thống nhất đất nước.",
+      "period": "Thời kỳ hiện đại",
+      "type": "Di tích lịch sử",
+      "address": "Số 135, Nam Kỳ Khởi Nghĩa, Quận 1, Thành phố Hồ Chí Minh",
+      "relatedEvents": ["Sự kiện 30/4/1975", "Giải phóng miền Nam"],
+      "relatedFigures": ["Hồ Chí Minh"]
+    },
+    {
+      "id": "war-remnants-museum",
+      "name": "Bảo tàng Chứng tích Chiến tranh",
+      "lat": 10.779167,
+      "lng": 106.692222,
+      "description": "Bảo tàng Chứng tích Chiến tranh là nơi lưu giữ và trưng bày các hiện vật, tài liệu về chiến tranh Việt Nam. Đây là nơi giáo dục về hòa bình và tình yêu đất nước.",
+      "period": "Thời kỳ hiện đại",
+      "type": "Bảo tàng",
+      "address": "Số 28, Võ Văn Tần, Quận 3, Thành phố Hồ Chí Minh",
+      "relatedEvents": ["Chiến tranh Việt Nam"],
+      "relatedFigures": []
+    },
+    {
+      "id": "ba-dinh-square",
+      "name": "Quảng trường Ba Đình",
+      "lat": 21.036944,
+      "lng": 105.834167,
+      "description": "Quảng trường Ba Đình là nơi Chủ tịch Hồ Chí Minh đọc bản Tuyên ngôn Độc lập khai sinh nước Việt Nam Dân chủ Cộng hòa ngày 2/9/1945.",
+      "period": "Thời kỳ hiện đại",
+      "type": "Địa danh lịch sử",
+      "address": "Quận Ba Đình, Hà Nội",
+      "relatedEvents": ["Cách mạng Tháng Tám", "Tuyên ngôn Độc lập"],
+      "relatedFigures": ["Hồ Chí Minh"]
+    },
+    {
+      "id": "battle-of-bach-dang",
+      "name": "Sông Bạch Đằng",
+      "lat": 20.916667,
+      "lng": 106.733333,
+      "description": "Sông Bạch Đằng là nơi diễn ra nhiều trận đánh lịch sử quan trọng của Việt Nam, đặc biệt là chiến thắng của Ngô Quyền năm 938 chống quân Nam Hán và Trần Hưng Đạo năm 1288 chống quân Nguyên Mông.",
+      "period": "Thời kỳ phong kiến",
+      "type": "Địa danh lịch sử",
+      "address": "Tỉnh Quảng Ninh",
+      "relatedEvents": ["Chiến thắng Bạch Đằng 938", "Chiến thắng Bạch Đằng 1288"],
+      "relatedFigures": ["Ngô Quyền", "Trần Hưng Đạo"]
+    },
+    {
+      "id": "hoi-an-ancient-town",
+      "name": "Phố cổ Hội An",
+      "lat": 15.877222,
+      "lng": 108.331667,
+      "description": "Phố cổ Hội An là một thương cảng cổ của Việt Nam, từng là trung tâm thương mại quốc tế sầm uất từ thế kỷ 16 đến 19. Đây là di sản văn hóa thế giới.",
+      "period": "Thời kỳ phong kiến",
+      "type": "Di tích lịch sử",
+      "address": "Thành phố Hội An, Tỉnh Quảng Nam",
+      "relatedEvents": ["Thương mại quốc tế"],
+      "relatedFigures": []
+    }
+  ]
+}

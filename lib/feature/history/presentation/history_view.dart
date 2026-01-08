@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:ai_map_explainer/core/common/style/padding_style.dart';
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
+import 'package:ai_map_explainer/core/widget/error_widget.dart';
+import 'package:ai_map_explainer/core/widget/loading_widget.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:ai_map_explainer/feature/chat/data/model/chat_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 
 class HistoryView extends StatefulWidget {
   const HistoryView({super.key});
@@ -41,9 +43,10 @@ class _HistoryViewState extends State<HistoryView> {
           body: SingleChildScrollView(
             child: Column(
               children: [
-                const Text(
-                  "Lịch sử trò chuyện",
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 24),
+                Text(
+                  AppLocalizations.of(context)?.chatHistory ?? "Chat History",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w500, fontSize: 24),
                 ),
                 const Gap(16),
                 _buildBody(),
@@ -120,6 +123,7 @@ class _HistoryViewState extends State<HistoryView> {
                 ),
                 IconButton(
                     onPressed: () => _deleteChat(lsChat[index].id ?? ""),
+                    tooltip: AppLocalizations.of(context)?.delete ?? "Delete",
                     icon: const Icon(
                       Icons.delete,
                       color: Colors.white,
@@ -130,16 +134,16 @@ class _HistoryViewState extends State<HistoryView> {
         itemCount: lsChat.length,
       );
     } else if (state is Loading) {
-      return const Center(
-          child: SizedBox(
-        width: 100,
-        child: LoadingIndicator(
-          indicatorType: Indicator.ballPulse,
-        ),
-      ));
+      return LoadingWidget(
+        message: AppLocalizations.of(context)?.loadingHistory ??
+            "Loading history...",
+        style: LoadingStyle.centered,
+      );
     } else {
-      return const Center(
-        child: Text("Không có dữ liệu"),
+      return ErrorDisplayWidget(
+        message: AppLocalizations.of(context)?.noData ?? "No data",
+        style: ErrorStyle.centered,
+        icon: Icons.history,
       );
     }
   }

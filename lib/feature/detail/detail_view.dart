@@ -1,10 +1,9 @@
 import 'package:ai_map_explainer/core/common/components/loading_overlay.dart';
-import 'package:ai_map_explainer/core/di/service_locator.dart';
 import 'package:ai_map_explainer/core/widget/ToggleButton.dart';
-import 'package:ai_map_explainer/feature/history/domain/analyzer_use_case.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gap/gap.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -31,24 +30,26 @@ class DetailView extends StatelessWidget {
 }
 
 class _DetailViewContent extends StatelessWidget {
-  _DetailViewContent({required this.topic});
+  const _DetailViewContent({required this.topic});
 
-  String topic = "";
+  final String topic;
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AnalyzerBloc, AnalyzerState>(
       listener: (context, state) {
         if (state is Loading) {
+          final l10n = AppLocalizations.of(context);
           LoadingOverlay.show(context,
-              message: "Đợi xíu rồi mình cùng trò chuyện về $topic nha ...");
+              message: l10n != null 
+                ? "${l10n.loading} ${l10n.about} $topic..."
+                : "Loading about $topic...");
         } else if (state is Data) {
           LoadingOverlay.hide();
         }
       },
       child: BlocBuilder<DetailBloc, DetailState>(
         builder: (context, state) {
-          topic = state.query;
           return Scaffold(
             appBar: AppBar(
               centerTitle: true,
@@ -169,9 +170,9 @@ class _DetailViewContent extends StatelessWidget {
             const Divider(
               thickness: 1,
             ),
-            const Text(
-              "Thông tin liên quan:",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+            Text(
+              AppLocalizations.of(context)?.relatedInfo ?? "Related information:",
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
             ),
             SizedBox(
               height: 50,

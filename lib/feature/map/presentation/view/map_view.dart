@@ -1,15 +1,20 @@
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
 import 'package:ai_map_explainer/core/utils/enum/load_state.dart';
+import 'package:ai_map_explainer/core/utils/error_message_helper.dart';
 import 'package:ai_map_explainer/core/widget/ToggleButton.dart';
+import 'package:ai_map_explainer/core/widget/error_widget.dart';
+import 'package:ai_map_explainer/core/widget/loading_widget.dart';
+import 'package:ai_map_explainer/core/services/map/historical_location_model.dart';
+import 'package:ai_map_explainer/core/services/map/marker_cluster_service.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:gap/gap.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import '../bloc/map_bloc.dart';
 import '../bloc/map_event.dart';
 import '../bloc/map_state.dart';
@@ -30,6 +35,8 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   final Map<String, Marker> _markers = {};
   bool isExpand = false;
   var dataForNext = "";
+  double _currentZoom = 10.0;
+  LatLngBounds? _currentBounds;
 
   @override
   void initState() {
@@ -57,11 +64,39 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
         } else if (state is PlaceSelected) {
           _moveCameraToLocation(state.location);
           _resetMarker(state.placemark, state.location);
+          _updateHistoricalMarkers(state.historicalLocations);
         } else if (state is CurrentLocationObtained) {
-          _resetMarker(state.placemark, LatLng(state.position.latitude, state.position.longitude));
-          _moveCameraToLocation(LatLng(state.position.latitude, state.position.longitude));
+          _resetMarker(state.placemark,
+              LatLng(state.position.latitude, state.position.longitude));
+          _moveCameraToLocation(
+              LatLng(state.position.latitude, state.position.longitude));
+          _updateHistoricalMarkers(state.historicalLocations);
         } else if (state is ChipSelected) {
           dataForNext = state.selectedChip;
+        } else if (state is HistoricalLocationsLoaded) {
+          _updateHistoricalMarkers(state.locations);
+        } else if (state is HistoricalLocationSelected) {
+          _moveCameraToLocation(LatLng(state.location.lat, state.location.lng));
+          _selectHistoricalLocation(state.location);
+        } else if (state is Error) {
+          // Show error snackbar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  ErrorMessageHelper.getUserFriendlyMessage(state.message)),
+              backgroundColor: Theme.of(context).colorScheme.error,
+              action: ErrorMessageHelper.shouldShowRetry(state.message)
+                  ? SnackBarAction(
+                      label: 'Thử lại',
+                      textColor: Colors.white,
+                      onPressed: () {
+                        // Retry last action based on context
+                        mapBloc.add(const MapEvent.getCurrentLocation());
+                      },
+                    )
+                  : null,
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -73,6 +108,17 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
                 GoogleMap(
                   onMapCreated: (ctl) => _onMapCreated(ctl, context),
                   onTap: (latLng) => mapBloc.add(MapEvent.mapTapped(latLng)),
+                  onCameraMove: (position) {
+                    _currentZoom = position.zoom;
+                  },
+                  onCameraIdle: () {
+                    if (mapController != null) {
+                      mapController!.getVisibleRegion().then((bounds) {
+                        _currentBounds = bounds;
+                        _updateMarkersWithClustering();
+                      });
+                    }
+                  },
                   initialCameraPosition: const CameraPosition(
                     target: LatLng(0, 0),
                     zoom: 2,
@@ -87,8 +133,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () => mapBloc
-                .add(const MapEvent.getCurrentLocation()),
+            onPressed: () => mapBloc.add(const MapEvent.getCurrentLocation()),
             child: const Icon(Icons.location_on_rounded),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
@@ -105,17 +150,137 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   }
 
   void _resetMarker(Placemark? place, LatLng location) {
-    _markers.clear();
+    // Remove only user-selected markers, keep historical markers
+    final userMarkerId = place?.name ?? 'user_location';
+    _markers.remove(userMarkerId);
+
     final marker = Marker(
-      markerId: MarkerId(place?.name ?? ''),
+      markerId: MarkerId(userMarkerId),
       position: location,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
       infoWindow: InfoWindow(
-        title: place?.name,
+        title: place?.name ??
+            AppLocalizations.of(context)?.currentLocation ??
+            'Your location',
         snippet: place?.street ?? '',
       ),
     );
     setState(() {
-      _markers[place?.name ?? ''] = marker;
+      _markers[userMarkerId] = marker;
+    });
+  }
+
+  void _updateHistoricalMarkers(List<HistoricalLocation> locations) {
+    _updateMarkersWithClustering(locations: locations);
+  }
+
+  void _updateMarkersWithClustering({List<HistoricalLocation>? locations}) {
+    if (locations == null) {
+      // Get locations from current state
+      final state = mapBloc.state;
+      if (state is CurrentLocationObtained) {
+        locations = state.historicalLocations;
+      } else if (state is PlaceSelected) {
+        locations = state.historicalLocations;
+      } else {
+        return;
+      }
+    }
+
+    if (locations.isEmpty || _currentBounds == null) {
+      // Fallback to individual markers if no bounds
+      _createIndividualMarkers(locations);
+      return;
+    }
+
+    // Create clusters based on zoom level
+    final clusters = MarkerClusterService.createClusters(
+      locations: locations,
+      zoomLevel: _currentZoom,
+      bounds: _currentBounds!,
+    );
+
+    // Clear existing historical markers
+    _markers.removeWhere((key, value) =>
+        key.startsWith('historical_') || key.startsWith('cluster_'));
+
+    // Create markers from clusters
+    for (final cluster in clusters) {
+      if (cluster.isCluster) {
+        _createClusterMarker(cluster);
+      } else {
+        _createHistoricalMarker(cluster.locations.first);
+      }
+    }
+
+    setState(() {});
+  }
+
+  void _createIndividualMarkers(List<HistoricalLocation> locations) {
+    for (final location in locations) {
+      _createHistoricalMarker(location);
+    }
+    setState(() {});
+  }
+
+  void _createHistoricalMarker(HistoricalLocation location) {
+    final markerId = 'historical_${location.id}';
+    final marker = Marker(
+      markerId: MarkerId(markerId),
+      position: LatLng(location.lat, location.lng),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      infoWindow: InfoWindow(
+        title: location.name,
+        snippet: location.type,
+      ),
+      onTap: () {
+        mapBloc.add(MapEvent.historicalLocationTapped(location.id));
+      },
+    );
+    _markers[markerId] = marker;
+  }
+
+  void _createClusterMarker(ClusterItem cluster) {
+    final markerId =
+        'cluster_${cluster.center.latitude}_${cluster.center.longitude}';
+    final marker = Marker(
+      markerId: MarkerId(markerId),
+      position: cluster.center,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+      infoWindow: InfoWindow(
+        title:
+            AppLocalizations.of(context)?.clusterOfLocations(cluster.count) ??
+                'Cluster of ${cluster.count} locations',
+        snippet: AppLocalizations.of(context)?.tapToSeeDetails ??
+            'Tap to see details',
+      ),
+      onTap: () {
+        // Zoom in khi tap vào cluster
+        mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(cluster.center, _currentZoom + 2),
+        );
+      },
+    );
+    _markers[markerId] = marker;
+  }
+
+  void _selectHistoricalLocation(HistoricalLocation location) {
+    // Highlight the selected historical location
+    final markerId = 'historical_${location.id}';
+    final updatedMarker = Marker(
+      markerId: MarkerId(markerId),
+      position: LatLng(location.lat, location.lng),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      infoWindow: InfoWindow(
+        title: location.name,
+        snippet: '${location.type} - ${location.period}',
+      ),
+      onTap: () {
+        mapBloc.add(MapEvent.historicalLocationTapped(location.id));
+      },
+    );
+    setState(() {
+      _markers[markerId] = updatedMarker;
     });
   }
 
@@ -123,6 +288,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     mapController = controller;
     mapController?.setMapStyle(mapStyle);
     mapBloc.add(const MapEvent.getCurrentLocation());
+    mapBloc.add(const MapEvent.loadHistoricalLocations());
   }
 
   Widget _buildInformationBox({required Widget child}) {
@@ -148,19 +314,30 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildPlaceInfo(Placemark placemark) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Bạn đang chọn",
-            style: TextStyle(color: Colors.black, fontSize: 18)),
-        Text(placemark.street ?? 'street',
-            style: const TextStyle(color: Colors.black, fontSize: 24)),
-        Text("Thành phố: ${placemark.locality}",
-            style: const TextStyle(color: Colors.black)),
-        Text("Tỉnh: ${placemark.administrativeArea}",
-            style: const TextStyle(color: Colors.black)),
-        Text("Quốc gia: ${placemark.country}",
-            style: const TextStyle(color: Colors.black)),
+        Text(
+          l10n.youAreSelecting,
+          style: const TextStyle(color: Colors.black, fontSize: 18),
+        ),
+        Text(
+          placemark.street ?? 'street',
+          style: const TextStyle(color: Colors.black, fontSize: 24),
+        ),
+        Text(
+          "${l10n.city}: ${placemark.locality}",
+          style: const TextStyle(color: Colors.black),
+        ),
+        Text(
+          "${l10n.province}: ${placemark.administrativeArea}",
+          style: const TextStyle(color: Colors.black),
+        ),
+        Text(
+          "${l10n.country}: ${placemark.country}",
+          style: const TextStyle(color: Colors.black),
+        ),
       ],
     );
   }
@@ -175,16 +352,21 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
       ),
       child: SingleChildScrollView(
         child: Column(
-            children: [
+          children: [
             _buildSheetContentForState(state),
-        const Gap(8),
-        (state.loadState == LoadState.loading) ?
-        Text("Đang tìm kiếm thông tin về $dataForNext...")
-        : const SizedBox.shrink(),
-        _buildListOfChips(state),
-        ],
+            const Gap(8),
+            (state.loadState == LoadState.loading)
+                ? LoadingWidget(
+                    message: AppLocalizations.of(context)
+                            ?.searchingInfoAbout(dataForNext) ??
+                        "Searching for information about $dataForNext...",
+                    style: LoadingStyle.inline,
+                  )
+                : const SizedBox.shrink(),
+            _buildListOfChips(state),
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -207,9 +389,8 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
         direction: Axis.vertical,
         children: [
           ToggleButton(
-            onPressed: () => setState(() => isExpand = !isExpand),
-            changeValue: isExpand
-          ),
+              onPressed: () => setState(() => isExpand = !isExpand),
+              changeValue: isExpand),
           Expanded(
             child: SingleChildScrollView(
               child: MarkdownBody(data: data),
@@ -222,7 +403,11 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("Tìm hiểu thêm", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  Text(
+                    AppLocalizations.of(context)?.learnMore ?? "Learn more",
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
                   Icon(Icons.arrow_right_rounded),
                 ],
               ),
@@ -240,14 +425,16 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     if (state is PlaceSelected) {
       information = state.information;
     }
-    List<String> infos = information.values.map((e) => mapBloc.removeMapPrefix(e)).toList();
+    List<String> infos =
+        information.values.map((e) => mapBloc.removeMapPrefix(e)).toList();
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 48,
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemBuilder: (_, idx) => infos[idx] != "" ? _buildChip(infos[idx]) : const SizedBox.shrink(),
+        itemBuilder: (_, idx) =>
+            infos[idx] != "" ? _buildChip(infos[idx]) : const SizedBox.shrink(),
         separatorBuilder: (_, idx) => SizedBox(
           width: infos[idx] != "" ? 16 : 0,
         ),
@@ -268,7 +455,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
               borderRadius: BorderRadius.circular(36),
             ),
             side: BorderSide(
-                width:  isSelected ? 1 : 0,
+                width: isSelected ? 1 : 0,
                 color: isSelected ? Colors.blueGrey : Colors.transparent),
             label: Text(name),
           );
@@ -282,11 +469,13 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   }
 
   void _gotoDetail(String query) {
-    Routes.router.navigateTo(context, RoutePath.detail, routeSettings: RouteSettings(arguments: query));
+    Routes.router.navigateTo(context, RoutePath.detail,
+        routeSettings: RouteSettings(arguments: query));
   }
 
   void _moveCameraToLocation(LatLng? latlng) {
-    mapController?.animateCamera(CameraUpdate.newLatLngZoom(latlng ?? const LatLng(0, 0), 15.0));
+    mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(latlng ?? const LatLng(0, 0), 15.0));
   }
 
   Widget _buildInformationBoxForState(MapState state) {
@@ -301,14 +490,112 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   Widget _buildSheetContentForState(MapState state) {
     if (state is AIResponseReceived) {
       return _buildResult(state.response);
+    } else if (state is HistoricalLocationSelected) {
+      return _buildHistoricalLocationInfo(state.location);
+    } else if (state is Error) {
+      return ErrorDisplayWidget(
+        message: ErrorMessageHelper.getUserFriendlyMessage(state.message),
+        title: ErrorMessageHelper.getErrorTitle(state.message),
+        onRetry: ErrorMessageHelper.shouldShowRetry(state.message)
+            ? () {
+                // Retry based on last action
+                if (dataForNext.isNotEmpty) {
+                  _askAI(dataForNext);
+                } else {
+                  mapBloc.add(const MapEvent.getCurrentLocation());
+                }
+              }
+            : null,
+        style: ErrorStyle.banner,
+      );
     } else if (state is PlaceSelected || state is CurrentLocationObtained) {
-      return const Text("Hãy chọn thông tin bạn muốn tìm hiểu", style: TextStyle(color: Colors.black, fontSize: 18));
+      return Text(
+        AppLocalizations.of(context)?.selectInformationToLearn ??
+            "Select information you want to learn",
+        style: const TextStyle(color: Colors.black, fontSize: 18),
+      );
     }
-    return const SizedBox(
-        height: 50,
-        child: Center(
-            child: LoadingIndicator(
-                indicatorType: Indicator.ballPulseSync,
-                colors: [Colors.blueGrey])));
+    return LoadingWidget(
+      message: AppLocalizations.of(context)?.loading ?? "Loading...",
+      style: LoadingStyle.inline,
+    );
+  }
+
+  Widget _buildHistoricalLocationInfo(HistoricalLocation location) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: ShapeDecoration(
+        color: Colors.white,
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            location.name,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          const Gap(8),
+          Row(
+            children: [
+              Chip(
+                label: Text(
+                    '${AppLocalizations.of(context)?.type ?? "Type"}: ${location.type}'),
+                backgroundColor: Colors.blueGrey.shade100,
+              ),
+              const Gap(8),
+              Chip(
+                label: Text(
+                    '${AppLocalizations.of(context)?.period ?? "Period"}: ${location.period}'),
+                backgroundColor: Colors.blueGrey.shade100,
+              ),
+            ],
+          ),
+          const Gap(16),
+          Text(
+            location.description,
+            style: const TextStyle(fontSize: 16, color: Colors.black87),
+          ),
+          if (location.address != null) ...[
+            const Gap(16),
+            Row(
+              children: [
+                const Icon(Icons.location_on, size: 16),
+                const Gap(4),
+                Expanded(
+                  child: Text(
+                    '${AppLocalizations.of(context)?.address ?? "Address"}: ${location.address!}',
+                    style: const TextStyle(fontSize: 14, color: Colors.black54),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          const Gap(16),
+          TextButton(
+            onPressed: () {
+              _askAI(location.name);
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${AppLocalizations.of(context)?.learnMore ?? "Learn more"} ${AppLocalizations.of(context)?.about ?? "about"} ${location.name}',
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+                const Icon(Icons.arrow_right_rounded),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
