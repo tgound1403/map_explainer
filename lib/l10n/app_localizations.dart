@@ -463,6 +463,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
+
+  /// Favorites label
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// All items label
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// Locations label
+  ///
+  /// In en, this message translates to:
+  /// **'Locations'**
+  String get locations;
+
+  /// Chats label
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get chats;
+
+  /// Clear all button
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearAll;
+
+  /// Confirmation message for clearing all favorites
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear all favorites?'**
+  String get clearAllFavoritesConfirm;
+
+  /// Empty state title for no favorites
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet'**
+  String get noFavorites;
+
+  /// Empty state message for no favorites
+  ///
+  /// In en, this message translates to:
+  /// **'Start favoriting locations and chats to see them here.'**
+  String get noFavoritesMessage;
 }
 
 class _AppLocalizationsDelegate

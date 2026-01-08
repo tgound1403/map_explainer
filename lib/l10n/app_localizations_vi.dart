@@ -203,4 +203,30 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get cancel => 'Hủy';
+
+  @override
+  String get favorites => 'Yêu thích';
+
+  @override
+  String get all => 'Tất cả';
+
+  @override
+  String get locations => 'Địa điểm';
+
+  @override
+  String get chats => 'Trò chuyện';
+
+  @override
+  String get clearAll => 'Xóa tất cả';
+
+  @override
+  String get clearAllFavoritesConfirm =>
+      'Bạn có chắc chắn muốn xóa tất cả yêu thích?';
+
+  @override
+  String get noFavorites => 'Chưa có yêu thích';
+
+  @override
+  String get noFavoritesMessage =>
+      'Bắt đầu yêu thích địa điểm và trò chuyện để xem chúng ở đây.';
 }

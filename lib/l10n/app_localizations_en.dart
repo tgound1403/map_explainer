@@ -203,4 +203,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancel => 'Cancel';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get locations => 'Locations';
+
+  @override
+  String get chats => 'Chats';
+
+  @override
+  String get clearAll => 'Clear all';
+
+  @override
+  String get clearAllFavoritesConfirm =>
+      'Are you sure you want to clear all favorites?';
+
+  @override
+  String get noFavorites => 'No favorites yet';
+
+  @override
+  String get noFavoritesMessage =>
+      'Start favoriting locations and chats to see them here.';
 }

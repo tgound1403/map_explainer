@@ -263,5 +263,37 @@
   "cancel": "Cancel",
   "@cancel": {
     "description": "Cancel button"
+  },
+  "favorites": "Favorites",
+  "@favorites": {
+    "description": "Favorites label"
+  },
+  "all": "All",
+  "@all": {
+    "description": "All items label"
+  },
+  "locations": "Locations",
+  "@locations": {
+    "description": "Locations label"
+  },
+  "chats": "Chats",
+  "@chats": {
+    "description": "Chats label"
+  },
+  "clearAll": "Clear all",
+  "@clearAll": {
+    "description": "Clear all button"
+  },
+  "clearAllFavoritesConfirm": "Are you sure you want to clear all favorites?",
+  "@clearAllFavoritesConfirm": {
+    "description": "Confirmation message for clearing all favorites"
+  },
+  "noFavorites": "No favorites yet",
+  "@noFavorites": {
+    "description": "Empty state title for no favorites"
+  },
+  "noFavoritesMessage": "Start favoriting locations and chats to see them here.",
+  "@noFavoritesMessage": {
+    "description": "Empty state message for no favorites"
   }
 }

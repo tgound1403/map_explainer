@@ -88,5 +88,13 @@
   "titleAZ": "Tiêu đề A-Z",
   "titleZA": "Tiêu đề Z-A",
   "deleteChatConfirm": "Bạn có chắc chắn muốn xóa cuộc trò chuyện này?",
-  "cancel": "Hủy"
+  "cancel": "Hủy",
+  "favorites": "Yêu thích",
+  "all": "Tất cả",
+  "locations": "Địa điểm",
+  "chats": "Trò chuyện",
+  "clearAll": "Xóa tất cả",
+  "clearAllFavoritesConfirm": "Bạn có chắc chắn muốn xóa tất cả yêu thích?",
+  "noFavorites": "Chưa có yêu thích",
+  "noFavoritesMessage": "Bắt đầu yêu thích địa điểm và trò chuyện để xem chúng ở đây."
 }
