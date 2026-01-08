@@ -181,5 +181,37 @@
   "about": "about",
   "@about": {
     "description": "Preposition 'about'"
+  },
+  "offlineMode": "Offline Mode",
+  "@offlineMode": {
+    "description": "Offline mode label"
+  },
+  "youAreOffline": "You are offline",
+  "@youAreOffline": {
+    "description": "Offline status message"
+  },
+  "usingCachedData": "Using cached data",
+  "@usingCachedData": {
+    "description": "Message when using cached data"
+  },
+  "noInternetConnection": "No internet connection",
+  "@noInternetConnection": {
+    "description": "No internet connection message"
+  },
+  "checkingConnection": "Checking connection...",
+  "@checkingConnection": {
+    "description": "Checking connection message"
+  },
+  "backOnline": "Back online",
+  "@backOnline": {
+    "description": "Message when connection is restored"
+  },
+  "readAloud": "Read aloud",
+  "@readAloud": {
+    "description": "Button to read text aloud"
+  },
+  "stopReading": "Stop reading",
+  "@stopReading": {
+    "description": "Button to stop reading"
   }
 }

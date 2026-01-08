@@ -4,6 +4,8 @@ import 'package:ai_map_explainer/feature/chat/domain/chat_usecase.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/bloc/chat_bloc.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/view/chat_view.dart';
 import 'package:ai_map_explainer/feature/detail/detail_view.dart';
+import 'package:ai_map_explainer/feature/history/domain/analyzer_use_case.dart';
+import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:ai_map_explainer/feature/map/domain/map_usecase.dart';
 import 'package:ai_map_explainer/feature/map/presentation/bloc/map_bloc.dart';
 import 'package:fluro/fluro.dart';
@@ -31,5 +33,13 @@ Handler homeScreenHandler = Handler(handlerFunc: (BuildContext? context, params)
 
 Handler detailScreenHandler = Handler(handlerFunc: (context, params) {
   final query = context?.settings?.arguments as String;
-  return DetailView(query: query);
+  return MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) =>
+            AnalyzerBloc(getIt<AnalyzerUseCase>())..add(const AnalyzerEvent.started()),
+      ),
+    ],
+    child: DetailView(query: query),
+  );
 });

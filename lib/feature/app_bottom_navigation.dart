@@ -1,5 +1,5 @@
 import 'package:ai_map_explainer/core/di/service_locator.dart';
-import 'package:ai_map_explainer/core/utils/animations.dart';
+import 'package:ai_map_explainer/core/widget/offline_indicator.dart';
 import 'package:ai_map_explainer/feature/history/domain/analyzer_use_case.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:ai_map_explainer/feature/history/presentation/history_view.dart';
@@ -7,7 +7,6 @@ import 'package:ai_map_explainer/feature/map/presentation/view/map_view.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ai_map_explainer/l10n/app_localizations.dart';
 
 import 'detail/bloc/detail_bloc.dart';
 import 'detail/bloc/detail_event.dart';
@@ -48,12 +47,12 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
         ),
         BlocProvider(create: (context) => MapBloc(getIt<MapUseCase>())),
         BlocProvider(
-          create: (context) {
-            final l10n = AppLocalizations.of(context);
-            return DetailBloc()
-              ..add(DetailEvent.initData(l10n?.vietnameseHistory ?? "Vietnamese History"));
-          },
-        )
+          create: (context) => DetailBloc()
+            // Không dùng AppLocalizations trong create để tránh lỗi Provider lifecycle
+            ..add(
+              const DetailEvent.initData("Vietnamese History"),
+            ),
+        ),
       ],
       child: Scaffold(
         bottomNavigationBar: CurvedNavigationBar(
@@ -70,29 +69,24 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
             _selectedTabIndex.value = index;
           },
         ),
-        body: ValueListenableBuilder<int>(
-          valueListenable: _selectedTabIndex,
-          builder: (_, index, __) {
-            return AnimatedSwitcher(
-              duration: AppAnimations.normal,
-              transitionBuilder: (child, animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.1, 0.0),
-                      end: Offset.zero,
-                    ).animate(CurvedAnimation(
-                      parent: animation,
-                      curve: AppAnimations.standardCurve,
-                    )),
-                    child: child,
-                  ),
+        body: Stack(
+          children: [
+            ValueListenableBuilder<int>(
+              valueListenable: _selectedTabIndex,
+              builder: (_, index, __) {
+                return IndexedStack(
+                  index: index,
+                  children: _tabList,
                 );
               },
-              child: _tabList[index],
-            );
-          },
+            ),
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: OfflineBanner(),
+            ),
+          ],
         ),
       ),
     );

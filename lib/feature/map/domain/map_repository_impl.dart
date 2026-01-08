@@ -4,6 +4,7 @@ import 'package:ai_map_explainer/core/services/wikipedia/wikipedia.dart';
 import 'package:ai_map_explainer/core/services/map/historical_location_service.dart';
 import 'package:ai_map_explainer/core/services/map/historical_location_model.dart';
 import 'package:ai_map_explainer/core/services/cache/cache_service.dart';
+import 'package:ai_map_explainer/core/services/network/network_connectivity_service.dart';
 import 'package:ai_map_explainer/core/utils/error_converter.dart';
 import 'package:ai_map_explainer/core/common/models/app_error.dart';
 import 'package:ai_map_explainer/feature/map/domain/map_repository.dart';
@@ -64,11 +65,29 @@ class MapRepositoryImpl implements MapRepository {
   @override
   Future<Either<AppError, String>> searchWikipedia(String query) async {
     try {
-      // Thử lấy từ cache trước
       final cacheService = CacheService.instance;
+      final connectivityService = NetworkConnectivityService.instance;
+      
+      // Thử lấy từ cache trước
       final cachedData = await cacheService.getCachedWikipediaData(query);
       if (cachedData != null && cachedData.isNotEmpty) {
+        // Nếu offline, trả về cache ngay
+        if (!await connectivityService.checkConnectivity()) {
+          Logger.i('Offline: Returning cached Wikipedia data');
+          return Right(cachedData);
+        }
+        // Nếu online, vẫn trả về cache nhưng cập nhật ở background
+        _updateWikipediaCacheInBackground(query);
         return Right(cachedData);
+      }
+
+      // Kiểm tra connectivity trước khi gọi API
+      if (!await connectivityService.checkConnectivity()) {
+        // Nếu offline và không có cache, trả về lỗi
+        return Left(AppError.network(
+          message: 'No internet connection and no cached data available',
+          code: 'OFFLINE_NO_CACHE',
+        ));
       }
 
       // Nếu không có cache, gọi Wikipedia API
@@ -88,18 +107,60 @@ class MapRepositoryImpl implements MapRepository {
       return Right(response);
     } catch (e, st) {
       Logger.e('Error searching Wikipedia: $e', stackTrace: st);
-      return Left(ErrorConverter.fromException(e, st));
+      
+      // Nếu lỗi network và có cache, trả về cache
+      final error = ErrorConverter.fromException(e, st);
+      if (error is NetworkError || error is UnknownError) {
+        final cacheService = CacheService.instance;
+        final cachedData = await cacheService.getCachedWikipediaData(query);
+        if (cachedData != null && cachedData.isNotEmpty) {
+          Logger.i('Network error: Returning cached Wikipedia data');
+          return Right(cachedData);
+        }
+      }
+      
+      return Left(error);
+    }
+  }
+
+  /// Cập nhật cache ở background khi online
+  void _updateWikipediaCacheInBackground(String query) async {
+    try {
+      final response = await _wikipediaService.useWikipedia(query: query) ?? '';
+      if (response.isNotEmpty) {
+        await CacheService.instance.cacheWikipediaData(query, response);
+        Logger.i('Wikipedia cache updated in background');
+      }
+    } catch (e) {
+      // Ignore background update errors
     }
   }
 
   @override
   Future<Either<AppError, String>> getAISummary(String text) async {
     try {
-      // Thử lấy từ cache trước
       final cacheService = CacheService.instance;
+      final connectivityService = NetworkConnectivityService.instance;
+      
+      // Thử lấy từ cache trước
       final cachedResponse = await cacheService.getCachedAIResponse(text);
       if (cachedResponse != null && cachedResponse.isNotEmpty) {
+        // Nếu offline, trả về cache ngay
+        if (!await connectivityService.checkConnectivity()) {
+          Logger.i('Offline: Returning cached AI response');
+          return Right(cachedResponse);
+        }
+        // Nếu online, vẫn trả về cache (AI responses không cần update thường xuyên)
         return Right(cachedResponse);
+      }
+
+      // Kiểm tra connectivity trước khi gọi API
+      if (!await connectivityService.checkConnectivity()) {
+        // Nếu offline và không có cache, trả về lỗi
+        return Left(AppError.network(
+          message: 'No internet connection and no cached data available',
+          code: 'OFFLINE_NO_CACHE',
+        ));
       }
 
       // Nếu không có cache, gọi AI
@@ -118,7 +179,19 @@ class MapRepositoryImpl implements MapRepository {
       return Right(response);
     } catch (e, st) {
       Logger.e('Error getting AI summary: $e', stackTrace: st);
-      return Left(ErrorConverter.fromException(e, st));
+      
+      // Nếu lỗi network và có cache, trả về cache
+      final error = ErrorConverter.fromException(e, st);
+      if (error is NetworkError || error is UnknownError) {
+        final cacheService = CacheService.instance;
+        final cachedResponse = await cacheService.getCachedAIResponse(text);
+        if (cachedResponse != null && cachedResponse.isNotEmpty) {
+          Logger.i('Network error: Returning cached AI response');
+          return Right(cachedResponse);
+        }
+      }
+      
+      return Left(error);
     }
   }
 

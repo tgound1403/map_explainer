@@ -33,7 +33,8 @@ class _DetailViewContent extends StatelessWidget {
           child: Scaffold(
             body: state.isLoading1
                 ? LoadingWidget(
-                    message: AppLocalizations.of(context)?.loading ?? "Loading...",
+                    message:
+                        AppLocalizations.of(context)?.loading ?? "Loading...",
                     style: LoadingStyle.centered,
                   )
                 : SingleChildScrollView(
@@ -48,7 +49,8 @@ class _DetailViewContent extends StatelessWidget {
                                 child: Text(
                                   state.query,
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.w500, fontSize: 24),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 24),
                                 ),
                               ),
                               Row(
@@ -81,27 +83,43 @@ class _DetailViewContent extends StatelessWidget {
           child: RefreshIndicator(
             onRefresh: () async {
               final l10n = AppLocalizations.of(context);
-              context
-                  .read<DetailBloc>()
-                  .add(DetailEvent.initData(l10n?.vietnameseHistory ?? "Vietnamese History"));
+              context.read<DetailBloc>().add(
+                    DetailEvent.initData(
+                      l10n?.vietnameseHistory ?? "Vietnamese History",
+                    ),
+                  );
             },
-            child: Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children: state.relatedInfos
-                  .where((info) => info.isNotEmpty)
-                  .map((info) => InkWell(
-                        onTap: () => _goToDetail(info, context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Wrap(
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children: state.relatedInfos
+                      .where((info) => info.isNotEmpty)
+                      .map(
+                        (info) => InkWell(
+                          onTap: () => _goToDetail(info, context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
                               color: Colors.blueGrey.shade100,
-                              borderRadius: AppBorderRadius.styleSmall),
-                          child: Text(info),
+                              borderRadius: AppBorderRadius.styleSmall,
+                            ),
+                            child: Text(
+                              info,
+                              softWrap: true,
+                            ),
+                          ),
                         ),
-                      ))
-                  .toList(),
+                      )
+                      .toList(),
+                ),
+              ),
             ),
           ),
         );
@@ -130,7 +148,6 @@ class _DetailViewContent extends StatelessWidget {
   }
 
   Widget _buildLanguageToggle(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Consumer<LocaleProvider>(
       builder: (context, localeProvider, _) {
         return PopupMenuButton<String>(

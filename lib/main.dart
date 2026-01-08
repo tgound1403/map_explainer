@@ -1,10 +1,13 @@
 import 'package:ai_map_explainer/core/di/service_locator.dart';
 import 'package:ai_map_explainer/core/localization/locale_provider.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
+import 'package:ai_map_explainer/core/providers/connectivity_provider.dart';
 import 'package:ai_map_explainer/core/services/cache/cache_service.dart';
 import 'package:ai_map_explainer/core/services/firebase/firebase_options.dart';
 import 'package:ai_map_explainer/core/services/firebase/firestore.dart';
 import 'package:ai_map_explainer/core/services/gemini_ai/gemini.dart';
+import 'package:ai_map_explainer/core/services/network/network_connectivity_service.dart';
+import 'package:ai_map_explainer/core/services/voice/text_to_speech_service.dart';
 import 'package:ai_map_explainer/core/theme/app_theme.dart';
 import 'package:ai_map_explainer/core/theme/theme_provider.dart';
 import 'package:ai_map_explainer/core/utils/logger.dart';
@@ -27,17 +30,25 @@ void main() async {
   // Initialize providers trước và await
   final themeProvider = ThemeProvider();
   final localeProvider = LocaleProvider();
+  final connectivityService = NetworkConnectivityService.instance;
+  final connectivityProvider = ConnectivityProvider(connectivityService);
   
   await Future.wait([
     themeProvider.initialize(),
     localeProvider.initialize(),
+    connectivityService.initialize(),
+    TextToSpeechService.instance.initialize(),
   ]);
+  
+  // Set TTS language based on locale
+  await TextToSpeechService.instance.setLanguage(localeProvider.locale.languageCode);
 
   await initApp();
   runApp(MyApp(
     hasSeenOnboarding: hasSeenOnboarding,
     themeProvider: themeProvider,
     localeProvider: localeProvider,
+    connectivityProvider: connectivityProvider,
   ));
 }
 
@@ -68,12 +79,14 @@ class MyApp extends StatelessWidget {
   final bool hasSeenOnboarding;
   final ThemeProvider themeProvider;
   final LocaleProvider localeProvider;
+  final ConnectivityProvider connectivityProvider;
 
   const MyApp({
     super.key,
     required this.hasSeenOnboarding,
     required this.themeProvider,
     required this.localeProvider,
+    required this.connectivityProvider,
   });
 
   @override
@@ -82,9 +95,13 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider.value(value: localeProvider),
+        ChangeNotifierProvider.value(value: connectivityProvider),
       ],
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder: (context, themeProvider, localeProvider, _) {
+          // Update TTS language when locale changes
+          TextToSpeechService.instance.setLanguage(localeProvider.locale.languageCode);
+          
           return MaterialApp(
             title: 'AI Map Explainer',
             theme: AppTheme.getLightTheme(),

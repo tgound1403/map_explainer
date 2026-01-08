@@ -1,3 +1,4 @@
+import 'package:ai_map_explainer/core/widget/tts_button.dart';
 import 'package:ai_map_explainer/feature/chat/data/model/message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -47,8 +48,25 @@ class MessageView extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
-    return MarkdownBody(
-      data: message.message ?? '',
+    final isUser = message.isUser ?? false;
+    final messageText = message.message ?? '';
+    
+    if (isUser) {
+      return MarkdownBody(data: messageText);
+    }
+    
+    // AI message: add TTS button
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: MarkdownBody(data: messageText),
+        ),
+        TTSButton(
+          text: messageText,
+          iconSize: 20,
+        ),
+      ],
     );
   }
 }

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-/// Widget để detect swipe gestures ở cạnh màn hình để zoom map
+/// Widget để detect swipe gestures ở cạnh phải màn hình để zoom map
 ///
 /// Cách sử dụng:
-/// - Vuốt lên/xuống ở cạnh trái/phải màn hình để zoom
-/// - Vuốt trái/phải ở cạnh trên/dưới màn hình để zoom
-/// - Swipe down/right = zoom in
-/// - Swipe up/left = zoom out
+/// - Vuốt lên/xuống ở cạnh phải màn hình để zoom
+/// - Swipe down = zoom in
+/// - Swipe up = zoom out
 class EdgeZoomGestureDetector extends StatefulWidget {
   final Widget child;
   final GoogleMapController? mapController;
@@ -68,30 +67,6 @@ class _EdgeZoomGestureDetectorState extends State<EdgeZoomGestureDetector> {
     }
   }
 
-  bool _isInEdgeZone(Offset position, Size screenSize) {
-    final edgeWidth = widget.edgeWidth;
-
-    // Check left edge
-    if (position.dx < edgeWidth) return true;
-
-    // Check right edge
-    if (position.dx > screenSize.width - edgeWidth) return true;
-
-    return false;
-  }
-
-  bool _isInVerticalEdgeZone(Offset position, Size screenSize) {
-    final edgeWidth = widget.edgeWidth;
-
-    // Check top edge
-    if (position.dy < edgeWidth) return true;
-
-    // Check bottom edge
-    if (position.dy > screenSize.height - edgeWidth) return true;
-
-    return false;
-  }
-
   void _performZoom(bool zoomIn) {
     if (widget.mapController == null) return;
 
@@ -143,64 +118,46 @@ class _EdgeZoomGestureDetectorState extends State<EdgeZoomGestureDetector> {
     });
   }
 
-  void _onPanUpdate(Offset currentPosition, Size screenSize) {
+  void _onPanUpdate(Offset currentPosition) {
     if (_startPosition == null) return;
 
     final delta = currentPosition - _startPosition!;
     final threshold = 50.0; // Tăng threshold để tránh zoom nhạy cảm
 
-    final isInHorizontalEdge = _isInEdgeZone(_startPosition!, screenSize);
-    final isInVerticalEdge = _isInVerticalEdgeZone(_startPosition!, screenSize);
-
-    // Nếu ở cạnh dọc (trái/phải), detect vertical swipe
-    if (isInHorizontalEdge &&
-        delta.dy.abs() > threshold &&
+    // Chỉ xử lý nếu vuốt theo chiều dọc (lên/xuống)
+    // Vì overlay đã ở cạnh phải rồi, nên không cần check lại
+    if (delta.dy.abs() > threshold &&
         delta.dy.abs() > delta.dx.abs() * 1.5) {
       // Swipe down = zoom in, swipe up = zoom out
       final zoomIn = delta.dy > 0;
       _performZoom(zoomIn);
       _startPosition = currentPosition; // Reset để tiếp tục detect
     }
-    // Nếu ở cạnh ngang (trên/dưới), detect horizontal swipe
-    else if (isInVerticalEdge &&
-        delta.dx.abs() > threshold &&
-        delta.dx.abs() > delta.dy.abs() * 1.5) {
-      // Swipe right = zoom in, swipe left = zoom out
-      final zoomIn = delta.dx > 0;
-      _performZoom(zoomIn);
-      _startPosition = currentPosition;
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final edgeWidth = widget.edgeWidth;
+
     return Stack(
       children: [
         widget.child,
-        // Overlay chỉ ở edge zones để detect gestures
-        Positioned.fill(
+        // Overlay chỉ ở cạnh phải để detect gestures, không chặn các vùng khác
+        Positioned(
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: edgeWidth,
           child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
+            behavior: HitTestBehavior.opaque, // Intercept gestures ở vùng này
             onPanStart: (details) {
-              final screenSize = MediaQuery.of(context).size;
-              // Chỉ capture nếu ở edge zone
-              if (_isInEdgeZone(details.localPosition, screenSize) ||
-                  _isInVerticalEdgeZone(details.localPosition, screenSize)) {
-                _startPosition = details.localPosition;
-              }
+              // Vì overlay đã ở cạnh phải rồi, nên mọi gesture trong overlay đều ở cạnh phải
+              _startPosition = details.localPosition;
             },
             onPanUpdate: (details) {
               if (_startPosition == null) return;
-
-              final screenSize = MediaQuery.of(context).size;
-              // Chỉ xử lý nếu vẫn ở trong edge zone
-              if (_isInEdgeZone(details.localPosition, screenSize) ||
-                  _isInVerticalEdgeZone(details.localPosition, screenSize)) {
-                _onPanUpdate(details.localPosition, screenSize);
-              } else {
-                // Nếu ra khỏi edge zone, reset ngay để không block gestures
-                _startPosition = null;
-              }
+              // Xử lý gesture với local position (chỉ cần delta, không cần global)
+              _onPanUpdate(details.localPosition);
             },
             onPanEnd: (_) {
               _startPosition = null;

@@ -56,5 +56,13 @@
   "doYouHaveYourOwnQuestion": "Hay bạn có câu hỏi cho riêng mình",
   "send": "Gửi",
   "vietnameseHistory": "Lịch sử Việt Nam",
-  "about": "về"
+  "about": "về",
+  "offlineMode": "Chế độ ngoại tuyến",
+  "youAreOffline": "Bạn đang ngoại tuyến",
+  "usingCachedData": "Đang sử dụng dữ liệu đã lưu",
+  "noInternetConnection": "Không có kết nối internet",
+  "checkingConnection": "Đang kiểm tra kết nối...",
+  "backOnline": "Đã kết nối lại",
+  "readAloud": "Đọc to",
+  "stopReading": "Dừng đọc"
 }

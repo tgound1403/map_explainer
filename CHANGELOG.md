@@ -3,6 +3,32 @@
 ## [Unreleased]
 
 ### Added
+- ✅ **Map View Refactoring**: Tách map_view.dart thành components để dễ maintain
+  - MapInformationBox: Component hiển thị thông tin địa điểm ở top
+  - MapBottomSheet: Draggable bottom sheet với haptic feedback và responsive snap sizes
+  - HistoricalLocationCard: Card hiển thị thông tin địa điểm lịch sử
+  - AIResponseCard: Card hiển thị AI response với expand/collapse
+  - MapChipsList: Horizontal list của chips để chọn topic
+  - Responsive snap sizes dựa trên screen height
+  - Haptic feedback khi snap bottom sheet
+  - Giảm file size từ 711 lines xuống ~400 lines
+- ✅ **Voice Output (Text-to-Speech)**: Đọc AI responses và thông tin địa điểm
+  - TextToSpeechService để đọc text thành giọng nói
+  - TTSButton widget để play/pause đọc nội dung
+  - Tự động set language dựa trên locale (Vietnamese/English)
+  - Clean text: remove markdown, URLs, special formatting
+  - Tích hợp vào MapView (AI responses), ChatView (AI messages), HistoricalLocationInfo
+  - Stop/Play controls với visual feedback
+  - Hỗ trợ cả tiếng Việt và tiếng Anh
+- ✅ **Offline Mode**: Hỗ trợ hoạt động khi không có internet
+  - NetworkConnectivityService để detect trạng thái kết nối mạng
+  - ConnectivityProvider để quản lý và broadcast trạng thái connectivity
+  - OfflineIndicator và OfflineBanner widgets để hiển thị trạng thái offline
+  - Repository tự động fallback về cache khi offline
+  - Background cache update khi có internet trở lại
+  - User-friendly messages khi offline
+  - Tự động sử dụng cached data khi không có internet
+  - Hiển thị banner ở top khi offline với message "Using cached data"
 - ✅ **Custom Marker Icons**: Icons tùy chỉnh cho các loại địa điểm khác nhau
   - MarkerIconService để tạo custom icons từ Material Icons
   - Icons khác nhau cho Di tích, Bảo tàng, Đền, Chùa, v.v.
@@ -106,9 +132,10 @@
   - Loại bỏ `await` trong `_performZoom` để không block UI thread
   - Tăng `_minZoomInterval` từ 150ms lên 250ms để giảm lag
   - Tăng threshold từ 30px lên 50px để tránh zoom nhạy cảm
-  - Sử dụng `Stack` với overlay `GestureDetector` thay vì `Listener` để không block gestures ở giữa
-  - Chỉ capture và xử lý gestures khi ở edge zones, reset ngay khi ra khỏi edge zone
-  - Đảm bảo GoogleMap có thể xử lý gestures ở giữa màn hình bình thường
+  - Chỉ cho phép zoom ở cạnh phải màn hình (thay vì tất cả các cạnh)
+  - Sử dụng `Positioned` với width = edgeWidth để chỉ đặt overlay ở cạnh phải
+  - Đảm bảo GoogleMap có thể xử lý gestures ở giữa và các cạnh khác bình thường
+  - Vuốt lên/xuống ở cạnh phải = zoom out/in
 
 ### Technical
 - Setup Hive cho local storage
