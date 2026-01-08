@@ -64,5 +64,29 @@
   "checkingConnection": "Đang kiểm tra kết nối...",
   "backOnline": "Đã kết nối lại",
   "readAloud": "Đọc to",
-  "stopReading": "Dừng đọc"
+  "stopReading": "Dừng đọc",
+  "justNow": "Vừa xong",
+  "minutesAgo": "{count} phút trước",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} giờ trước",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scrollToBottom": "Cuộn xuống dưới",
+  "newestFirst": "Mới nhất trước",
+  "oldestFirst": "Cũ nhất trước",
+  "titleAZ": "Tiêu đề A-Z",
+  "titleZA": "Tiêu đề Z-A",
+  "deleteChatConfirm": "Bạn có chắc chắn muốn xóa cuộc trò chuyện này?",
+  "cancel": "Hủy"
 }

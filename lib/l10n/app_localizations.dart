@@ -355,6 +355,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'about'**
   String get about;
+
+  /// Offline mode label
+  ///
+  /// In en, this message translates to:
+  /// **'Offline Mode'**
+  String get offlineMode;
+
+  /// Offline status message
+  ///
+  /// In en, this message translates to:
+  /// **'You are offline'**
+  String get youAreOffline;
+
+  /// Message when using cached data
+  ///
+  /// In en, this message translates to:
+  /// **'Using cached data'**
+  String get usingCachedData;
+
+  /// No internet connection message
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get noInternetConnection;
+
+  /// Checking connection message
+  ///
+  /// In en, this message translates to:
+  /// **'Checking connection...'**
+  String get checkingConnection;
+
+  /// Message when connection is restored
+  ///
+  /// In en, this message translates to:
+  /// **'Back online'**
+  String get backOnline;
+
+  /// Button to read text aloud
+  ///
+  /// In en, this message translates to:
+  /// **'Read aloud'**
+  String get readAloud;
+
+  /// Button to stop reading
+  ///
+  /// In en, this message translates to:
+  /// **'Stop reading'**
+  String get stopReading;
+
+  /// Timestamp for recent messages
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// Timestamp for minutes ago
+  ///
+  /// In en, this message translates to:
+  /// **'{count} minutes ago'**
+  String minutesAgo(int count);
+
+  /// Timestamp for hours ago
+  ///
+  /// In en, this message translates to:
+  /// **'{count} hours ago'**
+  String hoursAgo(int count);
+
+  /// Button to scroll to bottom
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to bottom'**
+  String get scrollToBottom;
+
+  /// Sort option for newest first
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get newestFirst;
+
+  /// Sort option for oldest first
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest first'**
+  String get oldestFirst;
+
+  /// Sort option for title A-Z
+  ///
+  /// In en, this message translates to:
+  /// **'Title A-Z'**
+  String get titleAZ;
+
+  /// Sort option for title Z-A
+  ///
+  /// In en, this message translates to:
+  /// **'Title Z-A'**
+  String get titleZA;
+
+  /// Confirmation message for deleting chat
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this chat?'**
+  String get deleteChatConfirm;
+
+  /// Cancel button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
 }
 
 class _AppLocalizationsDelegate

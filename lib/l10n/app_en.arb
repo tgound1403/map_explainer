@@ -213,5 +213,55 @@
   "stopReading": "Stop reading",
   "@stopReading": {
     "description": "Button to stop reading"
+  },
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "Timestamp for recent messages"
+  },
+  "minutesAgo": "{count} minutes ago",
+  "@minutesAgo": {
+    "description": "Timestamp for minutes ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "description": "Timestamp for hours ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scrollToBottom": "Scroll to bottom",
+  "@scrollToBottom": {
+    "description": "Button to scroll to bottom"
+  },
+  "newestFirst": "Newest first",
+  "@newestFirst": {
+    "description": "Sort option for newest first"
+  },
+  "oldestFirst": "Oldest first",
+  "@oldestFirst": {
+    "description": "Sort option for oldest first"
+  },
+  "titleAZ": "Title A-Z",
+  "@titleAZ": {
+    "description": "Sort option for title A-Z"
+  },
+  "titleZA": "Title Z-A",
+  "@titleZA": {
+    "description": "Sort option for title Z-A"
+  },
+  "deleteChatConfirm": "Are you sure you want to delete this chat?",
+  "@deleteChatConfirm": {
+    "description": "Confirmation message for deleting chat"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
   }
 }

@@ -144,4 +144,63 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get about => 'về';
+
+  @override
+  String get offlineMode => 'Chế độ ngoại tuyến';
+
+  @override
+  String get youAreOffline => 'Bạn đang ngoại tuyến';
+
+  @override
+  String get usingCachedData => 'Đang sử dụng dữ liệu đã lưu';
+
+  @override
+  String get noInternetConnection => 'Không có kết nối internet';
+
+  @override
+  String get checkingConnection => 'Đang kiểm tra kết nối...';
+
+  @override
+  String get backOnline => 'Đã kết nối lại';
+
+  @override
+  String get readAloud => 'Đọc to';
+
+  @override
+  String get stopReading => 'Dừng đọc';
+
+  @override
+  String get justNow => 'Vừa xong';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count phút trước';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count giờ trước';
+  }
+
+  @override
+  String get scrollToBottom => 'Cuộn xuống dưới';
+
+  @override
+  String get newestFirst => 'Mới nhất trước';
+
+  @override
+  String get oldestFirst => 'Cũ nhất trước';
+
+  @override
+  String get titleAZ => 'Tiêu đề A-Z';
+
+  @override
+  String get titleZA => 'Tiêu đề Z-A';
+
+  @override
+  String get deleteChatConfirm =>
+      'Bạn có chắc chắn muốn xóa cuộc trò chuyện này?';
+
+  @override
+  String get cancel => 'Hủy';
 }

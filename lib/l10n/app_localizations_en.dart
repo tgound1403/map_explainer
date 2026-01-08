@@ -145,4 +145,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get about => 'about';
+
+  @override
+  String get offlineMode => 'Offline Mode';
+
+  @override
+  String get youAreOffline => 'You are offline';
+
+  @override
+  String get usingCachedData => 'Using cached data';
+
+  @override
+  String get noInternetConnection => 'No internet connection';
+
+  @override
+  String get checkingConnection => 'Checking connection...';
+
+  @override
+  String get backOnline => 'Back online';
+
+  @override
+  String get readAloud => 'Read aloud';
+
+  @override
+  String get stopReading => 'Stop reading';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count minutes ago';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count hours ago';
+  }
+
+  @override
+  String get scrollToBottom => 'Scroll to bottom';
+
+  @override
+  String get newestFirst => 'Newest first';
+
+  @override
+  String get oldestFirst => 'Oldest first';
+
+  @override
+  String get titleAZ => 'Title A-Z';
+
+  @override
+  String get titleZA => 'Title Z-A';
+
+  @override
+  String get deleteChatConfirm => 'Are you sure you want to delete this chat?';
+
+  @override
+  String get cancel => 'Cancel';
 }
