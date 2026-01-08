@@ -1,8 +1,9 @@
+import 'package:ai_map_explainer/core/services/interfaces/ai_service_interface.dart';
 import 'package:ai_map_explainer/core/utils/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
-class GeminiAI {
+class GeminiAI implements AIServiceInterface {
   static final instance = GeminiAI();
   static late GenerativeModel? model;
 
@@ -90,15 +91,8 @@ class GeminiAI {
       required String topic,
       required String source}) async {
     try {
-      final direction = Content.text(
-          "Bạn là một chuyên gia lịch sử về $topic, trong nguồn dữ liệu được cung cấp là $source. "
-          "Nhiệm vụ của bạn là trả lời các câu hỏi về $topic dựa trên nguồn,"
-          " nếu câu hỏi ngoài chủ đề $topic,  "
-          "hãy trả lời rằng bạn không được phép trả lời, "
-          "hoặc trả lời không đủ thông tin khi nội dung không được tìm thấy trong nguồn. "
-          "Trả lời câu hỏi $prompt bằng tiếng Việt với định dạng markdown, highlight những đoạn text $topic xuất hiện trong response. "
-          "Ở cuối câu trả lời là các references bạn đã sử dụng để có câu trả lời trên. ");
-      // history?.add(direction);
+      // Note: direction content could be added to history if needed
+      // final direction = Content.text(...);
       final chat = model?.startChat(history: history);
       var response = (await chat?.sendMessage(prompt))?.text;
       Logger.i(response);
@@ -116,7 +110,8 @@ class GeminiAI {
     required String topic,
   }) async {
     try {
-      final content = Content.text("Bạn là một chuyên gia về lịch sử, lần này sẽ trò chuyện về chủ đề $topic."
+      final content = Content.text(
+          "Bạn là một chuyên gia về lịch sử, lần này sẽ trò chuyện về chủ đề $topic."
           "nhiệm vụ của bạn là gợi ý 5 câu hỏi mới dựa trên chủ đề $topic, cùng với $previousResponse và dựa trên nguồn $source."
           "trả lời bằng tiếng việt với định dạng ngắn gọn như sau, không thêm bớt: ['question 1', 'question 2', 'question 3']");
       final response = await model?.generateContent([content]);
@@ -146,5 +141,18 @@ class GeminiAI {
       Logger.e(st);
     }
     return null;
+  }
+
+  @override
+  Future<String?> generateResponse(String prompt) async {
+    try {
+      final content = [Content.text(prompt)];
+      final response = await model?.generateContent(content);
+      return response?.text;
+    } catch (e, st) {
+      Logger.e(e);
+      Logger.e(st);
+      return null;
+    }
   }
 }
