@@ -1,12 +1,14 @@
 import 'dart:io';
-// import 'package:ai_map_explainer/core/common/style/border_radius_style.dart';
 import 'package:ai_map_explainer/core/common/style/padding_style.dart';
 import 'package:ai_map_explainer/core/router/route_path.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
-import 'package:ai_map_explainer/core/widget/error_widget.dart';
 import 'package:ai_map_explainer/core/widget/loading_widget.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:ai_map_explainer/feature/chat/data/model/chat_model.dart';
+import 'package:ai_map_explainer/feature/history/components/history_search_bar.dart';
+import 'package:ai_map_explainer/feature/history/components/history_sort_menu.dart';
+import 'package:ai_map_explainer/feature/history/components/history_empty_state.dart';
+import 'package:ai_map_explainer/feature/history/components/history_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ai_map_explainer/l10n/app_localizations.dart';
@@ -23,6 +25,8 @@ class _HistoryViewState extends State<HistoryView> {
   AnalyzerBloc get _bloc => context.read<AnalyzerBloc>();
   late List<ChatModel> lsChat = [];
   late File? file;
+  String _searchQuery = '';
+  HistorySortOption _sortOption = HistorySortOption.dateDesc;
 
   get index => null;
 
@@ -32,26 +36,87 @@ class _HistoryViewState extends State<HistoryView> {
     super.initState();
   }
 
+  List<ChatModel> _getFilteredAndSortedChats() {
+    var filtered = lsChat.where((chat) {
+      if (_searchQuery.isEmpty) return true;
+      final title = (chat.title ?? '').toLowerCase();
+      return title.contains(_searchQuery.toLowerCase());
+    }).toList();
+
+    // Sort based on selected option
+    switch (_sortOption) {
+      case HistorySortOption.titleAsc:
+        filtered.sort((a, b) => (a.title ?? '').compareTo(b.title ?? ''));
+        break;
+      case HistorySortOption.titleDesc:
+        filtered.sort((a, b) => (b.title ?? '').compareTo(a.title ?? ''));
+        break;
+      case HistorySortOption.dateAsc:
+        // Keep original order (assumed to be oldest first from Firestore)
+        break;
+      case HistorySortOption.dateDesc:
+        // Reverse order (newest first)
+        filtered = filtered.reversed.toList();
+        break;
+    }
+
+    return filtered;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: RefreshIndicator(
-        onRefresh: () async {
-          _bloc.add(const AnalyzerEvent.started());
-        },
-        child: Scaffold(
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Text(
-                  AppLocalizations.of(context)?.chatHistory ?? "Chat History",
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 24),
+      child: Scaffold(
+        body: RefreshIndicator(
+          onRefresh: () async {
+            _bloc.add(const AnalyzerEvent.started());
+          },
+          child: Column(
+            children: [
+              // Header with title and sort
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context)?.chatHistory ?? "Chat History",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                    HistorySortMenu(
+                      currentSort: _sortOption,
+                      onSortChanged: (option) {
+                        setState(() {
+                          _sortOption = option;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-                const Gap(16),
-                _buildBody(),
-              ],
-            ),
+              ),
+              // Search bar
+              HistorySearchBar(
+                onSearchChanged: (query) {
+                  setState(() {
+                    _searchQuery = query;
+                  });
+                },
+              ),
+              // Chat list
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  switchInCurve: Curves.easeIn,
+                  switchOutCurve: Curves.easeOut,
+                  child: _buildBody(),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -92,46 +157,43 @@ class _HistoryViewState extends State<HistoryView> {
     if (state is Data) {
       final dataState = state as dynamic;
       lsChat = dataState.chats ?? [];
+      final filteredChats = _getFilteredAndSortedChats();
+
+      if (filteredChats.isEmpty) {
+        return HistoryEmptyState(
+          onRefresh: () {
+            _bloc.add(const AnalyzerEvent.started());
+          },
+        );
+      }
+
       return ListView.separated(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemBuilder: (_, int index) => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: ShapeDecoration(
-              color: Colors.blueGrey.shade500,
-              shape: RoundedSuperellipseBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () => _openChat(lsChat[index]),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        lsChat[index].title ?? '',
-                        style: const TextStyle(color: Colors.white),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
+        padding: AppPadding.styleLarge.copyWith(bottom: 0.0),
+        itemBuilder: (_, int index) {
+          final chat = filteredChats[index];
+          return TweenAnimationBuilder<double>(
+            key: ValueKey(chat.id ?? index),
+            tween: Tween(begin: 0.05, end: 0),
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            builder: (context, offset, child) {
+              return Transform.translate(
+                offset: Offset(0, offset * 30),
+                child: Opacity(
+                  opacity: 1 - offset,
+                  child: child,
                 ),
-                IconButton(
-                    onPressed: () => _deleteChat(lsChat[index].id ?? ""),
-                    tooltip: AppLocalizations.of(context)?.delete ?? "Delete",
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ))
-              ],
-            )),
-        separatorBuilder: (_, int index) => const Gap(16),
-        itemCount: lsChat.length,
+              );
+            },
+            child: HistoryListItem(
+              chat: chat,
+              onTap: () => _openChat(chat),
+              onDelete: () => _deleteChat(chat.id ?? ""),
+            ),
+          );
+        },
+        separatorBuilder: (_, __) => const Gap(16),
+        itemCount: filteredChats.length,
       );
     } else if (state is Loading) {
       return LoadingWidget(
@@ -140,10 +202,10 @@ class _HistoryViewState extends State<HistoryView> {
         style: LoadingStyle.centered,
       );
     } else {
-      return ErrorDisplayWidget(
-        message: AppLocalizations.of(context)?.noData ?? "No data",
-        style: ErrorStyle.centered,
-        icon: Icons.history,
+      return HistoryEmptyState(
+        onRefresh: () {
+          _bloc.add(const AnalyzerEvent.started());
+        },
       );
     }
   }
