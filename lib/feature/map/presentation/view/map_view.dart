@@ -7,6 +7,7 @@ import 'package:ai_map_explainer/core/widget/error_widget.dart';
 import 'package:ai_map_explainer/core/widget/loading_widget.dart';
 import 'package:ai_map_explainer/core/services/map/historical_location_model.dart';
 import 'package:ai_map_explainer/core/services/map/marker_cluster_service.dart';
+import 'package:ai_map_explainer/core/services/map/marker_icon_service.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
 import 'package:ai_map_explainer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +78,9 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
           _updateHistoricalMarkers(state.locations);
         } else if (state is HistoricalLocationSelected) {
           _moveCameraToLocation(LatLng(state.location.lat, state.location.lng));
-          _selectHistoricalLocation(state.location);
+          _selectHistoricalLocation(state.location).then((_) {
+            // Marker updated
+          });
         } else if (state is Error) {
           // Show error snackbar
           ScaffoldMessenger.of(context).showSnackBar(
@@ -204,31 +207,41 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     _markers.removeWhere((key, value) =>
         key.startsWith('historical_') || key.startsWith('cluster_'));
 
-    // Create markers from clusters
-    for (final cluster in clusters) {
+    // Create markers from clusters (async operations)
+    Future.wait(clusters.map((cluster) async {
       if (cluster.isCluster) {
-        _createClusterMarker(cluster);
+        await _createClusterMarker(cluster);
       } else {
-        _createHistoricalMarker(cluster.locations.first);
+        await _createHistoricalMarker(cluster.locations.first);
       }
-    }
-
-    setState(() {});
+    })).then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   void _createIndividualMarkers(List<HistoricalLocation> locations) {
-    for (final location in locations) {
-      _createHistoricalMarker(location);
-    }
-    setState(() {});
+    Future.wait(
+      locations.map((location) => _createHistoricalMarker(location)),
+    ).then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
-  void _createHistoricalMarker(HistoricalLocation location) {
+  Future<void> _createHistoricalMarker(HistoricalLocation location) async {
     final markerId = 'historical_${location.id}';
+    final icon = await MarkerIconService.getMarkerIconForLocation(
+      location,
+      isSelected: false,
+    );
+
     final marker = Marker(
       markerId: MarkerId(markerId),
       position: LatLng(location.lat, location.lng),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      icon: icon,
       infoWindow: InfoWindow(
         title: location.name,
         snippet: location.type,
@@ -237,16 +250,23 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
         mapBloc.add(MapEvent.historicalLocationTapped(location.id));
       },
     );
-    _markers[markerId] = marker;
+
+    if (mounted) {
+      setState(() {
+        _markers[markerId] = marker;
+      });
+    }
   }
 
-  void _createClusterMarker(ClusterItem cluster) {
+  Future<void> _createClusterMarker(ClusterItem cluster) async {
     final markerId =
         'cluster_${cluster.center.latitude}_${cluster.center.longitude}';
+    final icon = await MarkerIconService.getClusterIcon(cluster.count);
+
     final marker = Marker(
       markerId: MarkerId(markerId),
       position: cluster.center,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+      icon: icon,
       infoWindow: InfoWindow(
         title:
             AppLocalizations.of(context)?.clusterOfLocations(cluster.count) ??
@@ -261,16 +281,26 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
         );
       },
     );
-    _markers[markerId] = marker;
+
+    if (mounted) {
+      setState(() {
+        _markers[markerId] = marker;
+      });
+    }
   }
 
-  void _selectHistoricalLocation(HistoricalLocation location) {
+  Future<void> _selectHistoricalLocation(HistoricalLocation location) async {
     // Highlight the selected historical location
     final markerId = 'historical_${location.id}';
+    final icon = await MarkerIconService.getMarkerIconForLocation(
+      location,
+      isSelected: true,
+    );
+
     final updatedMarker = Marker(
       markerId: MarkerId(markerId),
       position: LatLng(location.lat, location.lng),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      icon: icon,
       infoWindow: InfoWindow(
         title: location.name,
         snippet: '${location.type} - ${location.period}',
@@ -279,9 +309,12 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
         mapBloc.add(MapEvent.historicalLocationTapped(location.id));
       },
     );
-    setState(() {
-      _markers[markerId] = updatedMarker;
-    });
+
+    if (mounted) {
+      setState(() {
+        _markers[markerId] = updatedMarker;
+      });
+    }
   }
 
   void _onMapCreated(GoogleMapController controller, BuildContext context) {

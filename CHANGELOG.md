@@ -3,6 +3,20 @@
 ## [Unreleased]
 
 ### Added
+- ✅ **Custom Marker Icons**: Icons tùy chỉnh cho các loại địa điểm khác nhau
+  - MarkerIconService để tạo custom icons từ Material Icons
+  - Icons khác nhau cho Di tích, Bảo tàng, Đền, Chùa, v.v.
+  - Màu sắc phân biệt theo loại địa điểm
+  - Selected marker có border đậm và background khác
+  - Cluster markers hiển thị số lượng với custom design
+  - Icon caching để tối ưu performance
+
+- ✅ **Unit Tests**: Viết unit tests cho core services
+  - Tests cho MarkerClusterService (clustering algorithm)
+  - Tests cho ErrorConverter (error type conversion)
+  - Tests cho MarkerIconService (icon generation và caching)
+  - Test coverage cho các business logic quan trọng
+  
 - ✅ **Localization Support**: Hỗ trợ đa ngôn ngữ (Tiếng Việt & Tiếng Anh)
   - Setup Flutter localization với ARB files
   - LocaleProvider để quản lý ngôn ngữ
@@ -64,8 +78,9 @@
 - Cập nhật MapRepository để sử dụng cache
 
 ## Next Steps
-- [ ] Cải thiện error handling
-- [ ] Better loading states
-- [ ] Marker clustering
-- [ ] Custom markers với icons
-- [ ] Unit tests
+- [ ] Cải thiện animations và transitions
+- [ ] Offline mode hoàn chỉnh
+- [ ] Voice input/output
+- [ ] Social features (favorites, collections, share)
+- [ ] Gamification (achievements, quizzes)
+- [ ] Analytics integration

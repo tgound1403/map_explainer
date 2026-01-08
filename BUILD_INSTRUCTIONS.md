@@ -57,3 +57,10 @@ flutter run
 ✅ AppError model với các loại errors: Network, Location, API, Cache, Unknown
 ✅ User-friendly error messages
 ✅ Retry functionality dựa trên loại error
+
+### Custom Marker Icons
+✅ Custom icons cho các loại địa điểm khác nhau
+✅ MarkerIconService để quản lý và cache icons
+✅ Icons phân biệt theo type (Di tích, Bảo tàng, Đền, Chùa, etc.)
+✅ Selected markers có visual feedback
+✅ Cluster markers với số lượng hiển thị
