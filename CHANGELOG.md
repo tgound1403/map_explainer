@@ -3,6 +3,44 @@
 ## [Unreleased]
 
 ### Added
+- ✅ **Timeline View Animation Fix**: Sửa lỗi animation delay trong ListView
+  - Thay thế FutureBuilder bằng TweenAnimationBuilder với Interval curve
+  - Đảm bảo widget luôn hiển thị (opacity tối thiểu 0.01) ngay cả khi đang delay
+  - Thêm key cho widgets để đảm bảo rebuild đúng
+  - Giảm delay time từ 50ms xuống 30ms để animation nhanh hơn
+- ✅ **Timeline View Debug & Fix**: Sửa lỗi Timeline không hiển thị items
+  - Thêm debug logging để track data loading
+  - Sửa lỗi filter logic với List.from() để tránh mutation
+  - Thêm empty state handling tốt hơn
+  - Sửa lỗi l10n variable declaration
+  - Thêm error handling và empty state messages
+- ✅ **Timeline View UI Improvements**: Cải thiện UI cho Timeline View
+  - Year header với circle indicator đẹp hơn, hiển thị số locations
+  - Timeline line với gradient effect
+  - Location cards với favorite và share buttons
+  - Staggered animations cho location cards
+  - Image loading với error handling và loading indicators
+  - Better spacing, shadows, và visual hierarchy
+  - RefreshIndicator để pull to refresh
+  - Improved filter menu với checkmarks
+- ✅ **FavoritesService Type Casting Fix**: Sửa lỗi type casting khi đọc từ Hive
+  - Thêm helper function `_convertHiveMap()` để convert an toàn từ `Map<dynamic, dynamic>` sang `Map<String, dynamic>`
+  - Sử dụng `cast<dynamic>()` khi iterate qua box.values
+  - Thêm error handling khi parse favorite items
+  - Sửa `FavoriteItem.fromJson()` để xử lý metadata conversion an toàn
+  - Skip invalid items thay vì throw error
+- ✅ **FavoritesBloc State Fix**: Sửa lỗi state change liên tục
+  - Loại bỏ việc emit FavoriteStatus và sau đó add LoadFavorites event
+  - Chỉ emit FavoritesLoaded trực tiếp sau khi add/remove favorite
+  - Sửa FavoriteButton: Không gọi CheckFavorite trong build method
+  - Check favorite status từ FavoritesLoaded state thay vì gọi CheckFavorite
+  - Thêm check trong _onTabChanged để chỉ load khi type thay đổi
+  - Sử dụng addPostFrameCallback để tránh gọi trong initState
+- ✅ **Bottom Navigation Tabs**: Thêm 2 tab mới vào màn hình chính
+  - Favorites tab: Hiển thị FavoritesView với icon favorite
+  - Timeline tab: Hiển thị TimelineView với icon timeline
+  - Tổng cộng 5 tabs: Map, General, History, Favorites, Timeline
+  - Sử dụng IndexedStack để preserve state khi chuyển tab
 - ✅ **Content Expansion**: Mở rộng nội dung với nhiều địa điểm, media content và Timeline View
   - Mở rộng HistoricalLocation model: Thêm year, images, videos fields
   - Timeline View: Hiển thị lịch sử theo thời gian với filter theo period
