@@ -7,6 +7,8 @@ import 'package:ai_map_explainer/core/widget/loading_widget.dart';
 import 'package:ai_map_explainer/feature/detail/bloc/detail_bloc.dart';
 import 'package:ai_map_explainer/feature/detail/bloc/detail_event.dart';
 import 'package:ai_map_explainer/feature/detail/bloc/detail_state.dart';
+import 'package:ai_map_explainer/feature/general/components/general_search_bar.dart';
+import 'package:ai_map_explainer/feature/general/components/general_empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ai_map_explainer/l10n/app_localizations.dart';
@@ -22,8 +24,15 @@ class GeneralView extends StatelessWidget {
   }
 }
 
-class _DetailViewContent extends StatelessWidget {
+class _DetailViewContent extends StatefulWidget {
   const _DetailViewContent();
+
+  @override
+  State<_DetailViewContent> createState() => _DetailViewContentState();
+}
+
+class _DetailViewContentState extends State<_DetailViewContent> {
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -37,37 +46,52 @@ class _DetailViewContent extends StatelessWidget {
                         AppLocalizations.of(context)?.loading ?? "Loading...",
                     style: LoadingStyle.centered,
                   )
-                : SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0).copyWith(bottom: 0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  state.query,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 24),
+                : Column(
+                    children: [
+                      // Header with title and toggles
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                state.query,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 24,
                                 ),
                               ),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  _buildLanguageToggle(context),
-                                  const Gap(8),
-                                  _buildThemeToggle(context),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const Gap(16),
-                          _buildRelatedInfo(context),
-                        ],
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildLanguageToggle(context),
+                                const Gap(8),
+                                _buildThemeToggle(context),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      // Search bar
+                      GeneralSearchBar(
+                        onSearchChanged: (query) {
+                          setState(() {
+                            _searchQuery = query.toLowerCase();
+                          });
+                        },
+                      ),
+                      // Related info with search filter
+                      Expanded(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 250),
+                          switchInCurve: Curves.easeIn,
+                          switchOutCurve: Curves.easeOut,
+                          child: _buildRelatedInfo(context, _searchQuery),
+                        ),
+                      ),
+                    ],
                   ),
           ),
         );
@@ -75,12 +99,18 @@ class _DetailViewContent extends StatelessWidget {
     );
   }
 
-  Widget _buildRelatedInfo(BuildContext context) {
+  Widget _buildRelatedInfo(BuildContext context, String searchQuery) {
     return BlocBuilder<DetailBloc, DetailState>(
       builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: RefreshIndicator(
+        // Filter tags based on search query
+        final filteredInfos = state.relatedInfos
+            .where((info) =>
+                info.isNotEmpty && info.toLowerCase().contains(searchQuery))
+            .toList();
+
+        // Show empty state if no results
+        if (filteredInfos.isEmpty && !state.isLoading1) {
+          return RefreshIndicator(
             onRefresh: () async {
               final l10n = AppLocalizations.of(context);
               context.read<DetailBloc>().add(
@@ -91,34 +121,74 @@ class _DetailViewContent extends StatelessWidget {
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Wrap(
-                  spacing: 8.0,
-                  runSpacing: 8.0,
-                  children: state.relatedInfos
-                      .where((info) => info.isNotEmpty)
-                      .map(
-                        (info) => InkWell(
+              child: GeneralEmptyState(
+                onRefresh: searchQuery.isEmpty
+                    ? () {
+                        final l10n = AppLocalizations.of(context);
+                        context.read<DetailBloc>().add(
+                              DetailEvent.initData(
+                                l10n?.vietnameseHistory ?? "Vietnamese History",
+                              ),
+                            );
+                      }
+                    : null,
+              ),
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            final l10n = AppLocalizations.of(context);
+            context.read<DetailBloc>().add(
+                  DetailEvent.initData(
+                    l10n?.vietnameseHistory ?? "Vietnamese History",
+                  ),
+                );
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16.0),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: filteredInfos
+                    .map(
+                      (info) => AnimatedOpacity(
+                        key: ValueKey(info),
+                        duration: const Duration(milliseconds: 200),
+                        opacity: 1,
+                        child: InkWell(
                           onTap: () => _goToDetail(info, context),
+                          borderRadius: AppBorderRadius.styleSmall,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 8,
+                              vertical: 10,
                             ),
                             decoration: BoxDecoration(
                               color: Colors.blueGrey.shade100,
                               borderRadius: AppBorderRadius.styleSmall,
+                              border: Border.all(
+                                color: Colors.blueGrey.shade300,
+                                width: 1,
+                              ),
                             ),
                             child: Text(
                               info,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                               softWrap: true,
                             ),
                           ),
                         ),
-                      )
-                      .toList(),
-                ),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ),
