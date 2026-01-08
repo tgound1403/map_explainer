@@ -96,6 +96,20 @@
 - Cải thiện performance với caching
 - Tối ưu loading historical locations
 
+### Fixed
+- ✅ **Bug Fix: Provider Initialization**: Sửa lỗi khởi tạo async của ThemeProvider và LocaleProvider
+  - Providers được khởi tạo và await trước khi được thêm vào widget tree
+  - Sử dụng `ChangeNotifierProvider.value` thay vì `create` với cascade operator
+  - Đảm bảo theme và locale preferences được load đúng từ SharedPreferences
+  - Tránh việc app sử dụng giá trị mặc định ban đầu thay vì user preferences
+- ✅ **Bug Fix: Edge Zoom Gesture Performance & Center Gestures**: Sửa lỗi performance và gestures ở giữa màn hình
+  - Loại bỏ `await` trong `_performZoom` để không block UI thread
+  - Tăng `_minZoomInterval` từ 150ms lên 250ms để giảm lag
+  - Tăng threshold từ 30px lên 50px để tránh zoom nhạy cảm
+  - Sử dụng `Stack` với overlay `GestureDetector` thay vì `Listener` để không block gestures ở giữa
+  - Chỉ capture và xử lý gestures khi ở edge zones, reset ngay khi ra khỏi edge zone
+  - Đảm bảo GoogleMap có thể xử lý gestures ở giữa màn hình bình thường
+
 ### Technical
 - Setup Hive cho local storage
 - Tạo CacheService để quản lý caching

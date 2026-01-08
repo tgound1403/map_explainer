@@ -24,8 +24,21 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
 
+  // Initialize providers trước và await
+  final themeProvider = ThemeProvider();
+  final localeProvider = LocaleProvider();
+  
+  await Future.wait([
+    themeProvider.initialize(),
+    localeProvider.initialize(),
+  ]);
+
   await initApp();
-  runApp(MyApp(hasSeenOnboarding: hasSeenOnboarding));
+  runApp(MyApp(
+    hasSeenOnboarding: hasSeenOnboarding,
+    themeProvider: themeProvider,
+    localeProvider: localeProvider,
+  ));
 }
 
 Future<void> initApp() async {
@@ -53,15 +66,22 @@ Future<void> initApp() async {
 
 class MyApp extends StatelessWidget {
   final bool hasSeenOnboarding;
+  final ThemeProvider themeProvider;
+  final LocaleProvider localeProvider;
 
-  const MyApp({super.key, required this.hasSeenOnboarding});
+  const MyApp({
+    super.key,
+    required this.hasSeenOnboarding,
+    required this.themeProvider,
+    required this.localeProvider,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()..initialize()),
-        ChangeNotifierProvider(create: (_) => LocaleProvider()..initialize()),
+        ChangeNotifierProvider.value(value: themeProvider),
+        ChangeNotifierProvider.value(value: localeProvider),
       ],
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder: (context, themeProvider, localeProvider, _) {

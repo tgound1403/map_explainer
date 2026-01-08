@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// Widget để detect swipe gestures ở cạnh màn hình để zoom map
-/// 
+///
 /// Cách sử dụng:
 /// - Vuốt lên/xuống ở cạnh trái/phải màn hình để zoom
 /// - Vuốt trái/phải ở cạnh trên/dưới màn hình để zoom
@@ -27,7 +27,8 @@ class EdgeZoomGestureDetector extends StatefulWidget {
   });
 
   @override
-  State<EdgeZoomGestureDetector> createState() => _EdgeZoomGestureDetectorState();
+  State<EdgeZoomGestureDetector> createState() =>
+      _EdgeZoomGestureDetectorState();
 }
 
 class _EdgeZoomGestureDetectorState extends State<EdgeZoomGestureDetector> {
@@ -35,7 +36,8 @@ class _EdgeZoomGestureDetectorState extends State<EdgeZoomGestureDetector> {
   bool _isZooming = false;
   Offset? _startPosition;
   DateTime? _lastZoomTime;
-  static const Duration _minZoomInterval = Duration(milliseconds: 150);
+  static const Duration _minZoomInterval =
+      Duration(milliseconds: 250); // Tăng interval để giảm lag
 
   @override
   void initState() {
@@ -68,173 +70,184 @@ class _EdgeZoomGestureDetectorState extends State<EdgeZoomGestureDetector> {
 
   bool _isInEdgeZone(Offset position, Size screenSize) {
     final edgeWidth = widget.edgeWidth;
-    
+
     // Check left edge
     if (position.dx < edgeWidth) return true;
-    
+
     // Check right edge
     if (position.dx > screenSize.width - edgeWidth) return true;
-    
+
     return false;
   }
 
   bool _isInVerticalEdgeZone(Offset position, Size screenSize) {
     final edgeWidth = widget.edgeWidth;
-    
+
     // Check top edge
     if (position.dy < edgeWidth) return true;
-    
+
     // Check bottom edge
     if (position.dy > screenSize.height - edgeWidth) return true;
-    
+
     return false;
   }
 
-  Future<void> _performZoom(bool zoomIn) async {
+  void _performZoom(bool zoomIn) {
     if (widget.mapController == null) return;
-    
+
     final now = DateTime.now();
-    if (_lastZoomTime != null && 
+    if (_lastZoomTime != null &&
         now.difference(_lastZoomTime!) < _minZoomInterval) {
       return; // Throttle zoom để tránh zoom quá nhanh
     }
-    
+
     _lastZoomTime = now;
-    
-    final newZoom = zoomIn 
-        ? _currentZoom + widget.zoomStep 
+
+    final newZoom = zoomIn
+        ? _currentZoom + widget.zoomStep
         : _currentZoom - widget.zoomStep;
-    
+
     // Giới hạn zoom level (thường là 2-20)
     final clampedZoom = newZoom.clamp(2.0, 20.0);
-    
+
     if (clampedZoom == _currentZoom) return;
-    
-    try {
-      await widget.mapController!.animateCamera(
-        CameraUpdate.zoomTo(clampedZoom),
-      );
-      
-      setState(() {
-        _currentZoom = clampedZoom;
-        _isZooming = true;
-      });
-      
-      // Notify zoom change
-      widget.onZoomChanged?.call(clampedZoom);
-      
-      // Reset zoom indicator sau animation
-      Future.delayed(widget.animationDuration, () {
-        if (mounted) {
-          setState(() {
-            _isZooming = false;
-          });
-        }
-      });
-    } catch (e) {
-      // Ignore errors
-    }
+
+    // Update state trước để UI responsive hơn
+    setState(() {
+      _currentZoom = clampedZoom;
+      _isZooming = true;
+    });
+
+    // Notify zoom change
+    widget.onZoomChanged?.call(clampedZoom);
+
+    // Perform zoom async (không await để không block UI)
+    widget.mapController!
+        .animateCamera(
+      CameraUpdate.zoomTo(clampedZoom),
+    )
+        .catchError((e) {
+      // Ignore errors, nhưng revert zoom nếu fail
+      if (mounted) {
+        _updateCurrentZoom();
+      }
+    });
+
+    // Reset zoom indicator sau animation
+    Future.delayed(widget.animationDuration, () {
+      if (mounted) {
+        setState(() {
+          _isZooming = false;
+        });
+      }
+    });
   }
 
-  void _onPanStart(DragStartDetails details, Size screenSize) {
-    if (_isInEdgeZone(details.localPosition, screenSize) ||
-        _isInVerticalEdgeZone(details.localPosition, screenSize)) {
-      _startPosition = details.localPosition;
-    }
-  }
-
-  void _onPanUpdate(DragUpdateDetails details, Size screenSize) {
+  void _onPanUpdate(Offset currentPosition, Size screenSize) {
     if (_startPosition == null) return;
-    
-    // Check if still in edge zone
-    if (!_isInEdgeZone(details.localPosition, screenSize) &&
-        !_isInVerticalEdgeZone(details.localPosition, screenSize)) {
-      _startPosition = null; // Reset nếu ra khỏi edge zone
-      return;
-    }
-    
-    final delta = details.localPosition - _startPosition!;
-    final threshold = 30.0; // Minimum distance để trigger zoom
-    
+
+    final delta = currentPosition - _startPosition!;
+    final threshold = 50.0; // Tăng threshold để tránh zoom nhạy cảm
+
     final isInHorizontalEdge = _isInEdgeZone(_startPosition!, screenSize);
     final isInVerticalEdge = _isInVerticalEdgeZone(_startPosition!, screenSize);
-    
+
     // Nếu ở cạnh dọc (trái/phải), detect vertical swipe
-    if (isInHorizontalEdge && 
-        delta.dy.abs() > threshold && 
+    if (isInHorizontalEdge &&
+        delta.dy.abs() > threshold &&
         delta.dy.abs() > delta.dx.abs() * 1.5) {
       // Swipe down = zoom in, swipe up = zoom out
       final zoomIn = delta.dy > 0;
       _performZoom(zoomIn);
-      _startPosition = details.localPosition; // Reset để tiếp tục detect
+      _startPosition = currentPosition; // Reset để tiếp tục detect
     }
     // Nếu ở cạnh ngang (trên/dưới), detect horizontal swipe
     else if (isInVerticalEdge &&
-             delta.dx.abs() > threshold && 
-             delta.dx.abs() > delta.dy.abs() * 1.5) {
+        delta.dx.abs() > threshold &&
+        delta.dx.abs() > delta.dy.abs() * 1.5) {
       // Swipe right = zoom in, swipe left = zoom out
       final zoomIn = delta.dx > 0;
       _performZoom(zoomIn);
-      _startPosition = details.localPosition;
+      _startPosition = currentPosition;
     }
-  }
-
-  void _onPanEnd(DragEndDetails details) {
-    _startPosition = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onPanStart: (details) {
-        final screenSize = MediaQuery.of(context).size;
-        _onPanStart(details, screenSize);
-      },
-      onPanUpdate: (details) {
-        final screenSize = MediaQuery.of(context).size;
-        _onPanUpdate(details, screenSize);
-      },
-      onPanEnd: _onPanEnd,
-      child: Stack(
-        children: [
-          widget.child,
-          // Zoom indicator
-          if (_isZooming)
-            Positioned(
-              right: 20,
-              top: MediaQuery.of(context).size.height / 2 - 40,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _currentZoom > 10 ? Icons.zoom_in : Icons.zoom_out,
+    return Stack(
+      children: [
+        widget.child,
+        // Overlay chỉ ở edge zones để detect gestures
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onPanStart: (details) {
+              final screenSize = MediaQuery.of(context).size;
+              // Chỉ capture nếu ở edge zone
+              if (_isInEdgeZone(details.localPosition, screenSize) ||
+                  _isInVerticalEdgeZone(details.localPosition, screenSize)) {
+                _startPosition = details.localPosition;
+              }
+            },
+            onPanUpdate: (details) {
+              if (_startPosition == null) return;
+
+              final screenSize = MediaQuery.of(context).size;
+              // Chỉ xử lý nếu vẫn ở trong edge zone
+              if (_isInEdgeZone(details.localPosition, screenSize) ||
+                  _isInVerticalEdgeZone(details.localPosition, screenSize)) {
+                _onPanUpdate(details.localPosition, screenSize);
+              } else {
+                // Nếu ra khỏi edge zone, reset ngay để không block gestures
+                _startPosition = null;
+              }
+            },
+            onPanEnd: (_) {
+              _startPosition = null;
+            },
+            onPanCancel: () {
+              _startPosition = null;
+            },
+            // Transparent container để detect gestures
+            child: Container(color: Colors.transparent),
+          ),
+        ),
+        // Zoom indicator
+        if (_isZooming)
+          Positioned(
+            right: 20,
+            top: MediaQuery.of(context).size.height / 2 - 40,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _currentZoom > 10 ? Icons.zoom_in : Icons.zoom_out,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _currentZoom.toStringAsFixed(1),
+                    style: const TextStyle(
                       color: Colors.white,
-                      size: 20,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      _currentZoom.toStringAsFixed(1),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
