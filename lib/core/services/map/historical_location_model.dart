@@ -16,6 +16,9 @@ class HistoricalLocation {
     this.imageUrl,
     this.relatedEvents,
     this.relatedFigures,
+    this.year, // Năm lịch sử (để sort timeline)
+    this.images, // Danh sách ảnh
+    this.videos, // Danh sách video URLs
   });
 
   factory HistoricalLocation.fromJson(Map<String, dynamic> json) =>
@@ -31,9 +34,12 @@ class HistoricalLocation {
   final String period; // Thời kỳ lịch sử (VD: "Thời kỳ phong kiến", "Thời kỳ kháng chiến")
   final String type; // Loại địa điểm (VD: "Di tích", "Bảo tàng", "Địa danh lịch sử")
   final String? address;
-  final String? imageUrl;
+  final String? imageUrl; // Ảnh chính (backward compatibility)
   final List<String>? relatedEvents; // Các sự kiện liên quan
   final List<String>? relatedFigures; // Các nhân vật lịch sử liên quan
+  final int? year; // Năm lịch sử (để sort timeline)
+  final List<String>? images; // Danh sách ảnh
+  final List<String>? videos; // Danh sách video URLs
 }
 
 @JsonSerializable()

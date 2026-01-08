@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ai_map_explainer/core/services/map/historical_location_model.dart';
 import 'package:ai_map_explainer/core/widget/tts_button.dart';
+import 'package:ai_map_explainer/core/widget/favorite_button.dart';
+import 'package:ai_map_explainer/core/widget/share_button.dart';
 import 'package:ai_map_explainer/l10n/app_localizations.dart';
 import 'package:gap/gap.dart';
 
@@ -44,7 +46,25 @@ class HistoricalLocationCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              TTSButton(text: descriptionText),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FavoriteButton(
+                    type: 'location',
+                    itemId: location.id,
+                    title: location.name,
+                    metadata: {
+                      'type': location.type,
+                      'period': location.period,
+                      'address': location.address,
+                    },
+                  ),
+                  ShareButton(
+                    content: ShareLocation(location),
+                  ),
+                  TTSButton(text: descriptionText),
+                ],
+              ),
             ],
           ),
           const Gap(8),
