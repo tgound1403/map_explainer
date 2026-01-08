@@ -1,3 +1,4 @@
+import 'package:ai_map_explainer/core/bloc/bloc_observer.dart';
 import 'package:ai_map_explainer/core/di/service_locator.dart';
 import 'package:ai_map_explainer/core/localization/locale_provider.dart';
 import 'package:ai_map_explainer/core/router/router.dart';
@@ -7,6 +8,7 @@ import 'package:ai_map_explainer/core/services/firebase/firebase_options.dart';
 import 'package:ai_map_explainer/core/services/firebase/firestore.dart';
 import 'package:ai_map_explainer/core/services/gemini_ai/gemini.dart';
 import 'package:ai_map_explainer/core/services/network/network_connectivity_service.dart';
+import 'package:ai_map_explainer/core/services/sync/sync_service.dart';
 import 'package:ai_map_explainer/core/services/voice/text_to_speech_service.dart';
 import 'package:ai_map_explainer/core/theme/app_theme.dart';
 import 'package:ai_map_explainer/core/theme/theme_provider.dart';
@@ -15,6 +17,7 @@ import 'package:ai_map_explainer/feature/app_bottom_navigation.dart';
 import 'package:ai_map_explainer/feature/onboarding_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +26,9 @@ import 'package:ai_map_explainer/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Set BLoC observer để log state changes
+  Bloc.observer = AppBlocObserver();
 
   final prefs = await SharedPreferences.getInstance();
   final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
@@ -38,6 +44,7 @@ void main() async {
     localeProvider.initialize(),
     connectivityService.initialize(),
     TextToSpeechService.instance.initialize(),
+    SyncService.instance.initialize(), // Initialize sync service
   ]);
   
   // Set TTS language based on locale

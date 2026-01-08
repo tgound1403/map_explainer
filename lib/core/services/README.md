@@ -44,6 +44,17 @@ Tất cả services đều có interfaces trong `interfaces/` để dễ dàng t
   - `retry()`: Retry với exponential backoff
   - `retryWithJitter()`: Retry với jitter để tránh thundering herd
 
+#### Offline & Sync Services (`offline/`, `sync/`)
+- **OfflineFirstService**: Service để implement offline-first pattern
+  - `getDataOfflineFirst()`: Lấy data với strategy cache-first, network-fallback
+  - Background cache updates khi online
+  - Automatic fallback khi offline
+- **SyncService**: Service để quản lý background sync
+  - `initialize()`: Khởi tạo và lắng nghe connectivity changes
+  - `queueSyncOperation()`: Thêm operation vào sync queue
+  - Auto sync khi connection restored
+  - Historical locations sync
+
 #### Voice Services (`voice/`)
 - **TextToSpeechService**: Service để đọc text thành giọng nói
   - `speak()`: Đọc text

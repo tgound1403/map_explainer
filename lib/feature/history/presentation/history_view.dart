@@ -88,13 +88,25 @@ class _HistoryViewState extends State<HistoryView> {
                         ),
                       ),
                     ),
-                    HistorySortMenu(
-                      currentSort: _sortOption,
-                      onSortChanged: (option) {
-                        setState(() {
-                          _sortOption = option;
-                        });
-                      },
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.favorite),
+                          tooltip: 'Favorites', // TODO: Use l10n after running flutter gen-l10n
+                          onPressed: () {
+                            Routes.router.navigateTo(context, RoutePath.favorites);
+                          },
+                        ),
+                        HistorySortMenu(
+                          currentSort: _sortOption,
+                          onSortChanged: (option) {
+                            setState(() {
+                              _sortOption = option;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),

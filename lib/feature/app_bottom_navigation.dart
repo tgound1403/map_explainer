@@ -1,5 +1,7 @@
 import 'package:ai_map_explainer/core/di/service_locator.dart';
+import 'package:ai_map_explainer/core/services/social/favorites_service.dart';
 import 'package:ai_map_explainer/core/widget/offline_indicator.dart';
+import 'package:ai_map_explainer/feature/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:ai_map_explainer/feature/history/domain/analyzer_use_case.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:ai_map_explainer/feature/history/presentation/history_view.dart';
@@ -52,6 +54,9 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
             ..add(
               const DetailEvent.initData("Vietnamese History"),
             ),
+        ),
+        BlocProvider(
+          create: (context) => FavoritesBloc(getIt<FavoritesService>()),
         ),
       ],
       child: Scaffold(

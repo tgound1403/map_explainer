@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ai_map_explainer/feature/chat/data/model/chat_model.dart';
+import 'package:ai_map_explainer/core/widget/favorite_button.dart';
+import 'package:ai_map_explainer/core/widget/share_button.dart';
 import 'package:ai_map_explainer/l10n/app_localizations.dart';
 
 /// List item với swipe actions cho History View
@@ -110,13 +112,31 @@ class HistoryListItem extends StatelessWidget {
                 ),
               ),
             ),
-            IconButton(
-              onPressed: onDelete,
-              tooltip: AppLocalizations.of(context)?.delete ?? "Delete",
-              icon: const Icon(
-                Icons.delete_outline,
-                color: Colors.white,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FavoriteButton(
+                  type: 'chat',
+                  itemId: chat.id ?? '',
+                  title: chat.title,
+                ),
+                ShareButton(
+                  content: ShareChat(
+                    title: chat.title ?? 'Chat',
+                    content: chat.messages?.isNotEmpty == true
+                        ? chat.messages!.map((m) => m.message ?? '').join('\n')
+                        : '',
+                  ),
+                ),
+                IconButton(
+                  onPressed: onDelete,
+                  tooltip: AppLocalizations.of(context)?.delete ?? "Delete",
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

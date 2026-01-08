@@ -3,12 +3,60 @@
 ## [Unreleased]
 
 ### Added
+- ✅ **Content Expansion**: Mở rộng nội dung với nhiều địa điểm, media content và Timeline View
+  - Mở rộng HistoricalLocation model: Thêm year, images, videos fields
+  - Timeline View: Hiển thị lịch sử theo thời gian với filter theo period
+  - Group locations by year: Sắp xếp và nhóm địa điểm theo năm
+  - Period filter: Lọc địa điểm theo thời kỳ lịch sử
+  - Timeline visualization: Visual timeline với year headers và location cards
+  - Media support: Support cho multiple images và videos
+  - Script helper: Python script để thêm locations mới
+  - Route và navigation: Thêm route cho Timeline View
+- ✅ **Offline Support Improvements**: Cải thiện offline-first architecture và background sync
+  - SyncService: Service để quản lý background sync khi connection được restore
+  - OfflineFirstService: Service để implement offline-first pattern
+  - Sync queue: Queue các operations cần sync khi offline
+  - Auto sync khi connection restored
+  - Background cache updates khi online
+  - Improved error handling cho offline scenarios
+- ✅ **Favorites View**: Tạo view để xem tất cả favorites
+  - TabBar với 3 tabs: All, Locations, Chats
+  - Hiển thị location cards với đầy đủ thông tin
+  - Hiển thị chat items với metadata
+  - Clear all favorites với confirmation dialog
+  - Empty state khi chưa có favorites
+  - Navigation từ History View
+  - Route và handler đã được thêm vào router
+- ✅ **Phase 4.2: Social Features Integration**: Tích hợp FavoriteButton và ShareButton vào UI
+  - HistoricalLocationCard: Thêm FavoriteButton và ShareButton cho locations
+  - HistoryListItem: Thêm FavoriteButton và ShareButton cho chats
+  - FavoritesBloc được cung cấp trong AppBottomNavigation
+  - Users có thể favorite và share locations/chats trực tiếp từ UI
+- ✅ **Phase 4.2: Social Features**: Tạo social features cho ứng dụng
+  - FavoritesService: Service để quản lý favorites (locations, chats) với Hive
+  - ShareService: Service để share locations, chats, và text content
+  - FavoritesBloc: BLoC để quản lý favorites state
+  - FavoriteButton: Widget để toggle favorite với animation
+  - ShareButton: Widget để share content với nhiều options
+  - Support share với Google Maps link
+  - Favorites được lưu local với Hive, sort theo createdAt
+- ✅ **Phase 4.1: Search Infrastructure**: Tạo search infrastructure cho ứng dụng
+  - SearchService: Service để search trong historical locations với relevance sorting
+  - SearchUseCase: Use case cho search functionality với error handling
+  - SearchBloc: BLoC để quản lý search state (searching, results, history)
+  - Search history: Lưu và quản lý search history với Hive (max 20 items)
+  - Search trong name, description, type, period, address
+  - Relevance sorting: Name matches first, then description matches
 - ✅ **Phase 3: Architecture Refactoring**: Cải thiện kiến trúc ứng dụng
   - Service Interfaces: Tạo interfaces cho tất cả services (AI, Cache, Map, Network, Voice)
   - Widget Library Documentation: README cho core widgets với usage examples
   - Service Documentation: README cho core services với best practices
+  - BLoC Documentation: README cho state management với best practices và testing guide
+  - State Persistence Service: Service để persist và restore state quan trọng
+  - AppBlocObserver: Custom BLoC observer để log state changes và errors
   - GeminiAI implements AIServiceInterface: Refactor để sử dụng interface pattern
   - Better code organization: Tách biệt interfaces và implementations
+  - State management optimization: Logging và debugging tools cho BLoCs
 - ✅ **Enhanced Error Handling & Empty States**: Nâng cao error handling và empty states
   - RetryService: Service để retry operations với exponential backoff và jitter
   - RetryErrorWidget: Error widget với retry functionality và progress indicator
