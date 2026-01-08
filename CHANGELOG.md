@@ -3,6 +3,42 @@
 ## [Unreleased]
 
 ### Added
+- ✅ **Phase 3: Architecture Refactoring**: Cải thiện kiến trúc ứng dụng
+  - Service Interfaces: Tạo interfaces cho tất cả services (AI, Cache, Map, Network, Voice)
+  - Widget Library Documentation: README cho core widgets với usage examples
+  - Service Documentation: README cho core services với best practices
+  - GeminiAI implements AIServiceInterface: Refactor để sử dụng interface pattern
+  - Better code organization: Tách biệt interfaces và implementations
+- ✅ **Enhanced Error Handling & Empty States**: Nâng cao error handling và empty states
+  - RetryService: Service để retry operations với exponential backoff và jitter
+  - RetryErrorWidget: Error widget với retry functionality và progress indicator
+  - EnhancedEmptyState: Empty state widget với contextual messages, illustrations, và CTA buttons
+  - Factory constructors cho các empty state types phổ biến (generic, noData, noSearchResults, noHistory, networkError)
+  - Cập nhật GeneralEmptyState và HistoryEmptyState để sử dụng EnhancedEmptyState
+  - Better error recovery với retry attempts tracking
+  - Visual feedback khi đang retry (loading indicator + attempt counter)
+- ✅ **History View Enhancements**: Cải thiện UX cho History View
+  - HistorySearchBar: Search functionality để filter chats
+  - HistorySortMenu: Sort options (Newest/Oldest first, Title A-Z/Z-A)
+  - HistoryListItem: List item với swipe-to-delete actions
+  - HistoryEmptyState: Empty state đẹp với icon và message
+  - Swipe-to-delete với confirmation dialog
+  - Better list item design với preview message
+  - Filter và sort chats theo search query và sort option
+- ✅ **General View Improvements**: Cải thiện UX cho General View
+  - GeneralSearchBar: Search functionality để filter tags
+  - GeneralEmptyState: Empty state đẹp với icon và message
+  - Better tag design với border và padding
+  - Responsive layout improvements
+  - Filter tags dựa trên search query
+- ✅ **Chat View Improvements**: Cải thiện UX cho chat interface
+  - ChatTimestamp: Hiển thị timestamp cho messages (Just now, Xm ago, Xh ago)
+  - Auto scroll to bottom khi có message mới
+  - Scroll to bottom button khi không ở cuối danh sách
+  - Fix keyboard overlap với resizeToAvoidBottomInset và KeyboardVisibilityBuilder
+  - Cải thiện Recommend Questions UI: Card design với icon, border, better spacing
+  - Pre-fill input khi tap vào recommend question
+  - Better visual hierarchy và spacing
 - ✅ **Map View Refactoring**: Tách map_view.dart thành components để dễ maintain
   - MapInformationBox: Component hiển thị thông tin địa điểm ở top
   - MapBottomSheet: Draggable bottom sheet với haptic feedback và responsive snap sizes
