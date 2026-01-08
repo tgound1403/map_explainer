@@ -35,8 +35,18 @@ class FavoriteItem {
         itemId: json['itemId'] as String,
         title: json['title'] as String?,
         createdAt: DateTime.parse(json['createdAt'] as String),
-        metadata: json['metadata'] as Map<String, dynamic>?,
+        metadata: _convertMap(json['metadata']),
       );
+
+  /// Helper để convert Map<dynamic, dynamic> thành Map<String, dynamic>?
+  static Map<String, dynamic>? _convertMap(dynamic value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) {
+      return Map<String, dynamic>.from(value);
+    }
+    return null;
+  }
 }
 
 /// Service để quản lý favorites
@@ -59,6 +69,17 @@ class FavoritesService {
     }
   }
 
+  /// Helper để convert Map từ Hive sang Map<String, dynamic>
+  Map<String, dynamic> _convertHiveMap(dynamic item) {
+    if (item is Map<String, dynamic>) {
+      return item;
+    }
+    if (item is Map) {
+      return Map<String, dynamic>.from(item);
+    }
+    throw Exception('Invalid item type: ${item.runtimeType}');
+  }
+
   /// Thêm favorite
   Future<bool> addFavorite({
     required String type,
@@ -71,10 +92,15 @@ class FavoritesService {
       final box = Hive.box(_favoritesBox);
       
       // Kiểm tra xem đã favorite chưa
-      final existing = box.values.firstWhere(
+      final existing = box.values.cast<dynamic>().firstWhere(
         (item) {
-          final fav = FavoriteItem.fromJson(item as Map<String, dynamic>);
-          return fav.type == type && fav.itemId == itemId;
+          try {
+            final fav = FavoriteItem.fromJson(_convertHiveMap(item));
+            return fav.type == type && fav.itemId == itemId;
+          } catch (e) {
+            Logger.e('Error parsing favorite item: $e');
+            return false;
+          }
         },
         orElse: () => null,
       );
@@ -111,10 +137,15 @@ class FavoritesService {
       await _init();
       final box = Hive.box(_favoritesBox);
       
-      final favorite = box.values.firstWhere(
+      final favorite = box.values.cast<dynamic>().firstWhere(
         (item) {
-          final fav = FavoriteItem.fromJson(item as Map<String, dynamic>);
-          return fav.type == type && fav.itemId == itemId;
+          try {
+            final fav = FavoriteItem.fromJson(_convertHiveMap(item));
+            return fav.type == type && fav.itemId == itemId;
+          } catch (e) {
+            Logger.e('Error parsing favorite item: $e');
+            return false;
+          }
         },
         orElse: () => null,
       );
@@ -124,7 +155,7 @@ class FavoritesService {
         return false;
       }
 
-      final fav = FavoriteItem.fromJson(favorite as Map<String, dynamic>);
+      final fav = FavoriteItem.fromJson(_convertHiveMap(favorite));
       await box.delete(fav.id);
       Logger.i('Favorite removed: $type - $itemId');
       return true;
@@ -143,10 +174,15 @@ class FavoritesService {
       await _init();
       final box = Hive.box(_favoritesBox);
       
-      final existing = box.values.firstWhere(
+      final existing = box.values.cast<dynamic>().firstWhere(
         (item) {
-          final fav = FavoriteItem.fromJson(item as Map<String, dynamic>);
-          return fav.type == type && fav.itemId == itemId;
+          try {
+            final fav = FavoriteItem.fromJson(_convertHiveMap(item));
+            return fav.type == type && fav.itemId == itemId;
+          } catch (e) {
+            Logger.e('Error parsing favorite item: $e');
+            return false;
+          }
         },
         orElse: () => null,
       );
@@ -165,10 +201,16 @@ class FavoritesService {
       final box = Hive.box(_favoritesBox);
       
       final favorites = <FavoriteItem>[];
-      for (final item in box.values) {
-        final fav = FavoriteItem.fromJson(item as Map<String, dynamic>);
-        if (type == null || fav.type == type) {
-          favorites.add(fav);
+      for (final item in box.values.cast<dynamic>()) {
+        try {
+          final fav = FavoriteItem.fromJson(_convertHiveMap(item));
+          if (type == null || fav.type == type) {
+            favorites.add(fav);
+          }
+        } catch (e) {
+          Logger.e('Error parsing favorite item: $e');
+          // Skip invalid items
+          continue;
         }
       }
 
