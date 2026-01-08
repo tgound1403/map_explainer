@@ -13,6 +13,10 @@ class Routes {
     _setRouter(RoutePath.detail, handler: detailScreenHandler);
 
     _setRouter(RoutePath.chat, handler: chatHandler);
+
+    _setRouter(RoutePath.favorites, handler: favoritesHandler);
+
+    _setRouter(RoutePath.timeline, handler: timelineHandler);
   }
 
   static void _setRouter(

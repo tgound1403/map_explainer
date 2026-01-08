@@ -1,13 +1,17 @@
+import 'package:ai_map_explainer/core/services/social/favorites_service.dart';
 import 'package:ai_map_explainer/feature/app_bottom_navigation.dart';
 import 'package:ai_map_explainer/feature/chat/data/model/chat_model.dart';
 import 'package:ai_map_explainer/feature/chat/domain/chat_usecase.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/bloc/chat_bloc.dart';
 import 'package:ai_map_explainer/feature/chat/presentation/view/chat_view.dart';
 import 'package:ai_map_explainer/feature/detail/detail_view.dart';
+import 'package:ai_map_explainer/feature/favorites/presentation/bloc/favorites_bloc.dart';
+import 'package:ai_map_explainer/feature/favorites/presentation/view/favorites_view.dart';
 import 'package:ai_map_explainer/feature/history/domain/analyzer_use_case.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:ai_map_explainer/feature/map/domain/map_usecase.dart';
 import 'package:ai_map_explainer/feature/map/presentation/bloc/map_bloc.dart';
+import 'package:ai_map_explainer/feature/timeline/presentation/view/timeline_view.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,4 +46,15 @@ Handler detailScreenHandler = Handler(handlerFunc: (context, params) {
     ],
     child: DetailView(query: query),
   );
+});
+
+Handler favoritesHandler = Handler(handlerFunc: (context, params) {
+  return BlocProvider(
+    create: (context) => FavoritesBloc(getIt<FavoritesService>()),
+    child: const FavoritesView(),
+  );
+});
+
+Handler timelineHandler = Handler(handlerFunc: (context, params) {
+  return const TimelineView();
 });

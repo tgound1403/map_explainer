@@ -7,4 +7,6 @@ class RoutePath {
   static const String map = '/map';
   static const String chat = '/chat';
   static const String history = '/history';
+  static const String favorites = '/favorites';
+  static const String timeline = '/timeline';
 }
