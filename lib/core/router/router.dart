@@ -20,7 +20,9 @@ class Routes {
         required Handler handler,
         TransitionType? transitionType,
       }) {
-    transitionType ??= TransitionType.cupertino;
+    // Use smooth transitions for better UX
+    // Fluro supports: none, material, cupertino, custom, native, nativeModal
+    transitionType ??= TransitionType.material;
     router.define(path, handler: handler, transitionType: transitionType);
   }
 }

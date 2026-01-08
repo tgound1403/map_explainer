@@ -1,4 +1,5 @@
 import 'package:ai_map_explainer/core/di/service_locator.dart';
+import 'package:ai_map_explainer/core/utils/animations.dart';
 import 'package:ai_map_explainer/feature/history/domain/analyzer_use_case.dart';
 import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc.dart';
 import 'package:ai_map_explainer/feature/history/presentation/history_view.dart';
@@ -29,9 +30,9 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
   @override
   void initState() {
     _tabList = [
-      const MapView(),
-      const GeneralView(),
-      const HistoryView()
+      const MapView(key: ValueKey('map')),
+      const GeneralView(key: ValueKey('general')),
+      const HistoryView(key: ValueKey('history'))
     ];
     _selectedTabIndex = ValueNotifier<int>(0);
     super.initState();
@@ -72,9 +73,24 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
         body: ValueListenableBuilder<int>(
           valueListenable: _selectedTabIndex,
           builder: (_, index, __) {
-            return IndexedStack(
-              index: index,
-              children: _tabList,
+            return AnimatedSwitcher(
+              duration: AppAnimations.normal,
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0.1, 0.0),
+                      end: Offset.zero,
+                    ).animate(CurvedAnimation(
+                      parent: animation,
+                      curve: AppAnimations.standardCurve,
+                    )),
+                    child: child,
+                  ),
+                );
+              },
+              child: _tabList[index],
             );
           },
         ),

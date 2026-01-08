@@ -64,3 +64,10 @@ flutter run
 ✅ Icons phân biệt theo type (Di tích, Bảo tàng, Đền, Chùa, etc.)
 ✅ Selected markers có visual feedback
 ✅ Cluster markers với số lượng hiển thị
+
+### Animations & Transitions
+✅ AppAnimations utility với các animation helpers
+✅ Smooth tab switching với AnimatedSwitcher
+✅ Fade-slide animations cho information boxes
+✅ Improved bottom sheet animations
+✅ Material transitions cho navigation

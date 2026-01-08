@@ -16,6 +16,14 @@
   - Tests cho ErrorConverter (error type conversion)
   - Tests cho MarkerIconService (icon generation và caching)
   - Test coverage cho các business logic quan trọng
+
+- ✅ **Animations & Transitions**: Cải thiện animations và transitions
+  - AppAnimations utility với các animation helpers (fade, slide, scale, bounce)
+  - Custom page route transitions (SlidePageRoute, FadePageRoute, ScalePageRoute)
+  - Smooth tab switching với AnimatedSwitcher
+  - Fade-slide animations cho information boxes
+  - Improved bottom sheet animations
+  - Material transitions cho navigation
   
 - ✅ **Localization Support**: Hỗ trợ đa ngôn ngữ (Tiếng Việt & Tiếng Anh)
   - Setup Flutter localization với ARB files

@@ -8,6 +8,7 @@ import 'package:ai_map_explainer/core/widget/loading_widget.dart';
 import 'package:ai_map_explainer/core/services/map/historical_location_model.dart';
 import 'package:ai_map_explainer/core/services/map/marker_cluster_service.dart';
 import 'package:ai_map_explainer/core/services/map/marker_icon_service.dart';
+import 'package:ai_map_explainer/core/utils/animations.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
 import 'package:ai_map_explainer/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,8 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     mapBloc = context.read<MapBloc>();
     _bottomSheetAnimationCtl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: AppAnimations.slow,
+      reverseDuration: AppAnimations.normal,
     );
   }
 
