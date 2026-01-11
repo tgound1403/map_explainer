@@ -12,6 +12,16 @@ import 'package:ai_map_explainer/feature/history/presentation/bloc/analyzer_bloc
 import 'package:ai_map_explainer/feature/map/domain/map_usecase.dart';
 import 'package:ai_map_explainer/feature/map/presentation/bloc/map_bloc.dart';
 import 'package:ai_map_explainer/feature/timeline/presentation/view/timeline_view.dart';
+import 'package:ai_map_explainer/feature/search/presentation/view/search_view.dart';
+import 'package:ai_map_explainer/feature/search/presentation/bloc/search_bloc.dart';
+import 'package:ai_map_explainer/feature/search/domain/search_usecase.dart';
+import 'package:ai_map_explainer/feature/collections/presentation/view/collections_view.dart';
+import 'package:ai_map_explainer/feature/collections/presentation/bloc/collections_bloc.dart';
+import 'package:ai_map_explainer/feature/collections/domain/collections_usecase.dart';
+import 'package:ai_map_explainer/feature/tours/presentation/view/tours_view.dart';
+import 'package:ai_map_explainer/feature/tours/presentation/view/tour_detail_view.dart';
+import 'package:ai_map_explainer/feature/tours/presentation/bloc/tours_bloc.dart';
+import 'package:ai_map_explainer/feature/tours/domain/tours_usecase.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,4 +67,33 @@ Handler favoritesHandler = Handler(handlerFunc: (context, params) {
 
 Handler timelineHandler = Handler(handlerFunc: (context, params) {
   return const TimelineView();
+});
+
+Handler searchHandler = Handler(handlerFunc: (context, params) {
+  return BlocProvider(
+    create: (context) => SearchBloc(getIt<SearchUseCase>()),
+    child: const SearchView(),
+  );
+});
+
+Handler collectionsHandler = Handler(handlerFunc: (context, params) {
+  return BlocProvider(
+    create: (context) => CollectionsBloc(getIt<CollectionsUseCase>()),
+    child: const CollectionsView(),
+  );
+});
+
+Handler toursHandler = Handler(handlerFunc: (context, params) {
+  return BlocProvider(
+    create: (context) => ToursBloc(getIt<ToursUseCase>()),
+    child: const ToursView(),
+  );
+});
+
+Handler tourDetailHandler = Handler(handlerFunc: (context, params) {
+  final tourId = params['tourId']?.first ?? '';
+  return BlocProvider(
+    create: (context) => ToursBloc(getIt<ToursUseCase>()),
+    child: TourDetailView(tourId: tourId),
+  );
 });

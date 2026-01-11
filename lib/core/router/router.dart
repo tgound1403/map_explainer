@@ -17,6 +17,14 @@ class Routes {
     _setRouter(RoutePath.favorites, handler: favoritesHandler);
 
     _setRouter(RoutePath.timeline, handler: timelineHandler);
+
+    _setRouter(RoutePath.search, handler: searchHandler);
+
+    _setRouter(RoutePath.collections, handler: collectionsHandler);
+
+    _setRouter(RoutePath.tours, handler: toursHandler);
+
+    _setRouter(RoutePath.tourDetail, handler: tourDetailHandler);
   }
 
   static void _setRouter(

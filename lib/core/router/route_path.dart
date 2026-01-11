@@ -9,4 +9,8 @@ class RoutePath {
   static const String history = '/history';
   static const String favorites = '/favorites';
   static const String timeline = '/timeline';
+  static const String search = '/search';
+  static const String collections = '/collections';
+  static const String tours = '/tours';
+  static const String tourDetail = '/tour/:tourId';
 }
