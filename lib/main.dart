@@ -26,7 +26,7 @@ import 'package:ai_map_explainer/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Set BLoC observer để log state changes
   Bloc.observer = AppBlocObserver();
 
@@ -38,7 +38,7 @@ void main() async {
   final localeProvider = LocaleProvider();
   final connectivityService = NetworkConnectivityService.instance;
   final connectivityProvider = ConnectivityProvider(connectivityService);
-  
+
   await Future.wait([
     themeProvider.initialize(),
     localeProvider.initialize(),
@@ -46,9 +46,10 @@ void main() async {
     TextToSpeechService.instance.initialize(),
     SyncService.instance.initialize(), // Initialize sync service
   ]);
-  
+
   // Set TTS language based on locale
-  await TextToSpeechService.instance.setLanguage(localeProvider.locale.languageCode);
+  await TextToSpeechService.instance
+      .setLanguage(localeProvider.locale.languageCode);
 
   await initApp();
   runApp(MyApp(
@@ -62,10 +63,10 @@ void main() async {
 Future<void> initApp() async {
   try {
     await dotenv.load(fileName: ".env");
-    
+
     // Initialize cache service trước (cần cho các services khác)
     await CacheService.instance.init();
-    
+
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -73,7 +74,7 @@ Future<void> initApp() async {
     await Firestore.init();
     Routes.configureRoutes();
     setupDependencies();
-    
+
     // Clear expired cache trong background
     CacheService.instance.clearExpiredCache();
   } catch (e, st) {
@@ -107,15 +108,17 @@ class MyApp extends StatelessWidget {
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder: (context, themeProvider, localeProvider, _) {
           // Update TTS language when locale changes
-          TextToSpeechService.instance.setLanguage(localeProvider.locale.languageCode);
-          
+          TextToSpeechService.instance
+              .setLanguage(localeProvider.locale.languageCode);
+
           return MaterialApp(
             title: 'AI Map Explainer',
             theme: AppTheme.getLightTheme(),
             darkTheme: AppTheme.getDarkTheme(),
-            themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            themeMode:
+                themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             locale: localeProvider.locale,
-            localizationsDelegates: [
+            localizationsDelegates: const [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,

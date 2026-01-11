@@ -7,6 +7,7 @@ import 'package:ai_map_explainer/core/widget/enhanced_empty_state.dart';
 import 'package:ai_map_explainer/core/widget/loading_widget.dart';
 import 'package:ai_map_explainer/core/widget/favorite_button.dart';
 import 'package:ai_map_explainer/core/widget/share_button.dart';
+import 'package:ai_map_explainer/core/widget/search_app_bar_button.dart';
 import 'package:ai_map_explainer/feature/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:ai_map_explainer/feature/favorites/presentation/bloc/favorites_event.dart';
 import 'package:ai_map_explainer/feature/favorites/presentation/bloc/favorites_state.dart';
@@ -75,19 +76,20 @@ class _FavoritesViewState extends State<FavoritesView> with SingleTickerProvider
     
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorites'), // TODO: Use l10n?.favorites after running flutter gen-l10n
+        title: Text(l10n?.favorites ?? 'Favorites'),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Locations'),
-            Tab(text: 'Chats'),
+          tabs: [
+            Tab(text: l10n?.all ?? 'All'),
+            Tab(text: l10n?.locations ?? 'Locations'),
+            Tab(text: l10n?.chats ?? 'Chats'),
           ],
         ),
         actions: [
+          const SearchAppBarButton(),
           IconButton(
             icon: const Icon(Icons.delete_outline),
-            tooltip: 'Clear all', // TODO: Use l10n?.clearAll after running flutter gen-l10n
+            tooltip: l10n?.clearAll ?? 'Clear all',
             onPressed: () => _showClearAllDialog(context),
           ),
         ],
@@ -121,8 +123,8 @@ class _FavoritesViewState extends State<FavoritesView> with SingleTickerProvider
           if (state is FavoritesLoaded) {
             if (state.favorites.isEmpty) {
               return EnhancedEmptyState.noData(
-                title: 'No favorites yet', // TODO: Use l10n?.noFavorites after running flutter gen-l10n
-                message: 'Start favoriting locations and chats to see them here.', // TODO: Use l10n?.noFavoritesMessage after running flutter gen-l10n
+                title: l10n?.noFavorites ?? 'No favorites yet',
+                message: l10n?.noFavoritesMessage ?? 'Start favoriting locations and chats to see them here.',
                 onRefresh: () {
                   context.read<FavoritesBloc>().add(LoadFavorites(
                     type: _selectedType == 'all' ? null : _selectedType,
@@ -361,9 +363,9 @@ class _FavoritesViewState extends State<FavoritesView> with SingleTickerProvider
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear all'), // TODO: Use l10n?.clearAll after running flutter gen-l10n
-        content: const Text(
-          'Are you sure you want to clear all favorites?', // TODO: Use l10n?.clearAllFavoritesConfirm after running flutter gen-l10n
+        title: Text(l10n?.clearAll ?? 'Clear all'),
+        content: Text(
+          l10n?.clearAllFavoritesConfirm ?? 'Are you sure you want to clear all favorites?',
         ),
         actions: [
           TextButton(
@@ -373,7 +375,7 @@ class _FavoritesViewState extends State<FavoritesView> with SingleTickerProvider
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Clear all'), // TODO: Use l10n?.clearAll after running flutter gen-l10n
+            child: Text(l10n?.clearAll ?? 'Clear all'),
           ),
         ],
       ),

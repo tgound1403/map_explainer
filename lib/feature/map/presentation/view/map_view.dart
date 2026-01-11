@@ -5,6 +5,7 @@ import 'package:ai_map_explainer/core/widget/loading_widget.dart';
 import 'package:ai_map_explainer/core/services/map/historical_location_model.dart';
 import 'package:ai_map_explainer/core/services/map/marker_cluster_service.dart';
 import 'package:ai_map_explainer/core/services/map/marker_icon_service.dart';
+import 'package:ai_map_explainer/core/services/map/historical_location_service.dart';
 import 'package:ai_map_explainer/core/utils/error_message_helper.dart';
 import 'package:ai_map_explainer/core/widget/edge_zoom_gesture_detector.dart';
 import 'package:ai_map_explainer/feature/map/presentation/view/map_style.dart';
@@ -23,7 +24,12 @@ import '../bloc/map_event.dart';
 import '../bloc/map_state.dart';
 
 class MapView extends StatefulWidget {
-  const MapView({super.key});
+  final Map<String, dynamic>? tourRouteArgs;
+
+  const MapView({
+    super.key,
+    this.tourRouteArgs,
+  });
 
   @override
   MapViewState createState() => MapViewState();
@@ -35,6 +41,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   GoogleMapController? mapController;
 
   final Map<String, Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
   var dataForNext = "";
   double _currentZoom = 10.0;
   LatLngBounds? _currentBounds;
@@ -43,6 +50,39 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     mapBloc = context.read<MapBloc>();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _checkAndLoadTourRoute();
+  }
+
+  @override
+  void didUpdateWidget(MapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reload tour route if tour arguments changed
+    if (oldWidget.tourRouteArgs != widget.tourRouteArgs) {
+      _checkAndLoadTourRoute();
+    }
+  }
+
+  void _checkAndLoadTourRoute() {
+    // Check for tour route arguments from widget parameter or route settings
+    final tourArgs = widget.tourRouteArgs ?? 
+        (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?);
+    
+    if (tourArgs != null && tourArgs.containsKey('tourId')) {
+      final locationIds = tourArgs['locationIds'] as List<String>?;
+      if (locationIds != null && locationIds.isNotEmpty) {
+        // Delay to ensure map controller is ready
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && mapController != null) {
+            _loadTourRoute(locationIds);
+          }
+        });
+      }
+    }
   }
 
   @override
@@ -128,6 +168,7 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
                       zoom: 2,
                     ),
                     markers: _markers.values.toSet(),
+                    polylines: _polylines,
                   ),
                   if (state is PlaceSelected || state is CurrentLocationObtained)
                     Positioned(
@@ -360,6 +401,73 @@ class MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
   void _moveCameraToLocation(LatLng? latlng) {
     mapController?.animateCamera(
         CameraUpdate.newLatLngZoom(latlng ?? const LatLng(0, 0), 15.0));
+  }
+
+  /// Load tour route và hiển thị polyline
+  Future<void> _loadTourRoute(List<String> locationIds) async {
+    try {
+      final locationService = HistoricalLocationService.instance;
+      final allLocations = await locationService.loadHistoricalLocations();
+      
+      final tourLocations = <HistoricalLocation>[];
+      for (final id in locationIds) {
+        try {
+          final location = allLocations.firstWhere((loc) => loc.id == id);
+          tourLocations.add(location);
+        } catch (e) {
+          // Skip if location not found
+          debugPrint('Tour location not found: $id');
+          continue;
+        }
+      }
+
+      if (tourLocations.isEmpty) {
+        debugPrint('No valid tour locations found');
+        return;
+      }
+
+      // Create polyline points
+      final points = tourLocations
+          .map((loc) => LatLng(loc.lat, loc.lng))
+          .toList();
+
+      // Create polyline
+      final polyline = Polyline(
+        polylineId: const PolylineId('tour_route'),
+        points: points,
+        color: Colors.blue,
+        width: 4,
+        patterns: [PatternItem.dash(20), PatternItem.gap(10)],
+      );
+
+      if (mounted) {
+        setState(() {
+          _polylines.clear();
+          _polylines.add(polyline);
+        });
+      }
+
+      // Fit bounds to show all tour locations
+      if (points.isNotEmpty && mapController != null) {
+        final bounds = LatLngBounds(
+          southwest: LatLng(
+            points.map((p) => p.latitude).reduce((a, b) => a < b ? a : b),
+            points.map((p) => p.longitude).reduce((a, b) => a < b ? a : b),
+          ),
+          northeast: LatLng(
+            points.map((p) => p.latitude).reduce((a, b) => a > b ? a : b),
+            points.map((p) => p.longitude).reduce((a, b) => a > b ? a : b),
+          ),
+        );
+
+        mapController!.animateCamera(
+          CameraUpdate.newLatLngBounds(bounds, 100),
+        );
+      }
+    } catch (e, st) {
+      debugPrint('Error loading tour route: $e');
+      debugPrint('Stack trace: $st');
+    }
   }
 
   // Removed - using MapInformationBox component instead

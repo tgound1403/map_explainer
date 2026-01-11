@@ -63,17 +63,19 @@ class EnhancedEmptyState extends StatelessWidget {
   factory EnhancedEmptyState.noSearchResults({
     String? query,
     VoidCallback? onClearSearch,
+    BuildContext? context,
   }) {
+    final l10n = context != null ? AppLocalizations.of(context) : null;
     return EnhancedEmptyState(
       type: EmptyStateType.noSearchResults,
-      title: 'No results found',
+      title: l10n?.noSearchResults ?? 'No results found',
       message: query != null
-          ? 'No results found for "$query". Try a different search term.'
-          : 'No results found. Try a different search term.',
+          ? '${l10n?.noSearchResultsMessage ?? "Try different keywords or check your spelling."}'
+          : (l10n?.noSearchResultsMessage ?? 'Try different keywords or check your spelling.'),
       icon: Icons.search_off_outlined,
       illustration: '🔍',
       onAction: onClearSearch,
-      actionLabel: 'Clear search',
+      actionLabel: l10n?.clearAll ?? 'Clear search',
       actionIcon: Icons.clear,
     );
   }
