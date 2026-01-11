@@ -3,6 +3,16 @@
 ## [Unreleased]
 
 ### Added
+- ✅ **Interactive Tours & Routes**: Implement tính năng Interactive Tours
+  - Tour Model: id, name, description, locationIds, theme, color, icon, estimatedTime, estimatedDistance
+  - TourService: CRUD operations, auto-generate premade tours, calculate tour metrics (distance, time)
+  - ToursUseCase & ToursBloc: Business logic và state management
+  - ToursView: List view với tabs (Premade/My Tours), TourCard component
+  - CreateTourDialog: Dialog để tạo tour với location selection, theme, color, icon picker
+  - TourDetailView: Hiển thị chi tiết tour với location list, start tour button
+  - Map Route Integration: Polyline route trên map khi start tour, auto-fit bounds
+  - Premade Tours: Auto-generate 3 premade tours (Kháng chiến, Văn hóa, HCM City)
+  - Navigation: Thêm Tours button vào GeneralView, route integration
 - ✅ **Timeline View Animation Fix**: Sửa lỗi animation delay trong ListView
   - Thay thế FutureBuilder bằng TweenAnimationBuilder với Interval curve
   - Đảm bảo widget luôn hiển thị (opacity tối thiểu 0.01) ngay cả khi đang delay
