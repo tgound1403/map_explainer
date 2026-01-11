@@ -229,4 +229,101 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get noFavoritesMessage =>
       'Bắt đầu yêu thích địa điểm và trò chuyện để xem chúng ở đây.';
+
+  @override
+  String get search => 'Tìm kiếm';
+
+  @override
+  String get searchLocations => 'Tìm kiếm địa điểm...';
+
+  @override
+  String get recentSearches => 'Tìm kiếm gần đây';
+
+  @override
+  String get noSearchResults => 'Không tìm thấy kết quả';
+
+  @override
+  String get noSearchResultsMessage =>
+      'Thử từ khóa khác hoặc kiểm tra chính tả.';
+
+  @override
+  String get results => 'kết quả';
+
+  @override
+  String get result => 'kết quả';
+
+  @override
+  String get collections => 'Bộ sưu tập';
+
+  @override
+  String get createCollection => 'Tạo bộ sưu tập';
+
+  @override
+  String get collectionName => 'Tên bộ sưu tập';
+
+  @override
+  String get collectionNameRequired => 'Tên là bắt buộc';
+
+  @override
+  String get noCollections => 'Chưa có bộ sưu tập';
+
+  @override
+  String get noCollectionsMessage =>
+      'Tạo bộ sưu tập đầu tiên để tổ chức địa điểm và trò chuyện.';
+
+  @override
+  String get item => 'mục';
+
+  @override
+  String get items => 'mục';
+
+  @override
+  String get addToCollection => 'Thêm vào bộ sưu tập';
+
+  @override
+  String get itemAddedToCollection => 'Đã thêm vào bộ sưu tập';
+
+  @override
+  String get createNew => 'Tạo mới';
+
+  @override
+  String get noItems => 'Chưa có mục trong bộ sưu tập';
+
+  @override
+  String get noItemsMessage =>
+      'Thêm địa điểm hoặc trò chuyện vào bộ sưu tập này.';
+
+  @override
+  String get deleteCollection => 'Xóa bộ sưu tập';
+
+  @override
+  String get deleteCollectionConfirm =>
+      'Bạn có chắc chắn muốn xóa bộ sưu tập này? Tất cả các mục sẽ bị xóa.';
+
+  @override
+  String get edit => 'Chỉnh sửa';
+
+  @override
+  String get create => 'Tạo';
+
+  @override
+  String get color => 'Màu sắc';
+
+  @override
+  String get icon => 'Biểu tượng';
+
+  @override
+  String get somethingWentWrong => 'Đã xảy ra lỗi';
+
+  @override
+  String get close => 'Đóng';
+
+  @override
+  String get description => 'Mô tả';
+
+  @override
+  String get beforeChrist => 'Trước Công Nguyên';
+
+  @override
+  String get unknownPeriod => 'Thời kỳ không xác định';
 }

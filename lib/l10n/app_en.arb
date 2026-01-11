@@ -295,5 +295,141 @@
   "noFavoritesMessage": "Start favoriting locations and chats to see them here.",
   "@noFavoritesMessage": {
     "description": "Empty state message for no favorites"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search label"
+  },
+  "searchLocations": "Search locations...",
+  "@searchLocations": {
+    "description": "Search placeholder"
+  },
+  "recentSearches": "Recent Searches",
+  "@recentSearches": {
+    "description": "Recent searches header"
+  },
+  "noSearchResults": "No results found",
+  "@noSearchResults": {
+    "description": "No search results message"
+  },
+  "noSearchResultsMessage": "Try different keywords or check your spelling.",
+  "@noSearchResultsMessage": {
+    "description": "No search results help message"
+  },
+  "results": "results",
+  "@results": {
+    "description": "Results label"
+  },
+  "result": "result",
+  "@result": {
+    "description": "Result label (singular)"
+  },
+  "collections": "Collections",
+  "@collections": {
+    "description": "Collections label"
+  },
+  "createCollection": "Create Collection",
+  "@createCollection": {
+    "description": "Create collection button"
+  },
+  "collectionName": "Collection Name",
+  "@collectionName": {
+    "description": "Collection name field label"
+  },
+  "collectionNameRequired": "Name is required",
+  "@collectionNameRequired": {
+    "description": "Collection name validation error"
+  },
+  "noCollections": "No collections yet",
+  "@noCollections": {
+    "description": "Empty state title for no collections"
+  },
+  "noCollectionsMessage": "Create your first collection to organize locations and chats.",
+  "@noCollectionsMessage": {
+    "description": "Empty state message for no collections"
+  },
+  "item": "item",
+  "@item": {
+    "description": "Item label (singular)"
+  },
+  "items": "items",
+  "@items": {
+    "description": "Items label (plural)"
+  },
+  "addToCollection": "Add to Collection",
+  "@addToCollection": {
+    "description": "Add to collection button"
+  },
+  "itemAddedToCollection": "Item added to collection",
+  "@itemAddedToCollection": {
+    "description": "Success message when item is added to collection"
+  },
+  "createNew": "Create New",
+  "@createNew": {
+    "description": "Create new button"
+  },
+  "noItems": "No items in collection",
+  "@noItems": {
+    "description": "Empty state title for no items in collection"
+  },
+  "noItemsMessage": "Add locations or chats to this collection.",
+  "@noItemsMessage": {
+    "description": "Empty state message for no items in collection"
+  },
+  "deleteCollection": "Delete Collection",
+  "@deleteCollection": {
+    "description": "Delete collection dialog title"
+  },
+  "deleteCollectionConfirm": "Are you sure you want to delete this collection? All items will be removed.",
+  "@deleteCollectionConfirm": {
+    "description": "Delete collection confirmation message"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "create": "Create",
+  "@create": {
+    "description": "Create button"
+  },
+  "color": "Color",
+  "@color": {
+    "description": "Color label"
+  },
+  "icon": "Icon",
+  "@icon": {
+    "description": "Icon label"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error label"
+  },
+  "somethingWentWrong": "Something went wrong",
+  "@somethingWentWrong": {
+    "description": "Generic error message"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Description label"
+  },
+  "beforeChrist": "BC",
+  "@beforeChrist": {
+    "description": "Before Christ label for negative years"
+  },
+  "unknownPeriod": "Unknown Period",
+  "@unknownPeriod": {
+    "description": "Unknown period label"
   }
 }

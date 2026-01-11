@@ -212,7 +212,7 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
-  /// Error title
+  /// Error label
   ///
   /// In en, this message translates to:
   /// **'Error'**
@@ -511,6 +511,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start favoriting locations and chats to see them here.'**
   String get noFavoritesMessage;
+
+  /// Search label
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// Search placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Search locations...'**
+  String get searchLocations;
+
+  /// Recent searches header
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Searches'**
+  String get recentSearches;
+
+  /// No search results message
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noSearchResults;
+
+  /// No search results help message
+  ///
+  /// In en, this message translates to:
+  /// **'Try different keywords or check your spelling.'**
+  String get noSearchResultsMessage;
+
+  /// Results label
+  ///
+  /// In en, this message translates to:
+  /// **'results'**
+  String get results;
+
+  /// Result label (singular)
+  ///
+  /// In en, this message translates to:
+  /// **'result'**
+  String get result;
+
+  /// Collections label
+  ///
+  /// In en, this message translates to:
+  /// **'Collections'**
+  String get collections;
+
+  /// Create collection button
+  ///
+  /// In en, this message translates to:
+  /// **'Create Collection'**
+  String get createCollection;
+
+  /// Collection name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Collection Name'**
+  String get collectionName;
+
+  /// Collection name validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get collectionNameRequired;
+
+  /// Empty state title for no collections
+  ///
+  /// In en, this message translates to:
+  /// **'No collections yet'**
+  String get noCollections;
+
+  /// Empty state message for no collections
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first collection to organize locations and chats.'**
+  String get noCollectionsMessage;
+
+  /// Item label (singular)
+  ///
+  /// In en, this message translates to:
+  /// **'item'**
+  String get item;
+
+  /// Items label (plural)
+  ///
+  /// In en, this message translates to:
+  /// **'items'**
+  String get items;
+
+  /// Add to collection button
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Collection'**
+  String get addToCollection;
+
+  /// Success message when item is added to collection
+  ///
+  /// In en, this message translates to:
+  /// **'Item added to collection'**
+  String get itemAddedToCollection;
+
+  /// Create new button
+  ///
+  /// In en, this message translates to:
+  /// **'Create New'**
+  String get createNew;
+
+  /// Empty state title for no items in collection
+  ///
+  /// In en, this message translates to:
+  /// **'No items in collection'**
+  String get noItems;
+
+  /// Empty state message for no items in collection
+  ///
+  /// In en, this message translates to:
+  /// **'Add locations or chats to this collection.'**
+  String get noItemsMessage;
+
+  /// Delete collection dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Collection'**
+  String get deleteCollection;
+
+  /// Delete collection confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this collection? All items will be removed.'**
+  String get deleteCollectionConfirm;
+
+  /// Edit button
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// Create button
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// Color label
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get color;
+
+  /// Icon label
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get icon;
+
+  /// Generic error message
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get somethingWentWrong;
+
+  /// Close button
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// Description label
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// Before Christ label for negative years
+  ///
+  /// In en, this message translates to:
+  /// **'BC'**
+  String get beforeChrist;
+
+  /// Unknown period label
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Period'**
+  String get unknownPeriod;
 }
 
 class _AppLocalizationsDelegate

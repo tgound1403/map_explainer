@@ -229,4 +229,100 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noFavoritesMessage =>
       'Start favoriting locations and chats to see them here.';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get searchLocations => 'Search locations...';
+
+  @override
+  String get recentSearches => 'Recent Searches';
+
+  @override
+  String get noSearchResults => 'No results found';
+
+  @override
+  String get noSearchResultsMessage =>
+      'Try different keywords or check your spelling.';
+
+  @override
+  String get results => 'results';
+
+  @override
+  String get result => 'result';
+
+  @override
+  String get collections => 'Collections';
+
+  @override
+  String get createCollection => 'Create Collection';
+
+  @override
+  String get collectionName => 'Collection Name';
+
+  @override
+  String get collectionNameRequired => 'Name is required';
+
+  @override
+  String get noCollections => 'No collections yet';
+
+  @override
+  String get noCollectionsMessage =>
+      'Create your first collection to organize locations and chats.';
+
+  @override
+  String get item => 'item';
+
+  @override
+  String get items => 'items';
+
+  @override
+  String get addToCollection => 'Add to Collection';
+
+  @override
+  String get itemAddedToCollection => 'Item added to collection';
+
+  @override
+  String get createNew => 'Create New';
+
+  @override
+  String get noItems => 'No items in collection';
+
+  @override
+  String get noItemsMessage => 'Add locations or chats to this collection.';
+
+  @override
+  String get deleteCollection => 'Delete Collection';
+
+  @override
+  String get deleteCollectionConfirm =>
+      'Are you sure you want to delete this collection? All items will be removed.';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get color => 'Color';
+
+  @override
+  String get icon => 'Icon';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get beforeChrist => 'BC';
+
+  @override
+  String get unknownPeriod => 'Unknown Period';
 }

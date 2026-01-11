@@ -96,5 +96,42 @@
   "clearAll": "Xóa tất cả",
   "clearAllFavoritesConfirm": "Bạn có chắc chắn muốn xóa tất cả yêu thích?",
   "noFavorites": "Chưa có yêu thích",
-  "noFavoritesMessage": "Bắt đầu yêu thích địa điểm và trò chuyện để xem chúng ở đây."
+  "noFavoritesMessage": "Bắt đầu yêu thích địa điểm và trò chuyện để xem chúng ở đây.",
+  "search": "Tìm kiếm",
+  "searchLocations": "Tìm kiếm địa điểm...",
+  "recentSearches": "Tìm kiếm gần đây",
+  "noSearchResults": "Không tìm thấy kết quả",
+  "noSearchResultsMessage": "Thử từ khóa khác hoặc kiểm tra chính tả.",
+  "results": "kết quả",
+  "result": "kết quả",
+  "collections": "Bộ sưu tập",
+  "createCollection": "Tạo bộ sưu tập",
+  "collectionName": "Tên bộ sưu tập",
+  "collectionNameRequired": "Tên là bắt buộc",
+  "noCollections": "Chưa có bộ sưu tập",
+  "noCollectionsMessage": "Tạo bộ sưu tập đầu tiên để tổ chức địa điểm và trò chuyện.",
+  "item": "mục",
+  "items": "mục",
+  "addToCollection": "Thêm vào bộ sưu tập",
+  "itemAddedToCollection": "Đã thêm vào bộ sưu tập",
+  "createNew": "Tạo mới",
+  "noItems": "Chưa có mục trong bộ sưu tập",
+  "noItemsMessage": "Thêm địa điểm hoặc trò chuyện vào bộ sưu tập này.",
+  "deleteCollection": "Xóa bộ sưu tập",
+  "deleteCollectionConfirm": "Bạn có chắc chắn muốn xóa bộ sưu tập này? Tất cả các mục sẽ bị xóa.",
+  "edit": "Chỉnh sửa",
+  "create": "Tạo",
+  "color": "Màu sắc",
+  "icon": "Biểu tượng",
+  "somethingWentWrong": "Đã xảy ra lỗi",
+  "close": "Đóng",
+  "description": "Mô tả",
+  "beforeChrist": "Trước Công Nguyên",
+  "@beforeChrist": {
+    "description": "Before Christ label for negative years"
+  },
+  "unknownPeriod": "Thời kỳ không xác định",
+  "@unknownPeriod": {
+    "description": "Unknown period label"
+  }
 }
